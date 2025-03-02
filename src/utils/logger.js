@@ -34,6 +34,7 @@ function logAnalysisStart(options) {
   log(`Query: ${options.query}`);
   log(`Analyzing directory: ${options.directory}`);
   log(`File extensions: ${options.extensions}`);
+  log(`Ignoring patterns: ${options.ignore}`);
 }
 
 /**

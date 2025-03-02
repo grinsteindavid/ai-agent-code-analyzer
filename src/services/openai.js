@@ -7,27 +7,45 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 /**
- * Get grep patterns from GPT-4 based on the query
+ * Get grep patterns from GPT-4 based on the query and available context
  * @param {string} query - User query about the codebase
+ * @param {string} directory - Directory being analyzed
+ * @param {string} extensions - File extensions to analyze
+ * @param {string} ignore - Patterns to ignore
  * @returns {string[]} Array of grep patterns 
  */
-async function getGrepPatterns(query) {
-  try {
-    const grepPatternsResponse = await openai.createChatCompletion({
-      model: 'gpt-4',
-      messages: [
-        {
-          role: 'system',
-          content: `You are an expert code analyst specializing in generating grep search patterns to find relevant code. 
+async function getGrepPatterns(query, directory, extensions, ignore) {
+  let attempts = 0;
+  const maxAttempts = 3;
+  
+  while (attempts < maxAttempts) {
+    attempts++;
+    try {
+      console.log(`Attempt ${attempts} to generate grep patterns...`);
+      
+      const grepPatternsResponse = await openai.createChatCompletion({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert code analyst specializing in generating grep search patterns to find relevant code. 
 
 You will be given a question about a codebase, and your task is to generate 3-5 grep-compatible search patterns that would effectively find code related to the question.
 
-Important guidelines:
-1. Only respond with a JSON array of strings, with each string being a grep pattern
-2. Make patterns specific enough to find relevant code but not too restrictive
-3. Consider both function names and relevant keywords
-4. Avoid patterns that would match too many irrelevant files
-5. Patterns should be valid for use with the Unix grep command
+VERY IMPORTANT FORMATTING INSTRUCTIONS:
+1. You MUST respond with ONLY a valid JSON array of strings
+2. Each string should be a grep pattern
+3. Do not include any explanation, just the JSON array
+4. Example of correct format: ["pattern1", "pattern2", "pattern3"]
+5. DO NOT use escape characters in your JSON that would make it invalid
+
+Pattern generation guidelines:
+1. Make patterns specific enough to find relevant code but not too restrictive
+2. Consider both function names and relevant keywords
+3. Avoid patterns that would match too many irrelevant files
+4. Patterns should be valid for use with the Unix grep command
+5. Consider the file extensions and directory context provided
+6. Keep in mind which files/directories are being ignored
 
 Examples:
 
@@ -41,23 +59,92 @@ Question: "How are database connections handled?"
 Response: ["connect.*database", "mongoose", "connection", "db\\.", "sequelize"]
 
 Now, generate appropriate grep patterns for the given question.`
-        },
-        {
-          role: 'user',
-          content: `I'm analyzing a codebase and want to find code related to this question: "${query}"`
-        }
-      ],
-    });
+          },
+          {
+            role: 'user',
+            content: `I'm analyzing a codebase and want to find code related to this question: "${query}"
 
-    const content = grepPatternsResponse.data.choices[0].message.content.trim();
-    // Handle both direct JSON and code block JSON
-    const jsonMatch = content.match(/```json\n([\s\S]*)\n```/) || content.match(/```\n([\s\S]*)\n```/);
-    const jsonStr = jsonMatch ? jsonMatch[1] : content;
-    return JSON.parse(jsonStr);
-  } catch (e) {
-    console.error('Error parsing grep patterns from GPT-4 response. Using default patterns.');
-    return ['function', 'class', 'import', 'export'];
+Analysis context:
+- Directory being analyzed: ${directory}
+- File extensions being analyzed: ${extensions}
+- Patterns being ignored: ${ignore}
+
+Please generate grep patterns that will be most effective for this specific context.`
+          }
+        ],
+      });
+
+      const content = grepPatternsResponse.data.choices[0].message.content.trim();
+      console.log(`DEBUG grepPatternsResponse: ${content}`);
+      
+      // More robust parsing for various response formats
+      let jsonStr;
+      // Try to extract from code blocks first
+      const jsonMatch = content.match(/```(?:json)?\n([\s\S]*)\n```/);
+      jsonStr = jsonMatch ? jsonMatch[1].trim() : content;
+      
+      // Clean up potential issues with the JSON string
+      // If it's not already wrapped in square brackets, do so
+      if (!jsonStr.startsWith('[') && !jsonStr.endsWith(']')) {
+        // Check if it might be wrapped in other characters
+        if (jsonStr.includes('[') && jsonStr.includes(']')) {
+          const start = jsonStr.indexOf('[');
+          const end = jsonStr.lastIndexOf(']') + 1;
+          jsonStr = jsonStr.substring(start, end);
+        } else {
+          // It might be a comma-separated list, so wrap it
+          jsonStr = `[${jsonStr}]`;
+        }
+      }
+      
+      // Fix common JSON parsing issues with escape characters
+      // Replace improperly escaped characters with properly escaped ones
+      jsonStr = jsonStr.replace(/"\\?\./g, '"\\.')      // Fix \. and .
+                         .replace(/\\\\\./g, '\\\\.')   // Don't double-escape already correct ones
+                         .replace(/\\$/g, '\\\\$')       // Fix $ escape
+                         .replace(/\\\(/g, '\\\\(')     // Fix ( escape
+                         .replace(/\\\)/g, '\\\\)')     // Fix ) escape
+      
+      console.log(`Attempting to parse: ${jsonStr}`);
+      
+      // Attempt to parse the JSON response
+      let patterns;
+      try {
+        patterns = JSON.parse(jsonStr);
+      } catch (e) {
+        // Last resort - try to manually parse it
+        console.log(`JSON parse failed: ${e.message}. Trying fallback parser...`);
+        
+        // Simple regex-based parser for arrays of strings
+        const matches = jsonStr.match(/"([^"]*)"/g);
+        if (matches && matches.length > 0) {
+          patterns = matches.map(m => m.slice(1, -1));
+          console.log(`Fallback parser found ${patterns.length} patterns`);
+        } else {
+          throw e; // Re-throw if our fallback fails
+        }
+      }
+      
+      // Validate that we got an array of strings
+      if (Array.isArray(patterns) && patterns.length > 0 && patterns.every(p => typeof p === 'string')) {
+        console.log(`Successfully generated ${patterns.length} grep patterns on attempt ${attempts}`);
+        return patterns;
+      } else {
+        throw new Error('Response is not a valid array of strings');
+      }
+    } catch (e) {
+      console.error(`Attempt ${attempts} failed: ${e.message}`);
+      if (attempts >= maxAttempts) {
+        console.error('Maximum attempts reached. Using default patterns.');
+        return ['function', 'class', 'import', 'export'];
+      }
+      // Small delay before trying again
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
   }
+  
+  // Fallback if loop exits unexpectedly
+  return ['function', 'class', 'import', 'export'];
 }
 
 /**

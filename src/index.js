@@ -23,7 +23,12 @@ async function main() {
     
     // Step 1: Generate grep patterns using OpenAI
     logger.log('\nStep 1: Generating search patterns based on your question...');
-    const grepPatterns = await getGrepPatterns(options.query);
+    const grepPatterns = await getGrepPatterns(
+      options.query,
+      options.directory,
+      options.extensions,
+      options.ignore
+    );
     logger.logSearchPatterns(grepPatterns);
     
     // Step 2: Find files with matching extensions in the directory
