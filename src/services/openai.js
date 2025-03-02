@@ -30,7 +30,7 @@ async function getGrepPatterns(query, directory, extensions, ignore) {
             role: 'system',
             content: `You are an expert code analyst specializing in generating grep search patterns to find relevant code. 
 
-You will be given a question about a codebase, and your task is to generate 3-5 grep-compatible search patterns that would effectively find code related to the question.
+You will be given a question about a codebase, and your task is to generate 5-10 grep-compatible search patterns that would effectively find code related to the question.
 
 VERY IMPORTANT FORMATTING INSTRUCTIONS:
 1. You MUST respond with ONLY a valid JSON array of strings
@@ -40,36 +40,38 @@ VERY IMPORTANT FORMATTING INSTRUCTIONS:
 5. DO NOT use escape characters in your JSON that would make it invalid
 
 Pattern generation guidelines:
-1. Make patterns specific enough to find relevant code but not too restrictive
-2. Consider both function names and relevant keywords
-3. Avoid patterns that would match too many irrelevant files
-4. Patterns should be valid for use with the Unix grep command
-5. Consider the file extensions and directory context provided
-6. Keep in mind which files/directories are being ignored
+1. For JavaScript/Node.js codebases, focus on simple patterns like:
+   - "function" - to find function declarations
+   - "module.exports" - to find module exports
+   - "require(" - to find dependencies
+   - "const" - to find constant declarations
+   - "describe" or "it(" - for test files
+   - "/\*" - to find comment blocks that may contain documentation
+2. Avoid complex regex patterns with special characters
+3. Include both generic and specific patterns
+4. Use simple words likely to be found in code or comments
+5. When analyzing architecture, include terms like "config", "setup", "init", "server", "router"
 
 Examples:
 
-Question: "How does the user authentication work?"
-Response: ["login", "authenticate", "password", "user.*auth", "jwt", "session"]
+Question: "Explain the project architecture"
+Response: ["function", "module.exports", "require(", "const", "server", "router", "app", "index", "config", "setup", "init"]
 
-Question: "How is data fetched from the API?"
-Response: ["fetch", "axios", "api", "request", "http.get"]
-
-Question: "How are database connections handled?"
-Response: ["connect.*database", "mongoose", "connection", "db\\.", "sequelize"]
+Question: "How does error handling work?"
+Response: ["try", "catch", "throw", "error", "exception", "handle", "log.error", "console.error"]
 
 Now, generate appropriate grep patterns for the given question.`
           },
           {
             role: 'user',
-            content: `I'm analyzing a codebase and want to find code related to this question: "${query}"
+            content: `I'm analyzing a JavaScript/Node.js codebase and want to find code related to this question: "${query}"
 
 Analysis context:
 - Directory being analyzed: ${directory}
 - File extensions being analyzed: ${extensions}
 - Patterns being ignored: ${ignore}
 
-Please generate grep patterns that will be most effective for this specific context.`
+I need simple, effective grep patterns that will help me understand the overall structure and architecture of the codebase. Include common JavaScript/Node.js constructs and avoid complex regex patterns.`
           }
         ],
       });
@@ -156,67 +158,107 @@ Please generate grep patterns that will be most effective for this specific cont
  * @param {number} maxTokens - Maximum tokens in response
  * @returns {string} GPT-4 analysis 
  */
-async function analyzeCode(query, codeChunks, grepResults, grepPatterns, maxTokens) {
+async function analyzeCode(query, codeChunks, grepResults, grepPatterns, maxTokens = 2000) {
+  console.log(`DEBUG analyzeCode: Analyzing ${codeChunks.length} code chunks`);
+  
+  // Determine if we're doing direct file analysis vs. grep-based analysis
+  const isDirectAnalysis = !grepResults || Object.keys(grepResults).length === 0;
+  console.log(`DEBUG analyzeCode: Using ${isDirectAnalysis ? 'direct file' : 'grep-based'} analysis`);
+  
   // Prepare the context message with code chunks
   let contextMessage = `I'm analyzing a codebase to answer: "${query}"\n\n`;
   contextMessage += `Here are relevant code samples:\n\n`;
   
   let chunkNum = 1;
+  const maxContentLength = 15000; // Conservative limit to avoid token issues
+  let currentLength = 0;
+  
   for (const chunk of codeChunks) {
     // Add file info header
-    const ext = require('path').extname(chunk.file).slice(1);
-    contextMessage += `### CHUNK ${chunkNum}: ${chunk.file} (Lines ${chunk.startLine}-${chunk.endLine})\n`;
-    contextMessage += "```" + ext + "\n";
-    contextMessage += chunk.content + "\n";
-    contextMessage += "```\n\n";
-    chunkNum++;
+    const ext = require('path').extname(chunk.file).slice(1) || 'js';
+    const fileHeader = `### CHUNK ${chunkNum}: ${chunk.file} (Lines ${chunk.lineStart || 'N/A'}-${chunk.lineEnd || 'N/A'})\n`;
+    const codeBlock = "```" + ext + "\n" + chunk.content + "\n" + "```\n\n";
     
-    // Check if we need to make multiple API calls due to token limits
-    if (contextMessage.length > 12000 && chunkNum < codeChunks.length) {
-      contextMessage += `\nNote: Additional code chunks exist but were omitted due to token limits.`;
+    // Check if adding this chunk would exceed our limit
+    if (currentLength + fileHeader.length + codeBlock.length > maxContentLength) {
+      console.log(`DEBUG analyzeCode: Reached content limit after ${chunkNum-1} files`);
+      contextMessage += `\nNote: Additional ${codeChunks.length - (chunkNum-1)} code chunks exist but were omitted due to token limits.`;
       break;
     }
+    
+    contextMessage += fileHeader + codeBlock;
+    currentLength += fileHeader.length + codeBlock.length;
+    chunkNum++;
   }
   
-  // Add grep results summary
-  contextMessage += "\n### GREP SEARCH RESULTS:\n";
-  for (const pattern of grepPatterns) {
-    contextMessage += `\nMatches for pattern "${pattern}":\n`;
-    let matchCount = 0;
-    
-    for (const file of Object.keys(grepResults)) {
-      if (grepResults[file][pattern]) {
-        matchCount++;
-        if (matchCount <= 10) { // Limit to 10 files per pattern to save tokens
-          contextMessage += `- ${file}:\n`;
-          // Truncate if too many matches
-          const matches = grepResults[file][pattern].split('\n');
-          const displayMatches = matches.slice(0, 10);
-          displayMatches.forEach(match => {
-            contextMessage += `  ${match}\n`;
-          });
-          if (matches.length > 10) {
-            contextMessage += `  ... and ${matches.length - 10} more matches\n`;
+  // Only add grep results if we have them and are using grep-based analysis
+  if (!isDirectAnalysis && grepPatterns && grepPatterns.length > 0) {
+    contextMessage += "\n### GREP SEARCH RESULTS:\n";
+    for (const pattern of grepPatterns) {
+      contextMessage += `\nMatches for pattern "${pattern}":\n`;
+      let matchCount = 0;
+      
+      for (const file of Object.keys(grepResults)) {
+        if (grepResults[file] && grepResults[file][pattern]) {
+          matchCount++;
+          if (matchCount <= 5) { // Limit to 5 files per pattern to save tokens
+            contextMessage += `- ${file}:\n`;
+            // Truncate if too many matches
+            const matches = grepResults[file][pattern].split('\n');
+            const displayMatches = matches.slice(0, 5);
+            displayMatches.forEach(match => {
+              contextMessage += `  ${match}\n`;
+            });
+            if (matches.length > 5) {
+              contextMessage += `  ... and ${matches.length - 5} more matches\n`;
+            }
           }
         }
       }
-    }
-    
-    if (matchCount > 10) {
-      contextMessage += `... and ${matchCount - 10} more files with matches for this pattern\n`;
-    }
-    if (matchCount === 0) {
-      contextMessage += "No matches found\n";
+      
+      if (matchCount > 5) {
+        contextMessage += `... and ${matchCount - 5} more files with matches for this pattern\n`;
+      }
+      if (matchCount === 0) {
+        contextMessage += "No matches found\n";
+      }
     }
   }
+  
+  // Create different system messages based on analysis type
+  let systemContent = '';
+  
+  if (isDirectAnalysis) {
+    systemContent = `You are an expert code analyst specializing in Node.js and JavaScript codebases.
 
-  // Get analysis from GPT-4
-  const analysisResponse = await openai.createChatCompletion({
-    model: 'gpt-4',
-    messages: [
-      {
-        role: 'system',
-        content: `You are an expert code analyst tasked with providing detailed, accurate answers about codebases based on code samples and grep search results.
+You're analyzing complete files from a codebase to understand its architecture and structure.
+
+When analyzing the provided code:
+
+1. START WITH A CLEAR ANSWER that provides an overview of the codebase architecture
+2. DESCRIBE THE MAIN COMPONENTS and their responsibilities
+3. EXPLAIN HOW COMPONENTS INTERACT with each other (data flow, function calls, etc.)
+4. IDENTIFY DESIGN PATTERNS and architectural choices present in the code
+5. CITE SPECIFIC EVIDENCE from the files to support your analysis
+
+Structure your response with these sections:
+
+## Codebase Architecture Overview
+[High-level summary of the codebase architecture and main components]
+
+## Component Breakdown
+[Description of each major component, its purpose and functionality]
+
+## Component Interactions
+[How the different parts of the codebase work together]
+
+## Design Patterns & Implementation Details
+[Notable patterns, coding styles, and specific implementation details]
+
+## Strengths & Potential Improvements
+[Assessment of the architecture's strengths and areas for improvement]`;
+  } else {
+    systemContent = `You are an expert code analyst tasked with providing detailed, accurate answers about codebases based on code samples and grep search results.
 
 When analyzing the provided code:
 
@@ -242,17 +284,34 @@ Example structure:
 [Important code snippets with explanations]
 
 ## Additional Notes
-[Any limitations, potential issues, or suggestions]`
-      },
-      {
-        role: 'user',
-        content: contextMessage
-      }
-    ],
-    max_tokens: parseInt(maxTokens, 1000)
-  });
+[Any limitations, potential issues, or suggestions]`;
+  }
 
-  return analysisResponse.data.choices[0].message.content;
+  console.log(`DEBUG analyzeCode: Using prompt optimized for ${isDirectAnalysis ? 'architecture analysis' : 'specific query'}`);
+
+  try {
+    // Get analysis from GPT-4
+    const analysisResponse = await openai.createChatCompletion({
+      model: 'gpt-4',
+      messages: [
+        {
+          role: 'system',
+          content: systemContent
+        },
+        {
+          role: 'user',
+          content: contextMessage + `\n\nBased on the provided code${isDirectAnalysis ? ' files' : ' samples and search results'}, ${isDirectAnalysis ? 'explain the architecture and organization of this codebase' : 'please answer my question'}. Query: "${query}"`
+        }
+      ],
+      max_tokens: parseInt(maxTokens, 1000),
+      temperature: 0.5
+    });
+  
+    return analysisResponse.data.choices[0].message.content;
+  } catch (error) {
+    console.error('Error analyzing code with OpenAI:', error);
+    throw new Error(`Error analyzing code: ${error.message}`);
+  }
 }
 
 // Check if OpenAI API key is set

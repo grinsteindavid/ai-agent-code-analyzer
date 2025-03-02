@@ -45,10 +45,54 @@ async function main() {
     const topFiles = scoreAndRankFiles(grepResults, grepPatterns);
     logger.logTopFiles(topFiles);
     
-    // Step 5: Extract code chunks from top files
-    logger.log('\nStep 5: Extracting relevant code chunks for analysis...');
-    const codeChunks = extractCodeChunks(topFiles, grepResults);
-    logger.logCodeChunks(codeChunks);
+    // Check if we have valid results from grep search
+    const hasGrepResults = Object.keys(grepResults).length > 0;
+    let codeChunks = [];
+    
+    if (hasGrepResults) {
+      // Step 5: Extract code chunks from top files
+      logger.log('\nStep 5: Extracting relevant code chunks for analysis...');
+      codeChunks = extractCodeChunks(topFiles, grepResults);
+      logger.logCodeChunks(codeChunks);
+    } else {
+      // If no grep results, try direct file content analysis
+      logger.log('\nNo grep matches found. Switching to direct file content analysis...');
+      
+      const { readFilesContent } = require('./services/file');
+      
+      // Get all files in target directory for analysis
+      const filesForAnalysis = topFiles.map(item => item.file);
+      logger.log(`Analyzing ${filesForAnalysis.length} files directly`);
+      
+      // Read the file contents directly
+      const fileContents = readFilesContent(filesForAnalysis);
+      
+      // Convert file contents to code chunks format
+      fileContents.forEach(({file, content}) => {
+        // Only include non-empty files and limit size for API call
+        if (content && content.trim()) {
+          const maxContentLength = 8000; // Adjust as needed to keep under token limit
+          const truncatedContent = content.length > maxContentLength ? 
+            content.substring(0, maxContentLength) + '\n... (truncated)' : 
+            content;
+          
+          codeChunks.push({
+            file,
+            content: truncatedContent,
+            lineStart: 1,
+            lineEnd: truncatedContent.split('\n').length
+          });
+        }
+      });
+      
+      logger.logCodeChunks(codeChunks);
+    }
+    
+    // If we still have no code chunks, stop the analysis
+    if (codeChunks.length === 0) {
+      logger.log('\nNo code could be extracted for analysis. Please try a different query or modify the search parameters.');
+      return;
+    }
     
     // Step 6: Analyze code with OpenAI
     logger.log('\nStep 6: Analyzing code with OpenAI...');

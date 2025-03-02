@@ -13,20 +13,31 @@ function findFilesByExtension(directory, extensions, ignore) {
   const extArray = extensions.split(',');
   const ignoreArray = ignore.split(',');
   
+  // Debug logs
+  console.log(`DEBUG findFilesByExtension: Directory: ${directory}`);
+  console.log(`DEBUG findFilesByExtension: Extensions: ${extArray}`);
+  console.log(`DEBUG findFilesByExtension: Ignore: ${ignoreArray}`);
+  
   // Create glob patterns
   const patterns = extArray.map(ext => `**/*.${ext}`);
+  console.log(`DEBUG findFilesByExtension: Glob patterns: ${patterns}`);
   
   // Use glob to find files
   const files = [];
   patterns.forEach(pattern => {
+    const ignorePatterns = ignoreArray.map(i => `**/${i}/**`);
+    console.log(`DEBUG findFilesByExtension: Ignore patterns: ${ignorePatterns}`);
+    
     const matches = glob.sync(pattern, {
       cwd: directory,
       absolute: true,
-      ignore: ignoreArray.map(i => `**/${i}/**`)
+      ignore: ignorePatterns
     });
+    console.log(`DEBUG findFilesByExtension: Found ${matches.length} files for pattern ${pattern}`);
     files.push(...matches);
   });
   
+  console.log(`DEBUG findFilesByExtension: Total files found: ${files.length}`);
   return files;
 }
 
@@ -37,7 +48,7 @@ function findFilesByExtension(directory, extensions, ignore) {
  * @param {number} contextLines - Number of context lines around matches
  * @returns {Array} Array of code chunks with file and line information
  */
-function extractCodeChunks(topFiles, grepResults, contextLines = 10) {
+function extractCodeChunks(topFiles, grepResults, contextLines = 100) {
   const codeChunks = [];
   
   topFiles.forEach(({file}) => {
@@ -105,7 +116,38 @@ function extractCodeChunks(topFiles, grepResults, contextLines = 10) {
   return codeChunks;
 }
 
+/**
+ * Read entire file contents for direct analysis
+ * @param {Array} files - Array of file paths to read
+ * @returns {Array} Array of objects with file path and content
+ */
+function readFilesContent(files) {
+  console.log(`DEBUG readFilesContent: Reading content from ${files.length} files`);
+  
+  const fileContents = [];
+  
+  files.forEach(file => {
+    try {
+      // Read the entire file content
+      const content = fs.readFileSync(file, 'utf-8');
+      
+      // Add file and content to the array
+      fileContents.push({
+        file,
+        content
+      });
+      
+      console.log(`DEBUG readFilesContent: Successfully read ${file}, size: ${content.length} bytes`);
+    } catch (error) {
+      console.log(`DEBUG readFilesContent: Error reading ${file}: ${error.message}`);
+    }
+  });
+  
+  return fileContents;
+}
+
 module.exports = {
   findFilesByExtension,
-  extractCodeChunks
+  extractCodeChunks,
+  readFilesContent
 };
