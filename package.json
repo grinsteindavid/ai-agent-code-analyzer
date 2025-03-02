@@ -1,0 +1,28 @@
+{
+  "name": "autonomous-code-analyzer",
+  "version": "1.0.0",
+  "description": "AI-powered code analyzer using OpenAI GPT-4 with autonomous grep pattern selection",
+  "main": "src/index.js",
+  "bin": {
+    "code-analyzer": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "code-analysis",
+    "openai",
+    "gpt-4",
+    "ai",
+    "grep",
+    "code-search"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "9.4.0",
+    "dotenv": "16.0.3",
+    "glob": "8.0.3",
+    "openai": "3.2.1"
+  }
+}
