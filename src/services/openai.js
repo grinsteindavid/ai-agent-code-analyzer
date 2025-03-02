@@ -18,7 +18,29 @@ async function getGrepPatterns(query) {
       messages: [
         {
           role: 'system',
-          content: 'You are an expert code analyst that helps generate grep search patterns to find relevant code. Only respond with a JSON array of strings, each string being a different grep pattern that would help find code related to the question. Suggest 2-5 different patterns.'
+          content: `You are an expert code analyst specializing in generating grep search patterns to find relevant code. 
+
+You will be given a question about a codebase, and your task is to generate 3-5 grep-compatible search patterns that would effectively find code related to the question.
+
+Important guidelines:
+1. Only respond with a JSON array of strings, with each string being a grep pattern
+2. Make patterns specific enough to find relevant code but not too restrictive
+3. Consider both function names and relevant keywords
+4. Avoid patterns that would match too many irrelevant files
+5. Patterns should be valid for use with the Unix grep command
+
+Examples:
+
+Question: "How does the user authentication work?"
+Response: ["login", "authenticate", "password", "user.*auth", "jwt", "session"]
+
+Question: "How is data fetched from the API?"
+Response: ["fetch", "axios", "api", "request", "http.get"]
+
+Question: "How are database connections handled?"
+Response: ["connect.*database", "mongoose", "connection", "db\\.", "sequelize"]
+
+Now, generate appropriate grep patterns for the given question.`
         },
         {
           role: 'user',
@@ -107,22 +129,40 @@ async function analyzeCode(query, codeChunks, grepResults, grepPatterns, maxToke
     messages: [
       {
         role: 'system',
-        content: `You are an expert code analyst that provides detailed answers about codebases.
-        
-        Guidelines for your response:
-        1. Answer the user's question comprehensively based on the provided code samples
-        2. Give specific file names and line numbers when referencing code
-        3. Provide code snippets for important parts of your explanation
-        4. Be concise but thorough
-        5. If the provided code isn't sufficient to fully answer the question, mention what additional information would be needed
-        6. Organize your response with clear sections and formatting`
+        content: `You are an expert code analyst tasked with providing detailed, accurate answers about codebases based on code samples and grep search results.
+
+When analyzing the provided code:
+
+1. START WITH A CLEAR ANSWER to the user's question based on the evidence in the code samples
+2. CITE SPECIFIC EVIDENCE including file names and line numbers (e.g., "In auth.js lines 15-20...")
+3. INCLUDE RELEVANT CODE SNIPPETS to support your explanations (use markdown code blocks)
+4. ORGANIZE YOUR RESPONSE with clear sections and headers for different aspects of the answer
+5. BE TECHNICALLY PRECISE - use the correct terminology for the programming language and frameworks
+6. If the code samples are insufficient to fully answer the question, EXPLICITLY STATE what's missing
+
+Example structure:
+
+## Answer
+[Direct answer to the question with a high-level overview]
+
+## Key Components
+[Breakdown of the main components/functions/classes involved]
+
+## Code Flow
+[Explanation of how the code works, with specific file references]
+
+## Code Examples
+[Important code snippets with explanations]
+
+## Additional Notes
+[Any limitations, potential issues, or suggestions]`
       },
       {
         role: 'user',
         content: contextMessage
       }
     ],
-    max_tokens: parseInt(maxTokens, 10)
+    max_tokens: parseInt(maxTokens, 1000)
   });
 
   return analysisResponse.data.choices[0].message.content;

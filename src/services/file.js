@@ -3,106 +3,105 @@ const path = require('path');
 const glob = require('glob');
 
 /**
- * Find files with specific extensions
- * @param {string[]} extensions - File extensions to search for
+ * Find files by extension in a directory
  * @param {string} directory - Directory to search in
- * @returns {Promise<string[]>} Array of file paths
+ * @param {string} extensions - Comma-separated list of file extensions
+ * @param {string} ignore - Comma-separated list of patterns to ignore
+ * @returns {string[]} Array of file paths
  */
-function findFilesByExtension(extensions, directory) {
-  const filePatterns = extensions.map(ext => `**/*.${ext}`);
+function findFilesByExtension(directory, extensions, ignore) {
+  const extArray = extensions.split(',');
+  const ignoreArray = ignore.split(',');
   
-  return new Promise((resolve, reject) => {
-    glob(filePatterns, { cwd: directory, ignore: '**/node_modules/**' }, (err, files) => {
-      if (err) reject(err);
-      else resolve(files);
+  // Create glob patterns
+  const patterns = extArray.map(ext => `**/*.${ext}`);
+  
+  // Use glob to find files
+  const files = [];
+  patterns.forEach(pattern => {
+    const matches = glob.sync(pattern, {
+      cwd: directory,
+      absolute: true,
+      ignore: ignoreArray.map(i => `**/${i}/**`)
     });
+    files.push(...matches);
   });
+  
+  return files;
 }
 
 /**
- * Extract code chunks from files based on grep results
- * @param {Array} topFiles - Array of top-ranked files
- * @param {Object} grepResults - Object with grep results
- * @param {string} directory - Base directory
- * @returns {Array} Array of code chunks
+ * Extract code chunks from files
+ * @param {string[]} topFiles - Array of top file paths
+ * @param {Object} grepResults - Results from grep searches
+ * @param {number} contextLines - Number of context lines around matches
+ * @returns {Array} Array of code chunks with file and line information
  */
-function extractCodeChunks(topFiles, grepResults, directory) {
+function extractCodeChunks(topFiles, grepResults, contextLines = 10) {
   const codeChunks = [];
-  const maxChunkSize = 100; // Max lines per chunk
-
-  for (const {file} of topFiles) {
-    console.log(`\nExtracting code from: ${file}`);
-    try {
-      const fileContent = fs.readFileSync(path.resolve(directory, file), 'utf8');
-      const fileLines = fileContent.split('\n');
-      
-      // Get matches and their line numbers
-      const matchLines = new Set();
-      Object.values(grepResults[file]).forEach(content => {
-        content.split('\n').forEach(line => {
-          const lineNumber = parseInt(line.split(':')[0]) - 1;
-          if (!isNaN(lineNumber)) {
-            matchLines.add(lineNumber);
-          }
-        });
+  
+  topFiles.forEach(({file}) => {
+    // Read file content
+    const content = fs.readFileSync(file, 'utf-8');
+    const lines = content.split('\n');
+    
+    // Collect all line numbers with matches
+    const matchedLines = new Set();
+    Object.keys(grepResults[file] || {}).forEach(pattern => {
+      const matches = grepResults[file][pattern];
+      const lineMatches = matches.match(/:\d+:/g) || [];
+      lineMatches.forEach(lineMatch => {
+        const lineNum = parseInt(lineMatch.replace(/[^0-9]/g, ''), 10);
+        matchedLines.add(lineNum);
       });
+    });
+    
+    // Extract chunks around matched lines
+    const processedLineRanges = [];
+    const sortedLines = Array.from(matchedLines).sort((a, b) => a - b);
+    
+    let currentChunkStart = null;
+    let currentChunkEnd = null;
+    
+    sortedLines.forEach(lineNum => {
+      // Convert to 0-based index
+      const lineIndex = lineNum - 1;
       
-      // Group adjacent matches into chunks
-      const lineArray = Array.from(matchLines).sort((a, b) => a - b);
-      let currentChunkStart = null;
-      let currentChunkEnd = null;
+      // Calculate context boundaries
+      const chunkStart = Math.max(0, lineIndex - contextLines);
+      const chunkEnd = Math.min(lines.length - 1, lineIndex + contextLines);
       
-      for (let i = 0; i <= lineArray.length; i++) {
-        const lineNum = lineArray[i];
-        
-        if (currentChunkStart === null) {
-          currentChunkStart = lineNum;
-          currentChunkEnd = lineNum;
-        } else if (i === lineArray.length || lineNum > currentChunkEnd + 20) {
-          // Ensure we don't exceed max chunk size
-          if (currentChunkEnd - currentChunkStart > maxChunkSize) {
-            // Split into multiple chunks
-            for (let start = currentChunkStart; start < currentChunkEnd; start += maxChunkSize) {
-              const end = Math.min(start + maxChunkSize, currentChunkEnd);
-              const chunkLines = fileLines.slice(start, end + 1);
-              codeChunks.push({
-                file,
-                startLine: start + 1,
-                endLine: end + 1,
-                content: chunkLines.join('\n')
-              });
-            }
-          } else {
-            // Add context around the chunk (up to 10 lines before and after)
-            const contextStart = Math.max(0, currentChunkStart - 10);
-            const contextEnd = Math.min(fileLines.length - 1, currentChunkEnd + 10);
-            const chunkLines = fileLines.slice(contextStart, contextEnd + 1);
-            
-            codeChunks.push({
-              file,
-              startLine: contextStart + 1,
-              endLine: contextEnd + 1,
-              content: chunkLines.join('\n')
-            });
-          }
-          
-          // Start a new chunk
-          if (i < lineArray.length) {
-            currentChunkStart = lineNum;
-            currentChunkEnd = lineNum;
-          } else {
-            currentChunkStart = null;
-            currentChunkEnd = null;
-          }
-        } else {
-          currentChunkEnd = lineNum;
+      // Check for overlap with existing chunk
+      if (currentChunkStart !== null && chunkStart <= currentChunkEnd + 5) { // Allow small gaps
+        currentChunkEnd = Math.max(currentChunkEnd, chunkEnd);
+      } else {
+        // Save previous chunk if exists
+        if (currentChunkStart !== null) {
+          processedLineRanges.push([currentChunkStart, currentChunkEnd]);
         }
+        // Start new chunk
+        currentChunkStart = chunkStart;
+        currentChunkEnd = chunkEnd;
       }
-    } catch (error) {
-      console.error(`Error reading file ${file}:`, error.message);
+    });
+    
+    // Add the last chunk
+    if (currentChunkStart !== null) {
+      processedLineRanges.push([currentChunkStart, currentChunkEnd]);
     }
-  }
-
+    
+    // Extract content for each chunk
+    processedLineRanges.forEach(([startLine, endLine]) => {
+      const chunkContent = lines.slice(startLine, endLine + 1).join('\n');
+      codeChunks.push({
+        file,
+        startLine: startLine + 1, // Convert back to 1-based for human readability
+        endLine: endLine + 1,
+        content: chunkContent
+      });
+    });
+  });
+  
   return codeChunks;
 }
 

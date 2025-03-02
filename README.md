@@ -1,15 +1,14 @@
 # Autonomous Code Analyzer
 
-A Node.js tool that uses OpenAI's GPT-4 to intelligently analyze codebases based on natural language questions. The AI automatically determines relevant grep patterns to find and analyze code related to your questions.
+A simple Node.js tool that uses OpenAI's GPT-4 to intelligently analyze codebases based on natural language questions. The AI automatically determines relevant grep patterns to find and analyze code related to your questions.
 
 ## Features
 
 - Ask natural language questions about your codebase
-- AI automatically determines appropriate grep patterns to search for relevant code
-- Intelligent file selection and analysis
-- Comprehensive summaries with specific code references
-- Language-aware analysis with support for multiple file extensions
-- Modular, maintainable code structure
+- AI automatically generates appropriate grep patterns
+- Ignore specific folders or files
+- Comprehensive analysis with file references and code snippets
+- Support for multiple file extensions
 
 ## Installation
 
@@ -37,31 +36,42 @@ A Node.js tool that uses OpenAI's GPT-4 to intelligently analyze codebases based
 ## Usage
 
 ```bash
-# Ask a question about your codebase
+# Basic usage - ask a question about your codebase
 node index.js --query "How does the authentication system work?"
 
 # Analyze a specific directory
-node index.js --directory ./my-project --query "What's the data flow in the application?"
+node index.js --directory ./my-project --query "How is data validated?"
 
 # Specify file extensions to analyze
-node index.js --query "How are API calls handled?" --extensions js,ts,jsx,tsx
+node index.js --query "How are API calls handled?" --extensions js,ts,jsx
 
-# Set maximum tokens in the GPT-4 response
-node index.js --query "Explain the architecture" --max-tokens 2000
+# Ignore specific folders or files
+node index.js --query "Explain the router" --ignore node_modules,dist,test
+
+# Combine multiple options
+node index.js --directory ./src --extensions js,ts --ignore test,mocks --query "How is state managed?"
 ```
 
 ## Options
 
 - `-d, --directory <path>`: Directory to analyze (default: current directory)
 - `-e, --extensions <exts>`: File extensions to analyze, comma-separated (default: js,jsx,ts,tsx,py,java,c,cpp,go,rb)
+- `-i, --ignore <patterns>`: Patterns to ignore, comma-separated (default: node_modules,dist,build,.git)
 - `-q, --query <query>`: Question about your codebase (required)
 - `-m, --max-tokens <number>`: Maximum tokens in the GPT-4 response (default: 4000)
 - `-h, --help`: Display help information
 - `-V, --version`: Display version information
 
-## Project Structure
+## How It Works
 
-The codebase has been refactored into a modular structure:
+1. Takes your natural language question about the codebase
+2. Uses GPT-4 to generate relevant grep search patterns
+3. Searches the codebase using these patterns to identify important files
+4. Extracts relevant code chunks from the most promising files
+5. Sends these code samples to GPT-4 along with grep results for analysis
+6. Returns a detailed analysis answering your question
+
+## Project Structure
 
 ```
 autonomous-code-analyzer/
@@ -80,31 +90,33 @@ autonomous-code-analyzer/
 └── .env
 ```
 
-## How It Works
+## Example Output
 
-1. Takes your natural language question about the codebase
-2. Uses GPT-4 to generate relevant grep search patterns
-3. Searches the codebase using these patterns to identify important files
-4. Extracts relevant code chunks from the most promising files
-5. Sends these code samples to GPT-4 along with grep results for analysis
-6. Returns a detailed analysis answering your question
+When you run the tool with a query like `node index.js --query "How does the error handling work?"`, you'll get an output like:
 
-## Modules
+```
+Starting code analysis...
+Query: How does the error handling work?
+Analyzing directory: .
+File extensions: js,jsx,ts,tsx,py,java,c,cpp,go,rb
 
-### CLI (src/cli/program.js)
-Configures the command-line interface using Commander.js
+Step 1: Generating search patterns based on your question...
+Generated search patterns: ["try.*catch", "throw", "error", "exception", "handler"]
 
-### OpenAI Service (src/services/openai.js)
-Handles OpenAI API interactions, including pattern generation and code analysis
+Step 2: Searching for files with specified extensions...
+Found 15 files with extensions: js,jsx,ts,tsx,py,java,c,cpp,go,rb
 
-### Grep Service (src/services/grep.js)
-Provides utilities for searching files using grep and ranking results
+...
 
-### File Service (src/services/file.js)
-Handles file operations including finding files and extracting code chunks
+==== CODE ANALYSIS ====
 
-### Logger (src/utils/logger.js)
-Provides consistent logging throughout the application
+## Answer
+Error handling in this codebase is primarily managed through try-catch blocks...
+
+[detailed analysis continues...]
+
+==== END OF ANALYSIS ====
+```
 
 ## License
 

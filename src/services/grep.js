@@ -1,105 +1,102 @@
-const { exec } = require('child_process');
+const { execSync } = require('child_process');
+const path = require('path');
+const logger = require('../utils/logger');
 
 /**
- * Find files containing a pattern
- * @param {string} pattern - The grep pattern to search for
- * @param {string} directory - The directory to search in
- * @param {string[]} extensions - Array of file extensions to search
- * @returns {Promise<string[]>} Array of file paths containing the pattern
- */
-function findFilesWithPattern(pattern, directory, extensions) {
-  return new Promise((resolve) => {
-    const fileExtensionPattern = extensions.map(ext => `*.${ext}`).join(' -o -name ');
-    const cmd = `find ${directory} -type f \\( -name ${fileExtensionPattern} \\) -not -path "*/node_modules/*" -not -path "*/\\.*" | xargs grep -l "${pattern}" 2>/dev/null`;
-    
-    exec(cmd, (error, stdout) => {
-      if (error) {
-        // Grep returns error code 1 if no matches, which is not a real error for us
-        resolve([]);
-        return;
-      }
-      
-      const files = stdout.trim().split('\n').filter(Boolean);
-      resolve(files);
-    });
-  });
-}
-
-/**
- * Get grep match content for a file and pattern
- * @param {string} file - The file to search in
- * @param {string} pattern - The grep pattern to search for
- * @returns {Promise<string>} The grep output showing matches
- */
-function getPatternMatchesInFile(file, pattern) {
-  return new Promise((resolve) => {
-    const cmd = `grep -n "${pattern}" "${file}" 2>/dev/null`;
-    
-    exec(cmd, (error, stdout) => {
-      if (error) {
-        resolve('');
-        return;
-      }
-      
-      resolve(stdout.trim());
-    });
-  });
-}
-
-/**
- * Execute grep searches for all patterns and build results object
+ * Execute grep searches based on patterns provided by OpenAI
  * @param {string[]} patterns - Array of grep patterns
  * @param {string} directory - Directory to search in
- * @param {string[]} extensions - Array of file extensions to search
- * @returns {Promise<Object>} Object with grep results
+ * @param {string} extensions - Comma-separated list of file extensions
+ * @param {string} ignore - Comma-separated list of patterns to ignore
+ * @returns {Object} Results from grep searches
  */
-async function executeGrepSearches(patterns, directory, extensions) {
-  const grepResults = {};
+async function executeGrepSearches(patterns, directory, extensions, ignore) {
+  const results = {};
+  const extArray = extensions.split(',');
+  const ignoreArray = ignore.split(',');
   
-  console.log('\nSearching for patterns in files...');
+  // Build the grep command from patterns
   for (const pattern of patterns) {
-    const files = await findFilesWithPattern(pattern, directory, extensions);
-    console.log(`Pattern "${pattern}" found in ${files.length} files`);
-    
-    for (const file of files) {
-      if (!grepResults[file]) {
-        grepResults[file] = {};
-      }
+    try {
+      // Construct grep command with ignore patterns
+      let grepCmd = `grep -r --include="*.{${extensions}}" "${pattern}" ${directory}`;
       
-      const content = await getPatternMatchesInFile(file, pattern);
-      if (content) {
-        grepResults[file][pattern] = content;
+      // Add ignore patterns
+      ignoreArray.forEach(ignorePattern => {
+        grepCmd += ` --exclude-dir="${ignorePattern}"`;
+      });
+      
+      // Execute the grep command
+      const output = execSync(grepCmd, { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 });
+      
+      // Process the results
+      const lines = output.trim().split('\n');
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        
+        // Parse the grep output (format: file:line:content)
+        const fileMatch = line.match(/^([^:]+):\d+:(.*)$/);
+        if (fileMatch) {
+          const [_, file, matchContent] = fileMatch;
+          const relativeFile = path.relative(process.cwd(), file);
+          
+          if (!results[relativeFile]) {
+            results[relativeFile] = {};
+          }
+          
+          if (!results[relativeFile][pattern]) {
+            results[relativeFile][pattern] = '';
+          }
+          
+          results[relativeFile][pattern] += line + '\n';
+        }
+      }
+    } catch (error) {
+      // Grep returns non-zero exit code when no matches found
+      if (error.status !== 1) {
+        logger.error(`Error executing grep for pattern "${pattern}":`, error);
       }
     }
   }
   
-  return grepResults;
+  return results;
 }
 
 /**
- * Score files based on grep results to identify most relevant files
- * @param {Object} grepResults - Object with grep results
- * @param {number} limit - Maximum number of files to return
- * @returns {Array} Array of scored files
+ * Score and rank files based on grep results
+ * @param {Object} grepResults - Results from grep searches
+ * @param {string[]} patterns - Array of grep patterns
+ * @param {number} maxResults - Maximum number of results to return
+ * @returns {Array} Array of scored and ranked files
  */
-function scoreAndRankFiles(grepResults, limit = 5) {
-  const fileScores = Object.keys(grepResults).map(file => {
-    const patternMatches = Object.keys(grepResults[file]).length;
-    const totalMatches = Object.values(grepResults[file])
-      .reduce((acc, content) => acc + content.split('\n').length, 0);
-    
-    return {
-      file,
-      score: patternMatches * 2 + totalMatches,
-      patternMatches,
-      totalMatches
-    };
-  });
-
-  fileScores.sort((a, b) => b.score - a.score);
+function scoreAndRankFiles(grepResults, patterns, maxResults = 5) {
+  const fileScores = [];
   
-  // Take top N files or less if fewer matches
-  return fileScores.slice(0, limit);
+  // Calculate scores for each file
+  for (const file in grepResults) {
+    let patternMatches = 0;
+    let totalMatches = 0;
+    
+    // Count pattern matches and total matches
+    for (const pattern of patterns) {
+      if (grepResults[file][pattern]) {
+        patternMatches++;
+        const matchCount = (grepResults[file][pattern].match(/\n/g) || []).length;
+        totalMatches += matchCount;
+      }
+    }
+    
+    // Calculate score based on pattern coverage and match count
+    const score = (patternMatches / patterns.length) * 0.7 + 
+                  (totalMatches / 50) * 0.3; // Cap at 50 matches for scoring
+    
+    fileScores.push({ file, score, patternMatches, totalMatches });
+  }
+  
+  // Sort files by score and return top results
+  return fileScores
+    .sort((a, b) => b.score - a.score)
+    .slice(0, maxResults);
 }
 
 module.exports = {

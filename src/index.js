@@ -19,33 +19,34 @@ async function main() {
     
     // Set up CLI program and get options
     const { options } = setupProgram();
-    
-    // Log analysis start
     logger.logAnalysisStart(options);
     
-    // Step 1: Get grep patterns from GPT-4
-    logger.log('\nDetermining search patterns...');
+    // Step 1: Generate grep patterns using OpenAI
+    logger.log('\nStep 1: Generating search patterns based on your question...');
     const grepPatterns = await getGrepPatterns(options.query);
     logger.logSearchPatterns(grepPatterns);
     
-    // Step 2: Find relevant files
-    const extensionList = options.extensions.split(',').map(ext => ext.trim());
-    const allFiles = await findFilesByExtension(extensionList, options.directory);
-    logger.logFoundFiles(allFiles, options.extensions);
+    // Step 2: Find files with matching extensions in the directory
+    logger.log('\nStep 2: Searching for files with specified extensions...');
+    const files = findFilesByExtension(options.directory, options.extensions, options.ignore);
+    logger.logFoundFiles(files, options.extensions);
     
-    // Step 3: Execute grep searches
-    const grepResults = await executeGrepSearches(grepPatterns, options.directory, extensionList);
+    // Step 3: Execute grep searches with the patterns
+    logger.log('\nStep 3: Searching code with generated patterns...');
+    const grepResults = await executeGrepSearches(grepPatterns, options.directory, options.extensions, options.ignore);
     
-    // Step 4: Score and rank files
-    const topFiles = scoreAndRankFiles(grepResults);
+    // Step 4: Score and rank files based on grep results
+    logger.log('\nStep 4: Identifying most relevant files...');
+    const topFiles = scoreAndRankFiles(grepResults, grepPatterns);
     logger.logTopFiles(topFiles);
     
     // Step 5: Extract code chunks from top files
-    const codeChunks = extractCodeChunks(topFiles, grepResults, options.directory);
+    logger.log('\nStep 5: Extracting relevant code chunks for analysis...');
+    const codeChunks = extractCodeChunks(topFiles, grepResults);
     logger.logCodeChunks(codeChunks);
     
-    // Step 6: Analyze code chunks with GPT-4
-    logger.log('\nAnalyzing code with GPT-4...');
+    // Step 6: Analyze code with OpenAI
+    logger.log('\nStep 6: Analyzing code with OpenAI...');
     const analysis = await analyzeCode(
       options.query,
       codeChunks,

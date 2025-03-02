@@ -41,7 +41,7 @@ function logAnalysisStart(options) {
  * @param {string[]} patterns - Array of grep patterns
  */
 function logSearchPatterns(patterns) {
-  log('Generated search patterns:', patterns);
+  log(`Generated search patterns: ${JSON.stringify(patterns)}`);
 }
 
 /**
