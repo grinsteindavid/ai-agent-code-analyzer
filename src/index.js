@@ -6,6 +6,7 @@ const { tools, executeTool } = require("./utils/tools");
 
 // Import providers
 const { providers } = require("./providers");
+const { addMessage, getCurrentDirectory, getMessages } = require('./utils/context');
 
 // CLI Setup
 const program = new Command();
@@ -33,6 +34,8 @@ program
       name,
       parameters: schema
     }));
+
+    addMessage('system', `You are an AI code analyzer. Current directory: ${getCurrentDirectory()}`);
     
     const functionCall = await selectedProvider.getAiFunctionCall({
       userInput: query,
@@ -43,6 +46,8 @@ program
     if (!functionCall) return;
     
     await executeTool(functionCall.name, functionCall.arguments);
+
+    console.log(getMessages());
   });
 
 program.parse(process.argv);

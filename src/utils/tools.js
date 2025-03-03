@@ -1,7 +1,7 @@
 const { executeLs, lsSchema } = require('../tools/executeLs');
 const { readFile, readFileSchema } = require('../tools/readFile');
 const { validateSchema } = require('./validation');
-const { getCurrentDirectory } = require('./context');
+const { getCurrentDirectory, addMessage } = require('./context');
 
 // Define available tools and their schemas
 const tools = {
@@ -14,7 +14,7 @@ const tools = {
     schema: readFileSchema,
     execute: readFile,
     formatResult: (result) => console.log("File Content:\n", result.content)
-  }
+  },
 };
 
 /**
@@ -42,6 +42,7 @@ async function executeTool(toolName, args) {
     }
     
     const result = await tool.execute(...Object.values(args));
+    addMessage('user', JSON.stringify(result));
     tool.formatResult(result);
   } catch (error) {
     console.error("Error:", error.error || error.message);

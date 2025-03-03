@@ -1,5 +1,4 @@
 const fs = require("fs");
-const { validateSchema } = require("../utils/validation");
 
 // JSON Schema Definition
 const readFileSchema = {

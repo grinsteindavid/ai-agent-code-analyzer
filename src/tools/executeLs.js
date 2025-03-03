@@ -1,5 +1,4 @@
 const { exec } = require("child_process");
-const { validateSchema } = require("../utils/validation");
 
 // JSON Schema Definition
 const lsSchema = {

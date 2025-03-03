@@ -1,5 +1,5 @@
 const { OpenAI } = require("openai");
-const { getCurrentDirectory } = require("../utils/context");
+const { getCurrentDirectory, getMessages, addMessage } = require("../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -21,18 +21,29 @@ async function getAiFunctionCall(options) {
   } = options;
 
   try {
-    // Enhance the user query with the current directory context
-    const enhancedInput = `Current directory: ${getCurrentDirectory()}\n\nQuery: ${userInput}`;
+    // Add the user's message to context
+    addMessage('user', userInput);
+    
+    // Create messages array for the API call
+    const messages = [
+      // Include conversation history
+      ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
+    ];
     
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
-      messages: [{ role: "user", content: enhancedInput }],
+      messages,
       max_tokens: parseInt(maxTokens),
       functions,
     });
 
-    const functionCall = response.choices[0]?.message?.function_call;
+    const message = response.choices[0]?.message;
+    
+    // Return function call if present
+    const functionCall = message?.function_call;
     if (functionCall) {
+      addMessage('assistant', JSON.stringify(functionCall));
+
       return {
         name: functionCall.name,
         arguments: JSON.parse(functionCall.arguments),
