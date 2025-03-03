@@ -1,5 +1,5 @@
 const { OpenAI } = require("openai");
-const {  } = require("../../utils/context");
+const { setPlan } = require("../../utils/context");
 const { tools } = require("../../utils/tools");
 
 // Initialize OpenAI
@@ -42,7 +42,7 @@ async function getPlan(options) {
 
     
     if (Boolean(messageContent)) {
-      const plan = JSON.parse(messageContent);
+        setPlan(setPlan)
       
       return plan
     } else {
