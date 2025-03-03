@@ -9,6 +9,41 @@ const { validateSchema } = require("./utils/validation");
 // Import providers
 const { getAiFunctionCall } = require("./providers/openai");
 
+// Define available tools and their schemas
+const tools = {
+  ls: {
+    schema: lsSchema,
+    execute: executeLs,
+    formatResult: (result) => console.log("Directories:", result.directories)
+  },
+  readFile: {
+    schema: readFileSchema,
+    execute: readFile,
+    formatResult: (result) => console.log("File Content:\n", result.content)
+  }
+};
+
+// Generic function to execute a tool
+async function executeTool(toolName, args) {
+  const tool = tools[toolName];
+  if (!tool) {
+    console.log(`Unknown tool: ${toolName}`);
+    return;
+  }
+
+  if (!validateSchema(args, tool.schema)) {
+    console.error(`Invalid arguments for '${toolName}'.`);
+    return;
+  }
+
+  try {
+    const result = await tool.execute(...Object.values(args));
+    tool.formatResult(result);
+  } catch (error) {
+    console.error("Error:", error.error || error.message);
+  }
+}
+
 // CLI Setup
 const program = new Command();
 program.name("AI CLI Agent").description("AI-powered CLI tool").version("1.0.0");
@@ -21,33 +56,18 @@ program
   .option("-m, --max-tokens <number>", "Maximum tokens in the GPT-4 response", 4000)
   .action(async (options) => {
     const { query, maxTokens } = options;
-    const functionCall = await getAiFunctionCall(query, maxTokens, [
-      { name: "ls", parameters: lsSchema },
-      { name: "readFile", parameters: readFileSchema },
-    ]);
+    
+    // Get available tool schemas for AI
+    const functionSchemas = Object.entries(tools).map(([name, { schema }]) => ({
+      name,
+      parameters: schema
+    }));
+    
+    const functionCall = await getAiFunctionCall(query, maxTokens, functionSchemas);
+    
     if (!functionCall) return;
-
-    if (functionCall.name === "ls") {
-      const { path, options } = functionCall;
-      if (validateSchema({ path, options }, lsSchema)) {
-        executeLs(path, options)
-          .then((result) => console.log("Directories:", result.directories))
-          .catch((error) => console.error("Error:", error.error));
-      } else {
-        console.error("Invalid arguments for `ls`.");
-      }
-    } else if (functionCall.name === "readFile") {
-      const { path, encoding } = functionCall;
-      if (validateSchema({ path, encoding }, readFileSchema)) {
-        readFile(path, encoding)
-          .then((result) => console.log("File Content:\n", result.content))
-          .catch((error) => console.error("Error:", error.error));
-      } else {
-        console.error("Invalid arguments for `readFile`.");
-      }
-    } else {
-      console.log("Unknown function call.");
-    }
+    
+    await executeTool(functionCall.name, functionCall.arguments);
   });
 
 program.parse(process.argv);
