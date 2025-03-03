@@ -1,122 +1,118 @@
-#!/usr/bin/env node
+const { exec } = require("child_process");
+const fs = require("fs");
+const { Command } = require("commander");
+const { OpenAI } = require("openai");
+const Ajv = require("ajv");
 
-require('dotenv').config();
+// Initialize OpenAI
+const openai = new OpenAI({ apiKey: "YOUR_OPENAI_API_KEY" });
 
-// Import services and utilities
-const { setupProgram } = require('./cli/program');
-const { validateApiKey, getGrepPatterns, analyzeCode } = require('./services/openai');
-const { executeGrepSearches, scoreAndRankFiles } = require('./services/grep');
-const { findFilesByExtension, extractCodeChunks } = require('./services/file');
-const logger = require('./utils/logger');
+// JSON Schema Definitions
+const lsSchema = {
+  type: "object",
+  properties: {
+    path: { type: "string", description: "Directory path to list", default: "." },
+    options: { type: "string", description: "Options for ls command" },
+  },
+  required: [],
+  additionalProperties: false,
+};
 
-/**
- * Main function that orchestrates the code analysis process
- */
-async function main() {
+const readFileSchema = {
+  type: "object",
+  properties: {
+    path: { type: "string", description: "Path of the file to read" },
+    encoding: { type: "string", description: "Encoding type", default: "utf-8" },
+  },
+  required: ["path"],
+  additionalProperties: false,
+};
+
+// Function to validate JSON input against schema
+function validateSchema(data, schema) {
+  const ajv = new Ajv();
+  const validate = ajv.compile(schema);
+  return validate(data);
+}
+
+// Function to execute `ls`
+function executeLs(path = ".", options = "") {
+  return new Promise((resolve, reject) => {
+    exec(`ls ${options} ${path}`, (err, stdout, stderr) => {
+      if (err) reject({ error: stderr });
+      else resolve({ directories: stdout.split("\n").filter(Boolean) });
+    });
+  });
+}
+
+// Function to read a file
+function readFile(path, encoding = "utf-8") {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, encoding, (err, data) => {
+      if (err) reject({ error: err.message });
+      else resolve({ content: data });
+    });
+  });
+}
+
+// Function to call OpenAI API and get JSON function response
+async function getAiFunctionCall(userInput) {
   try {
-    // Validate OpenAI API key
-    validateApiKey();
-    
-    // Set up CLI program and get options
-    const { options } = setupProgram();
-    logger.logAnalysisStart(options);
-    
-    // Step 1: Generate grep patterns using OpenAI
-    logger.log('\nStep 1: Generating search patterns based on your question...');
-    const grepPatterns = await getGrepPatterns(
-      options.query,
-      options.directory,
-      options.extensions,
-      options.ignore
-    );
-    logger.logSearchPatterns(grepPatterns);
-    
-    // Step 2: Find files with matching extensions in the directory
-    logger.log('\nStep 2: Searching for files with specified extensions...');
-    const files = findFilesByExtension(options.directory, options.extensions, options.ignore);
-    logger.logFoundFiles(files, options.extensions);
-    
-    // Step 3: Execute grep searches with the patterns
-    logger.log('\nStep 3: Searching code with generated patterns...');
-    const grepResults = await executeGrepSearches(grepPatterns, options.directory, options.extensions, options.ignore);
-    
-    // Step 4: Score and rank files based on grep results
-    logger.log('\nStep 4: Identifying most relevant files...');
-    const topFiles = scoreAndRankFiles(grepResults, grepPatterns);
-    logger.logTopFiles(topFiles);
-    
-    // Check if we have valid results from grep search
-    const hasGrepResults = Object.keys(grepResults).length > 0;
-    let codeChunks = [];
-    
-    if (hasGrepResults) {
-      // Step 5: Extract code chunks from top files
-      logger.log('\nStep 5: Extracting relevant code chunks for analysis...');
-      codeChunks = extractCodeChunks(topFiles, grepResults);
-      logger.logCodeChunks(codeChunks);
+    const response = await openai.chat.completions.create({
+      model: "gpt-4-turbo",
+      messages: [{ role: "user", content: userInput }],
+      functions: [
+        { name: "ls", parameters: lsSchema },
+        { name: "readFile", parameters: readFileSchema },
+      ],
+    });
+
+    const functionCall = response.choices[0]?.message?.function_call;
+    if (functionCall) {
+      return JSON.parse(functionCall.arguments);
     } else {
-      // If no grep results, try direct file content analysis
-      logger.log('\nNo grep matches found. Switching to direct file content analysis...');
-      
-      const { readFilesContent } = require('./services/file');
-      
-      // Get all files in target directory for analysis
-      const filesForAnalysis = topFiles.map(item => item.file);
-      logger.log(`Analyzing ${filesForAnalysis.length} files directly`);
-      
-      // Read the file contents directly
-      const fileContents = readFilesContent(filesForAnalysis);
-      
-      // Convert file contents to code chunks format
-      fileContents.forEach(({file, content}) => {
-        // Only include non-empty files and limit size for API call
-        if (content && content.trim()) {
-          const maxContentLength = 8000; // Adjust as needed to keep under token limit
-          const truncatedContent = content.length > maxContentLength ? 
-            content.substring(0, maxContentLength) + '\n... (truncated)' : 
-            content;
-          
-          codeChunks.push({
-            file,
-            content: truncatedContent,
-            lineStart: 1,
-            lineEnd: truncatedContent.split('\n').length
-          });
-        }
-      });
-      
-      logger.logCodeChunks(codeChunks);
+      console.log("No valid function call generated.");
+      return null;
     }
-    
-    // If we still have no code chunks, stop the analysis
-    if (codeChunks.length === 0) {
-      logger.log('\nNo code could be extracted for analysis. Please try a different query or modify the search parameters.');
-      return;
-    }
-    
-    // Step 6: Analyze code with OpenAI
-    logger.log('\nStep 6: Analyzing code with OpenAI...');
-    const analysis = await analyzeCode(
-      options.query,
-      codeChunks,
-      grepResults,
-      grepPatterns,
-      options.maxTokens
-    );
-    
-    // Step 7: Output analysis
-    logger.logAnalysis(analysis);
-    
   } catch (error) {
-    logger.error('Error during code analysis:', error);
+    console.error("OpenAI API Error:", error.message);
+    return null;
   }
 }
 
-// Run the main function if this file is executed directly
-if (require.main === module) {
-  main();
-}
+// CLI Setup
+const program = new Command();
+program.name("AI CLI Agent").description("AI-powered CLI tool").version("1.0.0");
 
-module.exports = {
-  main
-};
+// AI command
+program
+  .command("ai <query>")
+  .description("Ask the AI agent to perform an action")
+  .action(async (query) => {
+    const functionCall = await getAiFunctionCall(query);
+    if (!functionCall) return;
+
+    if (functionCall.name === "ls") {
+      const { path, options } = functionCall;
+      if (validateSchema({ path, options }, lsSchema)) {
+        executeLs(path, options)
+          .then((result) => console.log("Directories:", result.directories))
+          .catch((error) => console.error("Error:", error.error));
+      } else {
+        console.error("Invalid arguments for `ls`.");
+      }
+    } else if (functionCall.name === "readFile") {
+      const { path, encoding } = functionCall;
+      if (validateSchema({ path, encoding }, readFileSchema)) {
+        readFile(path, encoding)
+          .then((result) => console.log("File Content:\n", result.content))
+          .catch((error) => console.error("Error:", error.error));
+      } else {
+        console.error("Invalid arguments for `readFile`.");
+      }
+    } else {
+      console.log("Unknown function call.");
+    }
+  });
+
+program.parse(process.argv);
