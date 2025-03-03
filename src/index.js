@@ -50,17 +50,15 @@ program
     }
     
     // Log the generated plan
-    console.log("\n", plan);
+    console.log("\n", plan, "\n");
     
     // Add the plan to context for function calls to access
     setPlan(plan);
     
     // Then proceed with function calls in a loop until completion
     let functionCall;
-    let stepCount = 1;
     
     do {
-      console.log(`\nExecuting step ${stepCount}...`);
       
       // Get the next function call
       functionCall = await selectedProvider.getFunctionCall({
@@ -69,10 +67,9 @@ program
       
       // Execute the function if we have one
       if (functionCall) {
-        console.log(`Tool: ${functionCall.name}`);
+        console.log(`** Tool: ${functionCall.name}`);
         console.log(`Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
         await executeTool(functionCall.name, functionCall.arguments);
-        stepCount++;
       } else {
         const summary = await selectedProvider.getSummary();
         console.log(summary);
