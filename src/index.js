@@ -1,59 +1,13 @@
-const { exec } = require("child_process");
-const fs = require("fs");
 const { Command } = require("commander");
 const { OpenAI } = require("openai");
-const Ajv = require("ajv");
+
+// Import tools
+const { executeLs, lsSchema } = require("./tools/executeLs");
+const { readFile, readFileSchema } = require("./tools/readFile");
+const { validateSchema } = require("./utils/validation");
 
 // Initialize OpenAI
-const openai = new OpenAI({ apiKey: "YOUR_OPENAI_API_KEY" });
-
-// JSON Schema Definitions
-const lsSchema = {
-  type: "object",
-  properties: {
-    path: { type: "string", description: "Directory path to list", default: "." },
-    options: { type: "string", description: "Options for ls command" },
-  },
-  required: [],
-  additionalProperties: false,
-};
-
-const readFileSchema = {
-  type: "object",
-  properties: {
-    path: { type: "string", description: "Path of the file to read" },
-    encoding: { type: "string", description: "Encoding type", default: "utf-8" },
-  },
-  required: ["path"],
-  additionalProperties: false,
-};
-
-// Function to validate JSON input against schema
-function validateSchema(data, schema) {
-  const ajv = new Ajv();
-  const validate = ajv.compile(schema);
-  return validate(data);
-}
-
-// Function to execute `ls`
-function executeLs(path = ".", options = "") {
-  return new Promise((resolve, reject) => {
-    exec(`ls ${options} ${path}`, (err, stdout, stderr) => {
-      if (err) reject({ error: stderr });
-      else resolve({ directories: stdout.split("\n").filter(Boolean) });
-    });
-  });
-}
-
-// Function to read a file
-function readFile(path, encoding = "utf-8") {
-  return new Promise((resolve, reject) => {
-    fs.readFile(path, encoding, (err, data) => {
-      if (err) reject({ error: err.message });
-      else resolve({ content: data });
-    });
-  });
-}
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // Function to call OpenAI API and get JSON function response
 async function getAiFunctionCall(userInput) {
