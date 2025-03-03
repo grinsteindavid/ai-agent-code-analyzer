@@ -26,16 +26,20 @@ async function getFunctionCall(options) {
     // Create messages array for the API call
     const messages = [
       // System message with instructions
-      { role: 'system', content: `You are an AI code analyzer. You can only use tools provided and can only answer questions about your codebase. Current directory: ${getCurrentDirectory()}
+      { role: 'system', content: `
+        You are an AI code analyzer. You can only use tools provided. \n
+        Current directory: ${getCurrentDirectory()} \n
 
-Current execution plan:
-${plan}
+        IMPORTANT: Follow the execution plan exactly. You MUST:
+        1. Check that every function call has been called successfully
+        2. If the previous function calls have not been called successfully, retry the last function call 3 times only
+        3. If the entire plan have been completed, return function_call as null to end the plan
 
-IMPORTANT: Follow the execution plan exactly. You MUST:
-1. Check if all previous function calls already fulfill the plan
-2. If the plan has been fully executed, do NOT return any more function calls
-3. If the plan has been partially executed, only return a function call for the next step in the plan
-4. If no steps of the plan have been executed yet, return a function call for the first step` },
+        Current execution plan:
+        ${plan}
+
+       ` 
+      },
       // Include conversation history
       ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
     ];

@@ -45,7 +45,7 @@ async function getPlan(options) {
         1. Use the 'ls' tool to list contents of directory X.
         2. Use the 'readFile' tool to read file Y.
         
-        Do not include any explanations or additional text outside of the numbered steps.`
+        Do not include any explanations or additional text outside of the numbered steps. Max 300 tokens.`
       },
       {
         role: "user",
@@ -57,7 +57,7 @@ async function getPlan(options) {
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages,
-      max_tokens: 200,
+      max_tokens: 300,
     });
 
     const messageContent = response.choices[0]?.message?.content;
