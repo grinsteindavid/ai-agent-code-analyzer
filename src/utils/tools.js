@@ -41,7 +41,7 @@ async function executeTool(toolName, args) {
     addMessage('user', JSON.stringify(result));
   } catch (error) {
     console.error("Error:", error.error || error.message);
-    addMessage('user',  error.message);
+    addMessage('user',  JSON.stringify(error.error || error.message));
   }
 }
 
