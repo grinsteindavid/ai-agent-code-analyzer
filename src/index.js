@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { Command } = require("commander");
 const { OpenAI } = require("openai");
 
@@ -10,11 +11,12 @@ const { validateSchema } = require("./utils/validation");
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // Function to call OpenAI API and get JSON function response
-async function getAiFunctionCall(userInput) {
+async function getAiFunctionCall(userInput, maxTokens = 4000) {
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-4-turbo",
       messages: [{ role: "user", content: userInput }],
+      max_tokens: maxTokens,
       functions: [
         { name: "ls", parameters: lsSchema },
         { name: "readFile", parameters: readFileSchema },
@@ -40,10 +42,13 @@ program.name("AI CLI Agent").description("AI-powered CLI tool").version("1.0.0")
 
 // AI command
 program
-  .command("ai <query>")
-  .description("Ask the AI agent to perform an action")
-  .action(async (query) => {
-    const functionCall = await getAiFunctionCall(query);
+  .command("analyze")
+  .description("Analyze your codebase using AI")
+  .requiredOption("-q, --query <query>", "Question about your codebase")
+  .option("-m, --max-tokens <number>", "Maximum tokens in the GPT-4 response", 4000)
+  .action(async (options) => {
+    const { query, maxTokens } = options;
+    const functionCall = await getAiFunctionCall(query, maxTokens);
     if (!functionCall) return;
 
     if (functionCall.name === "ls") {
