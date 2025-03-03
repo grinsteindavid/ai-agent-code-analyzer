@@ -1,5 +1,5 @@
 const { OpenAI } = require("openai");
-const { getMessages, addMessage, getCurrentDirectory } = require("../../utils/context");
+const { getMessages, addMessage, getPlan } = require("../../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -17,6 +17,9 @@ async function getSummary(options = {}) {
   } = options;
 
   try {
+    // Get the plan from context
+    const plan = getPlan();
+    
     // Create messages array for the API call
     const messages = [
       // System message with instructions
@@ -24,10 +27,13 @@ async function getSummary(options = {}) {
         role: 'system', 
         content: `You are an AI code analyzer assistant.
         
+        Original execution plan:
+        ${plan}
+        
         Your task is to:
-        1. Review the conversation history
-        2. Identify the original query and plan that was executed
-        3. Summarize the results of the tools that were executed
+        1. Review the conversation history and the original execution plan
+        2. Identify the original query that was executed
+        3. Summarize the results of the tools that were executed and how they align with the plan
         4. Provide a clear, concise summary of what was found or accomplished
         5. If appropriate, suggest potential next steps or further analysis
         

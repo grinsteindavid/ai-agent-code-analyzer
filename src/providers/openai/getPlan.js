@@ -65,8 +65,7 @@ async function getPlan(options) {
     
     if (Boolean(messageContent)) {
         // Save the generated plan to context
-        const planObject = { content: messageContent };
-        setPlan(planObject);
+        setPlan(messageContent);
       
         return messageContent
     } else {
