@@ -1,6 +1,7 @@
 const { executeLs, lsSchema } = require('../tools/executeLs');
 const { readFile, readFileSchema } = require('../tools/readFile');
 const { validateSchema } = require('./validation');
+const { getCurrentDirectory } = require('./context');
 
 // Define available tools and their schemas
 const tools = {
@@ -34,6 +35,12 @@ async function executeTool(toolName, args) {
   }
 
   try {
+    // For path-based operations, resolve relative paths against the current directory
+    if (args.path && !args.path.startsWith('/')) {
+      const currentDir = getCurrentDirectory();
+      args.path = `${currentDir}/${args.path}`;
+    }
+    
     const result = await tool.execute(...Object.values(args));
     tool.formatResult(result);
   } catch (error) {

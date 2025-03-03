@@ -3,6 +3,7 @@ const { Command } = require("commander");
 
 // Import utilities
 const { tools, executeTool } = require("./utils/tools");
+const { getCurrentDirectory } = require("./utils/context");
 
 // Import providers
 const { getAiFunctionCall } = require("./providers/openai");
