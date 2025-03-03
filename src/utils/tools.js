@@ -37,7 +37,6 @@ async function executeTool(toolName, args) {
   }
 
   try {
-    console.log(`Executing ${toolName}...`);
     const result = await tool.execute(...Object.values(args));
     addMessage('user', JSON.stringify(result));
     tool.formatResult(result);
