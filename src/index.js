@@ -37,7 +37,7 @@ program
 
     addMessage('system', `You are an AI code analyzer. You can only use tools provided and can only answer questions about your codebase. Current directory: ${getCurrentDirectory()}`);
     
-    const functionCall = await selectedProvider.getAiFunctionCall({
+    const functionCall = await selectedProvider.getFunctionCall({
       userInput: query,
       maxTokens: maxTokens,
       functions: functionSchemas,

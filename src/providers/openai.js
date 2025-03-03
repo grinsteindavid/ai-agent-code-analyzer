@@ -12,7 +12,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
  * @param {Array} [options.functions=[]] - Array of function definitions
  * @returns {Object|null} - Function call with name and arguments, or null if error
  */
-async function getAiFunctionCall(options) {
+async function getFunctionCall(options) {
   // Default options
   const {
     userInput,
@@ -59,5 +59,5 @@ async function getAiFunctionCall(options) {
 }
 
 module.exports = {
-  getAiFunctionCall
+  getFunctionCall
 };
