@@ -33,7 +33,7 @@ A simple Node.js tool that uses OpenAI's GPT-4 to intelligently analyze codebase
 
 ```bash
 # Basic usage - ask a question about your codebase
-node index.js --query "How does the authentication system work?"
+node src/index.js analyze --query "What files are in src folder?" --max-tokens 2000
 ```
 
 ## Options
