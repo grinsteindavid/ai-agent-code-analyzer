@@ -40,6 +40,11 @@ program
     const plan = await selectedProvider.getPlan({
       userInput: query
     });
+
+    if(!plan) {
+      console.log("Error generating plan");
+      return;
+    }
     
     // Log the generated plan
     console.log("\n", plan);

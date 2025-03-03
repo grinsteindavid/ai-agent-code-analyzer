@@ -1,6 +1,7 @@
 const { OpenAI } = require("openai");
 const { setPlan, getCurrentDirectory } = require("../../utils/context");
 const { tools } = require("../../utils/tools");
+const { executeLs } = require("../../tools/executeLs");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -17,6 +18,10 @@ async function getPlan(options) {
     userInput,
   } = options;
 
+  // Get file listing for current directory
+  const result = await executeLs(getCurrentDirectory());
+  const currentDirectory = getCurrentDirectory();
+
   try {
     
     // Create messages array for the API call
@@ -27,7 +32,9 @@ async function getPlan(options) {
         content: `You are an AI code analyzer that creates execution plans. 
         Only Create a sequential plan to answer the user's query using the available tools.
         
-        Current working directory: ${getCurrentDirectory()}
+        Current working directory: ${currentDirectory}
+        
+        Files and directories in ${currentDirectory}:\n- ${result.directories.join('\n- ')}
         
         Available tools and their schemas:
         ${Object.entries(tools).map(([name, tool]) => {
