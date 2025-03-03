@@ -1,5 +1,5 @@
 const { OpenAI } = require("openai");
-const { getMessages, addMessage, getCurrentDirectory } = require("../../utils/context");
+const { getMessages, addMessage, getCurrentDirectory, getPlan } = require("../../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -20,12 +20,18 @@ async function getFunctionCall(options) {
 
   try {
     
+    // Get the current plan from context
+    const plan = getPlan();
+    
     // Create messages array for the API call
     const messages = [
       // System message with instructions
       { role: 'system', content: `You are an AI code analyzer. You can only use tools provided and can only answer questions about your codebase. Current directory: ${getCurrentDirectory()}
 
-IMPORTANT: If the previous user message contains a plan for tools execution, you MUST:
+Current execution plan:
+${plan}
+
+IMPORTANT: Follow the execution plan exactly. You MUST:
 1. Check if all previous function calls already fulfill the plan
 2. If the plan has been fully executed, do NOT return any more function calls
 3. If the plan has been partially executed, only return a function call for the next step in the plan

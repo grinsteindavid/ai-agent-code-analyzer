@@ -6,7 +6,7 @@ const { tools, executeTool } = require("./utils/tools");
 
 // Import providers
 const { providers } = require("./providers");
-const { addMessage} = require('./utils/context');
+const { setPlan } = require('./utils/context');
 
 // CLI Setup
 const program = new Command();
@@ -48,9 +48,9 @@ program
     
     // Log the generated plan
     console.log("\n", plan);
-
-    // Add the user's message to context
-    addMessage('user', plan);
+    
+    // Add the plan to context for function calls to access
+    setPlan(plan);
     
     // Then proceed with function calls in a loop until completion
     let functionCall;
