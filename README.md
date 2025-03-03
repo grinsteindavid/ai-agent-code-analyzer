@@ -50,43 +50,47 @@ node src/index.js analyze --query "read this file package.json" --max-tokens 200
 ## Example Output
 
 ```
-node src/index.js analyze -q "List the files in the src directory and show the contents of index.js"
+node src/index.js analyze -q "explain codebase"
 Generating plan...
 
- 1. Use the `ls` tool to list the files in the `src` directory.
-2. Use the `readFile` tool to read the contents of the `index.js` file. 
+ To explain the codebase, I will start by listing the files and directories in the current working directory. Then, I will review the `README.md` file, which typically contains important information about the project. 
 
-Here is the execution plan:
+Here’s the execution plan:
 
-1. Execute `ls` with the path set to `/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src`.
-2. Execute `readFile` with the path set to `/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/index.js`.
+1. List the files and directories in the current working directory `/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer`.
+2. Read the `README.md` file to gather information about the codebase.
+
+Let's begin with the first step.
 
 Executing step 1...
 Tool: ls
-Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src"}
+Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer"}
 
 
 Executing step 2...
 Tool: readFile
-Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/index.js"}
+Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/README.md"}
 
 
 Executing step 3...
-### Execution Summary
+### Summary of Review on the Codebase
 
-1. **Directory Listing**: The `ls` tool was executed successfully in the `/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src` directory. It returned the following contents:
-   - Files and directories: `index.js`, `providers`, `tools`, `utils`
+1. **Directory Listing**:
+   The working directory `/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer` contains the following files and directories:
+   - `README.md`
+   - `node_modules`
+   - `package-lock.json`
+   - `package.json`
+   - `src`
 
-2. **File Reading**: The `readFile` tool was used to read the contents of the `index.js` file. The content of the file defines a command-line interface (CLI) tool for an AI-powered application, which utilizes the `commander` library. Key features of the file include:
-   - Configuration of the CLI, including command setup and description.
-   - An `analyze` command to allow users to query their codebase using AI.
-   - Handling of input options such as query, maximum token count, and AI provider selection.
-   - A structured approach to generate a plan based on user input, execute function calls in a loop until completion, and log the results at each step.
+2. **Content of `README.md`**:
+   The `README.md` provides a comprehensive overview of the project titled **Autonomous Code Analyzer**, a Node.js tool designed to analyze codebases using natural language questions. Key details include:
+   - **Features**: Users can ask natural language questions about their codebase.
+   - **Installation Instructions**: Steps to clone the repository, install dependencies, set up the environment with an OpenAI API key, and make the main script executable.
+   - **Usage Examples**: Demonstrates how to use the command-line tool to execute queries regarding the codebase.
+   - **Options for Queries**: Lists available command-line options like query specifications, token limits, and provider selection.
 
-### Key Findings
-- The `index.js` serves as the primary entry point for the CLI, facilitating interaction with an AI model to analyze code, leveraging various tools and utilities imported from the `utils` and `providers` directories.
-
-### Next Steps
-- Depending on the project's goals, potential next steps could include:
-  - Testing the `analyze` command with various queries to validate functionality.
-  - Reviewing the contents of the `providers
+3. **Execution Summary of Commands**:
+   - The `ls` command was executed to list files in the `src` directory, revealing the following files: `index.js`, `providers`, `tools`, `utils`.
+   - The `readFile` command examined `index.js`, which serves as the main entry point for the CLI. It sets up the command structure and manages
+```
