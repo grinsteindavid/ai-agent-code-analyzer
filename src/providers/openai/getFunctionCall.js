@@ -1,5 +1,5 @@
 const { OpenAI } = require("openai");
-const { getMessages, addMessage } = require("../../utils/context");
+const { getMessages, addMessage, getCurrentDirectory } = require("../../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -7,7 +7,6 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 /**
  * Call OpenAI API and get function call response
  * @param {Object} options - Options object
- * @param {string} options.userInput - The user's query
  * @param {number} [options.maxTokens=4000] - Maximum tokens in the response
  * @param {Array} [options.functions=[]] - Array of function definitions
  * @returns {Object|null} - Function call with name and arguments, or null if error
@@ -15,17 +14,22 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 async function getFunctionCall(options) {
   // Default options
   const {
-    userInput,
     maxTokens = 4000,
     functions = [],
   } = options;
 
   try {
-    // Add the user's message to context
-    addMessage('user', userInput);
     
     // Create messages array for the API call
     const messages = [
+      // System message with instructions
+      { role: 'system', content: `You are an AI code analyzer. You can only use tools provided and can only answer questions about your codebase. Current directory: ${getCurrentDirectory()}
+
+IMPORTANT: If the previous user message contains a plan for tools execution, you MUST:
+1. Check if all previous function calls already fulfill the plan
+2. If the plan has been fully executed, do NOT return any more function calls
+3. If the plan has been partially executed, only return a function call for the next step in the plan
+4. If no steps of the plan have been executed yet, return a function call for the first step` },
       // Include conversation history
       ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
     ];

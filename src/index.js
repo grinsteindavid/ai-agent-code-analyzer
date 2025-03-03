@@ -34,10 +34,6 @@ program
       name,
       parameters: schema
     }));
-
-    
-
-    addMessage('system', `You are an AI code analyzer. You can only use tools provided and can only answer questions about your codebase. Current directory: ${getCurrentDirectory()}`);
     
     // First, generate a plan using the getPlan function
     console.log("Generating plan...");
@@ -47,6 +43,9 @@ program
     
     // Log the generated plan
     console.log("\n", plan);
+
+    // Add the user's message to context
+    addMessage('user', plan);
     
     // Then proceed with function call as before
     const functionCall = await selectedProvider.getFunctionCall({

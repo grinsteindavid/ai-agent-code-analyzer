@@ -25,7 +25,7 @@ async function getPlan(options) {
       {
         role: "system",
         content: `You are an AI code analyzer that creates execution plans. 
-        Create a sequential plan to answer the user's query using the available tools.
+        Only Create a sequential plan to answer the user's query using the available tools.
         
         Current working directory: ${getCurrentDirectory()}
         
