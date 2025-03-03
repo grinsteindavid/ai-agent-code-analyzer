@@ -3,10 +3,28 @@
  */
 const context = {
   currentDirectory: process.cwd(),
+  plan: null,
   messages: [
     
   ], // Store conversation history
 };
+
+/**
+ * Get the current plan
+ * @returns {Object|null} The current plan
+ */
+function getPlan() {
+  return context.plan;
+}
+
+/**
+ * Set the current plan
+ * @param {Object} newPlan - The new plan to set
+ */
+function setPlan(newPlan) {
+  context.plan = newPlan;
+}
+
 
 /**
  * Get the current working directory
@@ -50,6 +68,8 @@ function clearMessages() {
 
 module.exports = {
   context,
+  getPlan,
+  setPlan,
   getCurrentDirectory,
   setCurrentDirectory,
   getMessages,

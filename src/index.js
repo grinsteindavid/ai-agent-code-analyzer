@@ -12,7 +12,7 @@ const { addMessage, getCurrentDirectory, getMessages } = require('./utils/contex
 const program = new Command();
 program.name("AI CLI Agent").description("AI-powered CLI tool").version("1.0.0");
 
-// AI command
+// AI analyze command
 program
   .command("analyze")
   .description("Analyze your codebase using AI")
