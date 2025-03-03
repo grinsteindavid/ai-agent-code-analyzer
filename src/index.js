@@ -67,7 +67,8 @@ program
         await executeTool(functionCall.name, functionCall.arguments);
         stepCount++;
       } else {
-        console.log("Plan execution completed.");
+        const summary = await selectedProvider.getSummary();
+        console.log(summary);
       }
     } while (functionCall); // Continue until no more function calls
 
