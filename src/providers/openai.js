@@ -1,5 +1,5 @@
 const { OpenAI } = require("openai");
-const { getCurrentDirectory, getMessages, addMessage } = require("../utils/context");
+const { getMessages, addMessage } = require("../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
