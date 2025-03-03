@@ -1,4 +1,5 @@
 const { OpenAI } = require("openai");
+const { getCurrentDirectory } = require("../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -12,9 +13,12 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
  */
 async function getAiFunctionCall(userInput, maxTokens = 4000, functions = []) {
   try {
+    // Enhance the user query with the current directory context
+    const enhancedInput = `Current directory: ${getCurrentDirectory()}\n\nQuery: ${userInput}`;
+    
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
-      messages: [{ role: "user", content: userInput }],
+      messages: [{ role: "user", content: enhancedInput }],
       max_tokens: parseInt(maxTokens),
       functions,
     });
@@ -36,6 +40,5 @@ async function getAiFunctionCall(userInput, maxTokens = 4000, functions = []) {
 }
 
 module.exports = {
-  openai,
   getAiFunctionCall
 };

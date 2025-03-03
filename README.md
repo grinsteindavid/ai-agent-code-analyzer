@@ -33,11 +33,12 @@ A simple Node.js tool that uses OpenAI's GPT-4 to intelligently analyze codebase
 
 ```bash
 # Basic usage - ask a question about your codebase
-node src/index.js analyze --query "What files are in src folder?" --max-tokens 2000
+node src/index.js analyze --query "What files are in src folder?" --max-tokens 2000 --provider openai
 ```
 
 ## Options
 - `-q, --query <query>`: Question about your codebase (required)
-- `-m, --max-tokens <number>`: Maximum tokens in the GPT-4 response (default: 4000)
+- `-m, --max-tokens <number>`: Maximum tokens in the AI response (default: 4000)
+- `-p, --provider <provider>`: AI provider to use (default: openai)
 - `-h, --help`: Display help information
 - `-V, --version`: Display version information
