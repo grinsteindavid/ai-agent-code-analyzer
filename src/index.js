@@ -1,43 +1,13 @@
 require('dotenv').config();
 const { Command } = require("commander");
-const { OpenAI } = require("openai");
 
 // Import tools
 const { executeLs, lsSchema } = require("./tools/executeLs");
 const { readFile, readFileSchema } = require("./tools/readFile");
 const { validateSchema } = require("./utils/validation");
 
-// Initialize OpenAI
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-// Function to call OpenAI API and get JSON function response
-async function getAiFunctionCall(userInput, maxTokens = 4000) {
-  try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4-turbo",
-      messages: [{ role: "user", content: userInput }],
-      max_tokens: parseInt(maxTokens),
-      functions: [
-        { name: "ls", parameters: lsSchema },
-        { name: "readFile", parameters: readFileSchema },
-      ],
-    });
-
-    const functionCall = response.choices[0]?.message?.function_call;
-    if (functionCall) {
-      return {
-        name: functionCall.name,
-        arguments: JSON.parse(functionCall.arguments),
-      };
-    } else {
-      console.log("No valid function call generated.");
-      return null;
-    }
-  } catch (error) {
-    console.error("OpenAI Error:", error.message);
-    return null;
-  }
-}
+// Import providers
+const { getAiFunctionCall } = require("./providers/openai");
 
 // CLI Setup
 const program = new Command();
@@ -51,7 +21,10 @@ program
   .option("-m, --max-tokens <number>", "Maximum tokens in the GPT-4 response", 4000)
   .action(async (options) => {
     const { query, maxTokens } = options;
-    const functionCall = await getAiFunctionCall(query, maxTokens);
+    const functionCall = await getAiFunctionCall(query, maxTokens, [
+      { name: "ls", parameters: lsSchema },
+      { name: "readFile", parameters: readFileSchema },
+    ]);
     if (!functionCall) return;
 
     if (functionCall.name === "ls") {
