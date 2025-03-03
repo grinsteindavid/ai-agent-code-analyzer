@@ -1,7 +1,7 @@
 const { executeLs, lsSchema } = require('../tools/executeLs');
 const { readFile, readFileSchema } = require('../tools/readFile');
 const { validateSchema } = require('./validation');
-const { getCurrentDirectory, addMessage } = require('./context');
+const { addMessage } = require('./context');
 
 // Define available tools and their schemas
 const tools = {
@@ -26,20 +26,24 @@ async function executeTool(toolName, args) {
   const tool = tools[toolName];
   if (!tool) {
     console.log(`Unknown tool: ${toolName}`);
+    addMessage('user', `Unknown tool: ${toolName}`);
     return;
   }
 
   if (!validateSchema(args, tool.schema)) {
-    console.error(`Invalid arguments for '${toolName}'.`);
+    console.error(`Invalid arguments for '${toolName}'`);
+    addMessage('user', `Invalid arguments for '${toolName}'`);
     return;
   }
 
   try {
+    console.log(`Executing ${toolName}...`);
     const result = await tool.execute(...Object.values(args));
     addMessage('user', JSON.stringify(result));
     tool.formatResult(result);
   } catch (error) {
     console.error("Error:", error.error || error.message);
+    addMessage('user',  error.message);
   }
 }
 

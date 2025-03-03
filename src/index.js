@@ -47,7 +47,6 @@ program
     
     await executeTool(functionCall.name, functionCall.arguments);
 
-    console.log(getMessages());
   });
 
 program.parse(process.argv);
