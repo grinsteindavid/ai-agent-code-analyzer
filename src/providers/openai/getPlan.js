@@ -27,8 +27,18 @@ async function getPlan(options) {
         content: `You are an AI code analyzer that creates execution plans. 
         Create a sequential plan to answer the user's query using the available tools.
         For each step, specify the tool to use and the arguments to pass.
-        Available tools: ${Object.keys(tools).join(", ")}`
+        
+        Available tools and their schemas:
+        ${Object.entries(tools).map(([name, tool]) => {
+          return `Tool: ${name}
+Schema: ${JSON.stringify(tool.schema, null, 2)}`;
+        }).join('\n\n')}`
       },
+      // Add user query
+      {
+        role: "user",
+        content: userInput
+      }
     ];
 
     // Call the OpenAI API to generate a plan
@@ -42,9 +52,11 @@ async function getPlan(options) {
 
     
     if (Boolean(messageContent)) {
-        setPlan(setPlan)
+        // Save the generated plan to context
+        const planObject = { content: messageContent };
+        setPlan(planObject);
       
-      return plan
+        return messageContent
     } else {
       console.log("No valid plan generated.");
       return  null
