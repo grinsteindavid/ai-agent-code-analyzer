@@ -7,14 +7,12 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 /**
  * Call OpenAI API and get function call response
  * @param {Object} options - Options object
- * @param {number} [options.maxTokens=4000] - Maximum tokens in the response
  * @param {Array} [options.functions=[]] - Array of function definitions
  * @returns {Object|null} - Function call with name and arguments, or null if error
  */
 async function getFunctionCall(options) {
   // Default options
   const {
-    maxTokens = 4000,
     functions = [],
   } = options;
 
@@ -46,24 +44,59 @@ async function getFunctionCall(options) {
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages,
-      max_tokens: parseInt(maxTokens),
-      functions,
+      tools: functions,
     });
 
     const message = response.choices[0]?.message;
     
-    // Return function call if present
-    const functionCall = message?.function_call;
-    if (functionCall) {
+    // Check for tool_calls first (new OpenAI API format)
+    if (message?.tool_calls && message.tool_calls.length > 0) {
+      const toolCall = message.tool_calls[0];
+      if (toolCall.type === 'function') {
+        const functionCall = toolCall.function;
+        addMessage('assistant', JSON.stringify(functionCall));
+
+        return {
+          name: functionCall.name,
+          arguments: JSON.parse(functionCall.arguments),
+        };
+      }
+    }
+    // Check for direct function_call property (legacy format)
+    else if (message?.function_call) {
+      const functionCall = message.function_call;
       addMessage('assistant', JSON.stringify(functionCall));
 
       return {
         name: functionCall.name,
         arguments: JSON.parse(functionCall.arguments),
       };
-    } else {
-      return null;
+    } 
+    // Check if the content field contains function call information as a JSON string
+    else if (message?.content && typeof message.content === 'string') {
+      addMessage('assistant', message.content);
+      try {
+        // Try to parse the content as JSON
+        const contentJson = JSON.parse(message.content);
+        
+        // Check if the parsed content has the expected function call structure
+        if (contentJson.name && contentJson.arguments) {
+          
+          
+          return {
+            name: contentJson.name,
+            arguments: typeof contentJson.arguments === 'string' 
+              ? JSON.parse(contentJson.arguments) 
+              : contentJson.arguments,
+          };
+        }
+      } catch (e) {
+        // If parsing fails, it's not a JSON string with function call info
+        console.log(message?.content);
+      }
     }
+    
+    return null;
   } catch (error) {
     console.error("OpenAI Error:", error.message);
     return null;

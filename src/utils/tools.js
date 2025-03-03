@@ -8,10 +8,12 @@ const tools = {
   ls: {
     schema: lsSchema,
     execute: executeLs,
+    description: "List files and directories in the specified path",
   },
   readFile: {
     schema: readFileSchema,
     execute: readFile,
+    description: "Read the contents of a file at the specified path",
   },
 };
 

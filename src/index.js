@@ -17,10 +17,9 @@ program
   .command("analyze")
   .description("Analyze your codebase using AI")
   .requiredOption("-q, --query <query>", "Question about your codebase")
-  .option("-m, --max-tokens <number>", "Maximum tokens in the GPT-4 response", 4000)
   .option("-p, --provider <provider>", "AI provider to use (openai)", "openai")
   .action(async (options) => {
-    const { query, maxTokens, provider } = options;
+    const { query, provider } = options;
     
     // Select the AI provider
     const selectedProvider = providers[provider];
@@ -30,9 +29,13 @@ program
     }
     
     // Get available tool schemas for AI
-    const functionSchemas = Object.entries(tools).map(([name, { schema }]) => ({
-      name,
-      parameters: schema
+    const functionSchemas = Object.entries(tools).map(([name, { schema, description }]) => ({
+      type: "function",
+      function: {
+        name,
+        description: description || `Execute the ${name} function`,
+        parameters: schema
+      }
     }));
     
     // First, generate a plan using the getPlan function
@@ -61,7 +64,6 @@ program
       
       // Get the next function call
       functionCall = await selectedProvider.getFunctionCall({
-        maxTokens: maxTokens,
         functions: functionSchemas,
       });
       
