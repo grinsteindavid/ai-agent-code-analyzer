@@ -13,7 +13,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 async function getSummary(options = {}) {
   // Default options
   const {
-    maxTokens = 300,
+    maxTokens = 600,
   } = options;
 
   try {
@@ -37,7 +37,7 @@ async function getSummary(options = {}) {
         4. Provide a clear, concise summary of what was found or accomplished
         5. If appropriate, suggest potential next steps or further analysis
         
-        Keep your summary professional and focused on the most important findings.`
+        Keep your summary professional and focused on the most important findings. Max ${parseInt(maxTokens)} tokens.`
       },
       // Include conversation history
       ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))

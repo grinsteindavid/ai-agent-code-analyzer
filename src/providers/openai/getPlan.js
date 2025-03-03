@@ -1,7 +1,6 @@
 const { OpenAI } = require("openai");
 const { setPlan, getCurrentDirectory } = require("../../utils/context");
 const { tools } = require("../../utils/tools");
-const { executeLs } = require("../../tools/executeLs");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -18,8 +17,6 @@ async function getPlan(options) {
     userInput,
   } = options;
 
-  // Get file listing for current directory
-  const result = await executeLs(getCurrentDirectory());
   const currentDirectory = getCurrentDirectory();
 
   try {
@@ -33,9 +30,6 @@ async function getPlan(options) {
 
         Current working directory: ${currentDirectory}
         
-        Files and directories in ${currentDirectory}:
-        ${result.directories.map(item => `- ${item}`).join('\n')}
-        
         Available tools:
         ${Object.entries(tools).map(([name, {schema}]) => 
           `${name}: ${schema.description || 'No description provided.'}`
@@ -45,7 +39,7 @@ async function getPlan(options) {
         1. Use the 'ls' tool to list contents of directory X.
         2. Use the 'readFile' tool to read file Y.
         
-        Do not include any explanations or additional text outside of the numbered steps.`
+        Do not include any explanations or additional text outside of the numbered steps. Max 300 tokens.`
       },
       {
         role: "user",
@@ -57,7 +51,7 @@ async function getPlan(options) {
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages,
-      max_tokens: 200,
+      max_tokens: 300,
     });
 
     const messageContent = response.choices[0]?.message?.content;
