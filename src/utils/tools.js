@@ -8,12 +8,12 @@ const tools = {
   ls: {
     schema: lsSchema,
     execute: executeLs,
-    formatResult: (result) => console.log("Directories:", result.directories)
+    formatResult: (result) => console.log(result.directories)
   },
   readFile: {
     schema: readFileSchema,
     execute: readFile,
-    formatResult: (result) => console.log("File Content:\n", result.content)
+    formatResult: (result) => console.log(result.content)
   },
 };
 

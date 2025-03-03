@@ -1,5 +1,5 @@
 const { OpenAI } = require("openai");
-const { setPlan } = require("../../utils/context");
+const { setPlan, getCurrentDirectory } = require("../../utils/context");
 const { tools } = require("../../utils/tools");
 
 // Initialize OpenAI
@@ -26,7 +26,8 @@ async function getPlan(options) {
         role: "system",
         content: `You are an AI code analyzer that creates execution plans. 
         Create a sequential plan to answer the user's query using the available tools.
-        For each step, specify the tool to use and the arguments to pass.
+        
+        Current working directory: ${getCurrentDirectory()}
         
         Available tools and their schemas:
         ${Object.entries(tools).map(([name, tool]) => {
