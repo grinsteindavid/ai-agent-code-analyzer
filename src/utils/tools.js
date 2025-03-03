@@ -8,12 +8,10 @@ const tools = {
   ls: {
     schema: lsSchema,
     execute: executeLs,
-    formatResult: (result) => console.log(result.directories)
   },
   readFile: {
     schema: readFileSchema,
     execute: readFile,
-    formatResult: (result) => console.log(result.content)
   },
 };
 
@@ -39,7 +37,6 @@ async function executeTool(toolName, args) {
   try {
     const result = await tool.execute(...Object.values(args));
     addMessage('user', JSON.stringify(result));
-    tool.formatResult(result);
   } catch (error) {
     console.error("Error:", error.error || error.message);
     addMessage('user',  error.message);

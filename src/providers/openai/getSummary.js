@@ -13,7 +13,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 async function getSummary(options = {}) {
   // Default options
   const {
-    maxTokens = 150,
+    maxTokens = 300,
   } = options;
 
   try {
