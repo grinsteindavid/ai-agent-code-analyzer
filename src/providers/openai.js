@@ -6,12 +6,20 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /**
  * Call OpenAI API and get function call response
- * @param {string} userInput - The user's query
- * @param {number} maxTokens - Maximum tokens in the response
- * @param {Array} functions - Array of function definitions
+ * @param {Object} options - Options object
+ * @param {string} options.userInput - The user's query
+ * @param {number} [options.maxTokens=4000] - Maximum tokens in the response
+ * @param {Array} [options.functions=[]] - Array of function definitions
  * @returns {Object|null} - Function call with name and arguments, or null if error
  */
-async function getAiFunctionCall(userInput, maxTokens = 4000, functions = []) {
+async function getAiFunctionCall(options) {
+  // Default options
+  const {
+    userInput,
+    maxTokens = 4000,
+    functions = [],
+  } = options;
+
   try {
     // Enhance the user query with the current directory context
     const enhancedInput = `Current directory: ${getCurrentDirectory()}\n\nQuery: ${userInput}`;

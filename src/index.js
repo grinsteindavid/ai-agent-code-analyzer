@@ -3,7 +3,6 @@ const { Command } = require("commander");
 
 // Import utilities
 const { tools, executeTool } = require("./utils/tools");
-const { getCurrentDirectory } = require("./utils/context");
 
 // Import providers
 const { providers } = require("./providers");
@@ -22,9 +21,6 @@ program
   .action(async (options) => {
     const { query, maxTokens, provider } = options;
     
-    // Get the current directory
-    const currentDirectory = getCurrentDirectory();
-    
     // Select the AI provider
     const selectedProvider = providers[provider];
     if (!selectedProvider) {
@@ -38,7 +34,11 @@ program
       parameters: schema
     }));
     
-    const functionCall = await selectedProvider.getAiFunctionCall(query, maxTokens, functionSchemas);
+    const functionCall = await selectedProvider.getAiFunctionCall({
+      userInput: query,
+      maxTokens: maxTokens,
+      functions: functionSchemas,
+    });
     
     if (!functionCall) return;
     
