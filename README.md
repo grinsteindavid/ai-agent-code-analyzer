@@ -33,7 +33,7 @@ A simple Node.js tool that uses multiple providers like OpenAI's GPT-4 to intell
 
 ```bash
 # Basic usage - ask a question about your codebase
-node src/index.js analyze -q "List the files in the src directory and show the contents of index.js"
+node src/index.js analyze -q "explain codebase"
 
 node src/index.js analyze --query "What files are in src folder?" --max-tokens 2000 --provider openai
 
