@@ -16,7 +16,7 @@ async function getAiFunctionCall(userInput, maxTokens = 4000) {
     const response = await openai.chat.completions.create({
       model: "gpt-4-turbo",
       messages: [{ role: "user", content: userInput }],
-      max_tokens: maxTokens,
+      max_tokens: parseInt(maxTokens),
       functions: [
         { name: "ls", parameters: lsSchema },
         { name: "readFile", parameters: readFileSchema },
@@ -25,13 +25,16 @@ async function getAiFunctionCall(userInput, maxTokens = 4000) {
 
     const functionCall = response.choices[0]?.message?.function_call;
     if (functionCall) {
-      return JSON.parse(functionCall.arguments);
+      return {
+        name: functionCall.name,
+        arguments: JSON.parse(functionCall.arguments),
+      };
     } else {
       console.log("No valid function call generated.");
       return null;
     }
   } catch (error) {
-    console.error("OpenAI API Error:", error.message);
+    console.error("OpenAI Error:", error.message);
     return null;
   }
 }
