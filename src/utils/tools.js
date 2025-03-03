@@ -13,7 +13,7 @@ const tools = {
   readFile: {
     schema: readFileSchema,
     execute: readFile,
-    description: "Read the contents of a file at the specified path",
+    description: "Read the contents of a file at the specified path, avoid reading a folder",
   },
 };
 
