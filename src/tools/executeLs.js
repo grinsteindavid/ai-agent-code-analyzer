@@ -4,10 +4,10 @@ const { exec } = require("child_process");
 const lsSchema = {
   type: "object",
   properties: {
-    path: { type: "string", description: "Directory path to list", default: "." },
+    path: { type: "string", description: "Directory path to list" },
     options: { type: "string", description: "Options for ls command" },
   },
-  required: [],
+  required: ["path"],
   additionalProperties: false,
 };
 

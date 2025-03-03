@@ -35,7 +35,7 @@ program
       parameters: schema
     }));
 
-    addMessage('system', `You are an AI code analyzer. Current directory: ${getCurrentDirectory()}`);
+    addMessage('system', `You are an AI code analyzer. You can only use tools provided and can only answer questions about your codebase. Current directory: ${getCurrentDirectory()}`);
     
     const functionCall = await selectedProvider.getAiFunctionCall({
       userInput: query,
