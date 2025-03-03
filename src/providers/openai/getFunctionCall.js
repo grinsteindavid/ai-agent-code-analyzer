@@ -1,5 +1,5 @@
 const { OpenAI } = require("openai");
-const { getMessages, addMessage } = require("../utils/context");
+const { getMessages, addMessage } = require("../../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -58,6 +58,4 @@ async function getFunctionCall(options) {
   }
 }
 
-module.exports = {
-  getFunctionCall
-};
+module.exports = getFunctionCall;
