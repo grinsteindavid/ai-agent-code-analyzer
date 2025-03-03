@@ -1,6 +1,6 @@
 # Autonomous Code Analyzer
 
-A simple Node.js tool that uses OpenAI's GPT-4 to intelligently analyze codebases based on natural language questions. The AI automatically determines relevant grep patterns to find and analyze code related to your questions.
+A simple Node.js tool that uses OpenAI's GPT-4 to intelligently analyze codebases based on natural language questions.
 
 ## Features
 
