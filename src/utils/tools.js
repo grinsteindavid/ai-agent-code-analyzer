@@ -35,12 +35,6 @@ async function executeTool(toolName, args) {
   }
 
   try {
-    // For path-based operations, resolve relative paths against the current directory
-    if (args.path && !args.path.startsWith('/')) {
-      const currentDir = getCurrentDirectory();
-      args.path = `${currentDir}/${args.path}`;
-    }
-    
     const result = await tool.execute(...Object.values(args));
     addMessage('user', JSON.stringify(result));
     tool.formatResult(result);
