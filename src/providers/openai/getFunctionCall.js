@@ -53,7 +53,6 @@ IMPORTANT: If the previous user message contains a plan for tools execution, you
         arguments: JSON.parse(functionCall.arguments),
       };
     } else {
-      console.log("No valid function call generated.");
       return null;
     }
   } catch (error) {

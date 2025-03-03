@@ -6,7 +6,7 @@ const { tools, executeTool } = require("./utils/tools");
 
 // Import providers
 const { providers } = require("./providers");
-const { addMessage, getCurrentDirectory, getMessages } = require('./utils/context');
+const { addMessage} = require('./utils/context');
 
 // CLI Setup
 const program = new Command();
@@ -47,16 +47,29 @@ program
     // Add the user's message to context
     addMessage('user', plan);
     
-    // Then proceed with function call as before
-    const functionCall = await selectedProvider.getFunctionCall({
-      userInput: plan,
-      maxTokens: maxTokens,
-      functions: functionSchemas,
-    });
+    // Then proceed with function calls in a loop until completion
+    let functionCall;
+    let stepCount = 1;
     
-    if (!functionCall) return;
-    
-    await executeTool(functionCall.name, functionCall.arguments);
+    do {
+      console.log(`\nExecuting step ${stepCount}...`);
+      
+      // Get the next function call
+      functionCall = await selectedProvider.getFunctionCall({
+        maxTokens: maxTokens,
+        functions: functionSchemas,
+      });
+      
+      // Execute the function if we have one
+      if (functionCall) {
+        console.log(`Tool: ${functionCall.name}`);
+        console.log(`Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
+        await executeTool(functionCall.name, functionCall.arguments);
+        stepCount++;
+      } else {
+        console.log("Plan execution completed.");
+      }
+    } while (functionCall); // Continue until no more function calls
 
   });
 
