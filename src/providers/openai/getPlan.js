@@ -29,23 +29,27 @@ async function getPlan(options) {
       // System message with planning instructions
       {
         role: "system",
-        content: `You are an AI code analyzer that creates execution plans. 
-        Only Create a sequential plan to answer the user's query using the available tools.
-        
+        content: `You are an AI code analyzer tasked with creating execution plans. Your role is to generate a clear, step-by-step plan using only the available tools to address the user's query. Each step should correspond to a single tool execution.
+
         Current working directory: ${currentDirectory}
         
-        Files and directories in ${currentDirectory}:\n- ${result.directories.join('\n- ')}
+        Files and directories in ${currentDirectory}:
+        ${result.directories.map(item => `- ${item}`).join('\n')}
         
-        Available tools and their schemas:
-        ${Object.entries(tools).map(([name, tool]) => {
-          return `Tool: ${name}
-Schema: ${JSON.stringify(tool.schema, null, 2)}`;
-        }).join('\n\n')}`
+        Available tools:
+        ${Object.entries(tools).map(([name, {schema}]) => 
+          `${name}: ${schema.description || 'No description provided.'}`
+        ).join('\n')}
+
+        Respond with a numbered list of steps, each using a specific tool. For example:
+        1. Use the 'ls' tool to list contents of directory X.
+        2. Use the 'readFile' tool to read file Y.
+        
+        Do not include any explanations or additional text outside of the numbered steps.`
       },
-      // Add user query
       {
         role: "user",
-        content: userInput
+        content: `Create an execution plan for the following query: ${userInput}`
       }
     ];
 

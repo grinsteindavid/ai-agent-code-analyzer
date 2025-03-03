@@ -23,7 +23,7 @@ const tools = {
 async function executeTool(toolName, args) {
   const tool = tools[toolName];
   if (!tool) {
-    console.log(`Unknown tool: ${toolName}`);
+    console.error(`Unknown tool: ${toolName}`);
     addMessage('user', `Unknown tool: ${toolName}`);
     return;
   }
