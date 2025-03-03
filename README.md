@@ -26,7 +26,7 @@ A simple Node.js tool that uses OpenAI's GPT-4 to intelligently analyze codebase
 
 4. Make the script executable:
    ```bash
-   chmod +x index.js
+   chmod +x src/index.js
    ```
 
 ## Usage
