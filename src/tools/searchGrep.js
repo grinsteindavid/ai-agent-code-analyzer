@@ -6,9 +6,9 @@ const searchGrepSchema = {
   properties: {
     pattern: { type: "string", description: "Pattern to search for" },
     path: { type: "string", description: "Path to search within" },
-    options: { type: "string", description: "Options for grep command", default: "-r" },
+    options: { type: "string", description: "Options for grep command"},
   },
-  required: ["pattern", "path"],
+  required: ["pattern", "path", "options"],
   additionalProperties: false,
 };
 

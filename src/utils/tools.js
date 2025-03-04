@@ -6,10 +6,10 @@ const { addMessage } = require('./context');
 
 // Define available tools and their schemas
 const tools = {
-  ls: {
+  listDirectories: {
     schema: lsSchema,
     execute: executeLs,
-    description: "List files and directories in the specified path, distinguish between files and directories",
+    description: "Lists files and directories in the specified path. Takes a directory path and options for the ls command (e.g., '-la' for detailed listing including hidden files). Returns an array of file and directory names found at the path location.",
     format: (result) => {
       return result.directories;
     }
@@ -17,7 +17,7 @@ const tools = {
   readFile: {
     schema: readFileSchema,
     execute: readFile,
-    description: "Read ONLY the contents of a file at the specified path. DO NOT TRY TO READ FOLDERS",
+    description: "Reads and returns the contents of a file at the specified path. Takes a file path and optional encoding (defaults to 'utf-8'). ONLY works with files, not directories. Returns the text content of the file.",
     format: (result) => {
       return result.content;
     }
@@ -25,7 +25,7 @@ const tools = {
   searchGrep: {
     schema: searchGrepSchema,
     execute: searchGrep,
-    description: "Use Grep to Search for a pattern in files at the specified path",
+    description: "Searches for a specified pattern in files using grep. Takes a search pattern, path to search within, and optional grep command options (defaults to '-r' for recursive search). Returns an array of matching lines with their file locations.",
     format: (result) => {
       return result.matches;
     }
