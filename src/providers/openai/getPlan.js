@@ -29,7 +29,7 @@ async function getPlan(options) {
       // System message with planning instructions
       {
         role: "system",
-        content: `You are an AI code analyzer tasked with creating execution plans. Your role is to generate a clear, step-by-step plan using only the available tools to address the user's query. Each step should correspond to a single tool execution.
+        content: `You are an AI code analyzer tasked with creating execution plans.
 
         Current working directory: ${currentDirectory}
         
@@ -41,11 +41,13 @@ async function getPlan(options) {
           `${name}: ${schema.description || 'No description provided.'}`
         ).join('\n')}
 
-        Respond with a numbered list of steps, each using a specific tool. For example:
+        Respond with a short goal statement summarizing what you aim to accomplish, followed by a numbered list of steps, each using a specific tool. For example:
+        Goal: Find all JavaScript files that import specific packages.
+        
         1. Use the 'ls' tool to list contents of directory X.
         2. Use the 'readFile' tool to read file Y.
         
-        Do not include any explanations or additional text outside of the numbered steps. Max 300 tokens.`
+        Do not include any explanations or additional text outside of the goal and numbered steps. Max 300 tokens.`
       },
       {
         role: "user",
