@@ -38,12 +38,14 @@ async function getPlan(options) {
         
         Available tools:
         ${Object.entries(tools).map(([name, {schema}]) => 
-          `${name}: ${schema.description || 'No description provided.'}`
+          `${name}: ${schema}`
         ).join('\n')}
 
-        Respond with a short goal statement summarizing what you aim to accomplish, followed by a numbered list of steps, each using a specific tool. For example:
-        Goal: Find all JavaScript files that import specific packages.
+        Respond with a short goal statement summarizing what you aim to accomplish, followed by a numbered list of steps (STEPS CAN ONLY USE AVAILABLE TOOLS), each using a specific tool. For example:
         
+        Goal: Find all JavaScript files that import specific packages.
+
+        Steps:
         1. Use the 'ls' tool to list contents of directory X.
         2. Use the 'readFile' tool to read file Y.
         

@@ -29,9 +29,7 @@ async function getFunctionCall(options) {
       Always include the Current directory for paths: ${getCurrentDirectory()} \n
 
       You can ONLY use Availabl tools:
-      ${Object.entries(tools).map(([name, {schema}]) => 
-        `${name}`
-      ).join('\n')}
+      ${Object.entries(tools).map(([name, {schema}]) => `${name}`).join(',')}
 
       IMPORTANT: Follow the execution plan EXACTLY. You MUST:
       1. Check if all previous function calls already fulfill the plan
@@ -41,6 +39,7 @@ async function getFunctionCall(options) {
 
       AVOID:
       1. JSON only accepts a limited set of escape sequences. In JSON, sequences like \s, \w, \(, and \) are not valid
+      2. JSON only allows a specific set of escape sequences (like \\", \\n, \\t, etc.) and does not recognize \\. as a valid escape
      ` 
     },
     {
