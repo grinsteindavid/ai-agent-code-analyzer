@@ -1,6 +1,6 @@
 const { executeLs, lsSchema } = require('../tools/executeLs');
 const { readFile, readFileSchema } = require('../tools/readFile');
-const { searchGrep, searchGrepSchema } = require('../tools/searchGrep');
+const { grepSearch, grepSearchSchema } = require('../tools/searchGrep');
 const { findFiles, findFilesSchema } = require('../tools/findFiles');
 const { createFile, createFileSchema } = require('../tools/createFile');
 const { validateSchema } = require('./validation');
@@ -26,8 +26,8 @@ const tools = {
     }
   },
   grep_search: {
-    schema: searchGrepSchema,
-    execute: searchGrep,
+    schema: grepSearchSchema,
+    execute: grepSearch,
     description: "Searches for a specified pattern in files using grep.",
     format: (result) => {
       console.log(`-- Matches: ${result.matches.length}`);
