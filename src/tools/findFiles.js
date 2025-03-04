@@ -1,33 +1,62 @@
 const { exec } = require("child_process");
 
-// JSON Schema Definition
+/**
+ * JSON Schema for find_files function parameters.
+ * Defines the structure and validation rules for the input parameters.
+ */
 const findFilesSchema = {
   type: "object",
   properties: {
-    pattern: { type: "string", description: "Pattern to match file names (supports glob patterns)" },
-    path: { type: "string", description: "Directory path to search within" },
-    options: { type: "string", description: "Additional options for the find command" },
-    type: { type: "string", description: "Type of items to find: 'f' for files, 'd' for directories, or empty for both" },
+    pattern: { 
+      type: "string", 
+      description: "Pattern to match file names (supports glob patterns like *.js, *.md, etc.)"
+    },
+    path: { 
+      type: "string", 
+      description: "Directory path to search within (absolute or relative to current directory)"
+    },
+    options: { 
+      type: "string", 
+      description: "Additional options for the find command (e.g., '-maxdepth 2' to limit search depth)"
+    },
+    type: { 
+      type: "string", 
+      description: "Type of items to find: 'f' for regular files, 'd' for directories, 'l' for symbolic links, etc."
+    },
   },
   required: ["pattern", "path"],
   additionalProperties: false,
+  description: "Schema for validating the input parameters of the find_files function."
 };
 
-// Function to find files by pattern
+/**
+ * Finds files or directories matching a specified pattern within a given path.
+ * 
+ * @param {string} pattern - The filename pattern to search for (e.g., "*.js", "data.*")
+ * @param {string} path - The base directory to start the search from (defaults to current directory)
+ * @param {string} options - Additional options for the find command (e.g., "-maxdepth 3")
+ * @param {string} type - Filter by file type: 'f' for files, 'd' for directories, etc.
+ * @returns {Promise<Object>} A promise that resolves to an object with a files array containing matching paths
+ */
 function findFiles(pattern, path = ".", options = "", type = "") {
   return new Promise((resolve, reject) => {
-    // Base command
+    // Construct the base find command with path and pattern
     let command = `find "${path}" -name "${pattern}"`;
     
     // Add type filter if specified
-    // On macOS, valid types include: b (block special), c (character special), d (directory), f (regular file),
-    // l (symbolic link), p (FIFO), or s (socket)
+    // File type options:
+    // - f: regular file
+    // - d: directory
+    // - l: symbolic link
+    // - b: block special device
+    // - c: character special device
+    // - p: named pipe (FIFO)
+    // - s: socket
     if (type) {
-      // Ensure we have proper spacing
       command += ` -type ${type}`;
     }
     
-    // Add any additional options
+    // Add any additional options (e.g., -maxdepth, -mindepth, -size, etc.)
     if (options) {
       command += ` ${options}`;
     }

@@ -37,10 +37,6 @@ async function getFunctionCall(options) {
       3. If the plan has been partially executed, only return a function call for the next step in the plan
       4. If no steps of the plan have been executed yet, return a function call for the first step
       5. avoid repeating steps with same arguments
-
-      AVOID:
-      1. JSON only accepts a limited set of escape sequences. In JSON, sequences like \s, \w, \(, and \) are not valid
-      2. JSON only allows a specific set of escape sequences (like \\", \\n, \\t, etc.) and does not recognize \\. as a valid escape
      ` 
     },
     {
@@ -107,7 +103,7 @@ async function getFunctionCall(options) {
         };
       }
     } catch (error) {
-      addMessage('assistant', `ERROR: ${error.message}. Content: ${message.content}`);
+      addMessage('assistant', `ERROR: ${error.message}`);
       throw error;
     }
     
