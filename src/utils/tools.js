@@ -3,6 +3,7 @@ const { readFile, readFileSchema } = require('../tools/readFile');
 const { grepSearch, grepSearchSchema } = require('../tools/searchGrep');
 const { findFiles, findFilesSchema } = require('../tools/findFiles');
 const { createFile, createFileSchema } = require('../tools/createFile');
+const { webSearch, webSearchSchema } = require('../tools/webSearch');
 const { validateSchema } = require('./validation');
 const { addMessage } = require('./context');
 
@@ -50,6 +51,15 @@ const tools = {
     format: (result) => {
       console.log(`-- ${result.message}`);
       return result;
+    }
+  },
+  web_search: {
+    schema: webSearchSchema,
+    execute: webSearch,
+    description: "Performs a web search using DuckDuckGo Lite.",
+    format: (result) => {
+      console.log(`-- Results: ${result.results.length}`);
+      return result.results;
     }
   },
 };
