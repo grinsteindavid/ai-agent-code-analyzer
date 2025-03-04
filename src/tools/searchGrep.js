@@ -4,8 +4,8 @@ const { exec } = require("child_process");
 const searchGrepSchema = {
   type: "object",
   properties: {
-    pattern: { type: "string", description: "Pattern to search for" },
-    path: { type: "string", description: "Path to search within" },
+    pattern: { type: "string", description: "Grep command Pattern to search for" },
+    path: { type: "string", description: "Directory Path to search within" },
     options: { type: "string", description: "Options for grep command"},
   },
   required: ["pattern", "path", "options"],

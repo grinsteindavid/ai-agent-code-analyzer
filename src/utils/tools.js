@@ -9,15 +9,16 @@ const tools = {
   listDirectories: {
     schema: lsSchema,
     execute: executeLs,
-    description: "Lists files and directories in the specified path. Takes a directory path and options for the ls command (e.g., '-la' for detailed listing including hidden files). Returns an array of file and directory names found at the path location.",
+    description: "Lists files and directories in the specified path.",
     format: (result) => {
+      console.log(`-- Matches: ${result.directories.length}`);
       return result.directories;
     }
   },
   readFile: {
     schema: readFileSchema,
     execute: readFile,
-    description: "Reads and returns the contents of a file at the specified path. Takes a file path and optional encoding (defaults to 'utf-8'). ONLY works with files, not directories. Returns the text content of the file.",
+    description: "Reads and returns the contents of a file at the specified path.",
     format: (result) => {
       return result.content;
     }
@@ -25,8 +26,9 @@ const tools = {
   searchGrep: {
     schema: searchGrepSchema,
     execute: searchGrep,
-    description: "Searches for a specified pattern in files using grep. Takes a search pattern, path to search within, and optional grep command options (defaults to '-r' for recursive search). Returns an array of matching lines with their file locations.",
+    description: "Searches for a specified pattern in files using grep.",
     format: (result) => {
+      console.log(`-- Matches: ${result.matches.length}`);
       return result.matches;
     }
   },

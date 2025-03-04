@@ -67,7 +67,7 @@ program
       
       // Execute the function if we have one
       if (functionCall) {
-        console.log(`** Tool: ${functionCall.name}`);
+        console.log(`\n ** Tool: ${functionCall.name}`);
         console.log(`Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
         await executeTool(functionCall.name, functionCall.arguments);
       } else {

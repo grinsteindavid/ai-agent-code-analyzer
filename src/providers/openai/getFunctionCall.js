@@ -1,4 +1,5 @@
 const { OpenAI } = require("openai");
+const { tools } = require("../../utils/tools");
 const { getMessages, addMessage, getCurrentDirectory, getPlan } = require("../../utils/context");
 
 // Initialize OpenAI
@@ -25,8 +26,14 @@ async function getFunctionCall(options) {
     const messages = [
       // System message with instructions
       { role: 'system', content: `
-        You are an AI code analyzer. You can only use tools provided. \n
+        You are an AI code analyzer. \n
+
         Current directory: ${getCurrentDirectory()} \n
+
+        You can ONLY use Availabl tools:
+        ${Object.entries(tools).map(([name, {schema}]) => 
+          `${name}`
+        ).join('\n')}
 
         IMPORTANT: Follow the execution plan EXACTLY. You MUST:
         1. Check if all previous function calls already fulfill the plan
