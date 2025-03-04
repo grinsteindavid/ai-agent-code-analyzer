@@ -71,6 +71,7 @@ program
         console.log(`Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
         await executeTool(functionCall.name, functionCall.arguments);
       } else {
+        console.log("Generating summary...");
         const summary = await selectedProvider.getSummary();
         console.log(summary);
       }
