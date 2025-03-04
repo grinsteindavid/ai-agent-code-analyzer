@@ -29,6 +29,7 @@ const grepSearchSchema = {
     }
   },
   required: ["SearchDirectory", "Query", "Includes", "MatchPerLine", "CaseInsensitive"],
+  additionalProperties: false,
   description: "Schema for validating the input parameters of the grep_search function."
 };
 
