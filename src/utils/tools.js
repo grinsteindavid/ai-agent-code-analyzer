@@ -10,16 +10,25 @@ const tools = {
     schema: lsSchema,
     execute: executeLs,
     description: "List files and directories in the specified path",
+    format: (result) => {
+      return result.directories;
+    }
   },
   readFile: {
     schema: readFileSchema,
     execute: readFile,
-    description: "Read the contents of a file at the specified path, avoid reading a folder",
+    description: "Read ONLY the contents of a file at the specified path. DO NOT TRY TO READ FOLDERS",
+    format: (result) => {
+      return result;
+    }
   },
   searchGrep: {
     schema: searchGrepSchema,
     execute: searchGrep,
-    description: "Search for a pattern in files at the specified path",
+    description: "Use Grep to Search for a pattern in files at the specified path",
+    format: (result) => {
+      return result.matches;
+    }
   },
 };
 
@@ -43,7 +52,8 @@ async function executeTool(toolName, args) {
   }
 
   try {
-    const result = await tool.execute(...Object.values(args));
+    const rawResult = await tool.execute(...Object.values(args));
+    const result = tool.format(rawResult);
     addMessage('user', JSON.stringify(result));
   } catch (error) {
     console.error("Error:", error.error || error.message);
