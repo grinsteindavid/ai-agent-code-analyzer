@@ -49,7 +49,7 @@ async function getPlan(options) {
         1. Use the 'ls' tool to list contents of directory X.
         2. Use the 'readFile' tool to read file Y.
         
-        Do not include any explanations or additional text outside of the goal and numbered steps. Max 300 tokens.`
+        Do not include any explanations or additional text outside of the goal and numbered steps. Avoid mentioning creating files or directories, or using tools or directions that are not part of the goal. Max 300 tokens.`
       },
       {
         role: "user",
