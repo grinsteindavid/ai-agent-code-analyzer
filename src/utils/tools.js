@@ -1,5 +1,6 @@
 const { executeLs, lsSchema } = require('../tools/executeLs');
 const { readFile, readFileSchema } = require('../tools/readFile');
+const { searchGrep, searchGrepSchema } = require('../tools/searchGrep');
 const { validateSchema } = require('./validation');
 const { addMessage } = require('./context');
 
@@ -14,6 +15,11 @@ const tools = {
     schema: readFileSchema,
     execute: readFile,
     description: "Read the contents of a file at the specified path, avoid reading a folder",
+  },
+  searchGrep: {
+    schema: searchGrepSchema,
+    execute: searchGrep,
+    description: "Search for a pattern in files at the specified path",
   },
 };
 
