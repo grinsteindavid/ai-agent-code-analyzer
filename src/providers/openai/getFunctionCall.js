@@ -81,14 +81,13 @@ async function getFunctionCall(options) {
     } 
     // Check if the content field contains function call information as a JSON string
     else if (message?.content && typeof message.content === 'string') {
-      addMessage('assistant', message.content);
       try {
         // Try to parse the content as JSON
         const contentJson = JSON.parse(message.content);
         
         // Check if the parsed content has the expected function call structure
         if (contentJson.name && contentJson.arguments) {
-          
+          addMessage('assistant', message.content);
           
           return {
             name: contentJson.name,
@@ -99,7 +98,7 @@ async function getFunctionCall(options) {
         }
       } catch (e) {
         // If parsing fails, it's not a JSON string with function call info
-        console.log(message?.content);
+        console.log('\n', message?.content, '\n');
       }
     }
     

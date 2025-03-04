@@ -6,7 +6,7 @@ const { addMessage } = require('./context');
 
 // Define available tools and their schemas
 const tools = {
-  listDirectories: {
+  list_directories: {
     schema: lsSchema,
     execute: executeLs,
     description: "Lists files and directories in the specified path.",
@@ -15,7 +15,7 @@ const tools = {
       return result.directories;
     }
   },
-  readFile: {
+  read_file_content: {
     schema: readFileSchema,
     execute: readFile,
     description: "Reads and returns the contents of a file at the specified path.",
@@ -23,7 +23,7 @@ const tools = {
       return result.content;
     }
   },
-  searchGrep: {
+  grep_search: {
     schema: searchGrepSchema,
     execute: searchGrep,
     description: "Searches for a specified pattern in files using grep.",
@@ -56,10 +56,10 @@ async function executeTool(toolName, args) {
   try {
     const rawResult = await tool.execute(...Object.values(args));
     const result = tool.format(rawResult);
-    addMessage('user', JSON.stringify(result));
+    addMessage('user', `${tools[toolName]} RESULT: ${JSON.stringify(result)}`);
   } catch (error) {
     console.error("Error:", error.error || error.message);
-    addMessage('user',  JSON.stringify(error.error || error.message));
+    addMessage('user', `${tools[toolName]} ERROR: ${error.error || error.message}`);
   }
 }
 
