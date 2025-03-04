@@ -50,74 +50,77 @@ node src/index.js analyze --query "read this file package.json"
 ## Example Output
 
 ```
-node src/index.js analyze -q "explain codebase"
+node src/index.js analyze -q "explain my codebase"                  
 Generating plan...
 
- 1. Use the 'ls' tool to list contents of the current directory to identify relevant files in the codebase.
-2. Use the 'readFile' tool to read the 'README.md' file for an overview of the codebase.
-3. Use the 'readFile' tool to read 'package.json' for information about project dependencies and scripts.
-4. Use the 'ls' tool to list contents of the 'src' directory to find source code files.
-5. Use the 'readFile' tool to read key source code files in the 'src' directory to understand the application's structure and functionality. 
+ Goal: Provide an overview of the codebase by examining its structure and content.
 
-** Tool: ls
-Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer"}
+Steps:
+1. Use the 'list_directories' tool to list the directories in the current working directory.
+2. Use the 'find_files' tool to locate all relevant files in the 'src' directory.
+3. Use the 'read_file_content' tool to read the content of the 'README.md' file for documentation insights. 
 
-** Tool: readFile
-Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/README.md","encoding":"utf-8"}
 
-** Tool: readFile
-Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/package.json","encoding":"utf-8"}
+ ** Tool: list_directories
+Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer","options":"-l"}
 
-** Tool: ls
-Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src"}
+-- Matches: 6
 
-** Tool: readFile
-Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/index.js","encoding":"utf-8"}
+ ** Tool: find_files
+Arguments: {"pattern":"*","path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src","type":"f"}
 
-** Tool: readFile
-Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/utils/tools.js","encoding":"utf-8"}
+Error: find: f: unknown primary or operator
 
-** Tool: readFile
-Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/utils/validation.js","encoding":"utf-8"}
 
-All steps of the execution plan have been executed. No further steps are needed.
-### Summary of Findings
+ ** Tool: find_files
+Arguments: {"pattern":"*","path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src"}
 
-1. **Directory Listing**:
-   The working directory `/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer` contains the following files and directories:
+-- Matches: 18
+
+ ** Tool: read_file_content
+Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/README.md"}
+
+
+ Generating summary... 
+
+### Summary of Execution Results
+
+1. **Directory Listing**: The working directory contains:
    - `README.md`
    - `node_modules`
    - `package-lock.json`
    - `package.json`
-   - `src`
+   - `src` (which includes subdirectories and multiple source files)
 
-2. **Content of `README.md`**:
-   The `README.md` provides a detailed overview of the project, titled **Autonomous Code Analyzer**, which is designed to analyze codebases using natural language processing with OpenAI's GPT-4. Key sections include:
-   - **Features**: Users can ask natural language questions about their codebase.
-   - **Installation Instructions**: Steps to clone the repository, install dependencies, set up environment variables, and prepare the script for execution.
-   - **Usage Examples**: Demonstrates how to query the application for codebase information.
-   - **Options for Queries**: Lists available command-line options such as query specifications and available AI providers.
+2. **Source Files in `src` Directory**: The `src` directory includes several essential JavaScript files organized into subdirectories such as:
+   - `tools`
+   - `providers`
+   - `utils`
+   - The main entry point `index.js`
 
-3. **Content of `package.json`**:
-   The `package.json` file outlines the project's configuration, including its name, version, description, main entry point, scripts for execution, keywords, license, and dependencies. Key dependencies include `commander`, `ajv`, `dotenv`, `glob`, and `openai`.
+3. **Content of `README.md`**:
+   - **Project Title**: Autonomous Code Analyzer
+   - **Purpose**: A Node.js tool that leverages OpenAI's GPT-4 to answer natural language queries regarding the codebase.
+   - **Installation**: Instructions for cloning the repository, installing dependencies, setting up the API key, and making the main script executable.
+   - **Usage**: Provides command-line examples for querying the codebase.
+   - **Options**: Lists available command-line options for users.
 
-4. **Source Code Structure**:
-   The `src` directory includes:
-   - `index.js`: The main entry point that handles command-line interactions.
-   - `providers`: Potentially contains various AI interaction strategies.
-   - `tools`: Includes utility functions such as `executeLs` for listing directories and `readFile` for file reading operations.
-   - `utils`: Contains helper functions including schema validation logic.
+4. **Insights from `package.json`**:
+   - Contains project metadata, including dependencies like `commander`, `ajv`, and `dotenv`.
+   - Specifies scripts for building and running the project.
 
-5. **Key Code Insights from `index.js`**:
-   The `index.js` file sets up the Command Line Interface (CLI), allowing users to inquire about their codebase with specific AI providers. It validates user input, generates plans based on queries, and executes functions accordingly.
+### Overview of the Codebase
 
-6. **Code Execution Handling**:
-   The utility `tools` module defines the available tools and their schemas, enabling the execution of commands like listing files or reading files while validating the input against predefined schemas.
+The Autonomous Code Analyzer project is structured to facilitate intelligent codebase analysis via natural language queries. It includes several modules, specifically designed to manage user interactions, process queries, and validate inputs. 
 
-### Next Steps
-- **Testing**: To ensure functionality, the project can be tested using various queries to validate the responses from the AI.
-- **Extending Functionality**: Evaluate the potential for additional tools or improvements in the user interaction model based on user feedback or emerging requirements.
-- **Documentation**: Consider enhancing the documentation based on user operation scenarios and any additional features that may be implemented in the future.
+- **Main Components**:
+   - **Entry Point (`index.js`)**: Handles CLI interactions and query execution.
+   - **Providers**: Contains specific implementations for interacting with the OpenAI API.
+   - **Utilities**: Offers various helper functions that streamline operations such as file reading and command execution.
 
-This summary encapsulates the essential findings and insights from the exploration of the codebase, providing a clear understanding of the project's structure and functionality. Please let me know if further analysis or exploration is required.
+### Conclusion
+
+In conclusion, the analysis reveals a well-structured codebase designed to simplify codebase querying through an AI interface. Key functionalities, as outlined in the `README.md`, demonstrate a clear user journey from installation to execution, making it a promising tool for developers seeking insights into their code. Further testing and potential feature enhancements are advised to maximize user experience and applicability.
+
+If more detailed exploration or specific analysis is required on certain code files, please let me know.
 ```

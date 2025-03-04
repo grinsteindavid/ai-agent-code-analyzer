@@ -16,11 +16,20 @@ const findFilesSchema = {
 // Function to find files by pattern
 function findFiles(pattern, path = ".", options = "", type = "") {
   return new Promise((resolve, reject) => {
-    // Construct the type filter if provided
-    const typeFilter = type ? ` -type ${type}` : "";
+    let command = `find ${path} -name "${pattern}"`;
     
-    // Using find command with name pattern
-    exec(`find ${path} -name "${pattern}"${typeFilter} ${options}`, (err, stdout, stderr) => {
+    // Add type filter if specified
+    if (type) {
+      command += ` -type ${type}`;
+    }
+    
+    // Add any additional options
+    if (options) {
+      command += ` ${options}`;
+    }
+    
+    // Execute the find command
+    exec(command, (err, stdout, stderr) => {
       if (err) {
         reject({ error: stderr || err.message });
       } else {
