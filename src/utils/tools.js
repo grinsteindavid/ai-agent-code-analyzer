@@ -48,6 +48,7 @@ const tools = {
     execute: createFile,
     description: "Creates a new file with the specified content at the given path.",
     format: (result) => {
+      console.log(`-- ${result.message}`);
       return result;
     }
   },

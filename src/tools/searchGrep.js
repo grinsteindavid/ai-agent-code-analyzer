@@ -40,13 +40,16 @@ const grepSearchSchema = {
  * @param {string[]} Includes - Array of file glob patterns to include.
  * @param {boolean} MatchPerLine - If true, prints only the matching part.
  * @param {boolean} CaseInsensitive - If true, the search is case insensitive.
+ * @param {number} [maxResults=50] - Maximum number of results to return.
+ * @param {number} [maxBufferSize=1024 * 1024 * 10] - Maximum buffer size in bytes (default 10MB).
  *
- * @returns {Promise<Object>} A promise that resolves to an object with matches array.
+ * @returns {Promise<Object>} A promise that resolves to an object with matches array and metadata.
  */
-function grepSearch(SearchDirectory, Query, Includes, MatchPerLine, CaseInsensitive) {
+function grepSearch(SearchDirectory, Query, Includes, MatchPerLine, CaseInsensitive, maxResults = 50, maxBufferSize = 1024 * 1024 * 10) {
   return new Promise((resolve, reject) => {
-    // Construct the base grep command
-    let cmd = `grep -r`;
+    // Add -m option to limit results and prevent buffer overflows
+    let cmd = `grep -r --max-count=${maxResults}`;
+    
     if (CaseInsensitive) {
       cmd += " -i";
     }
@@ -54,20 +57,43 @@ function grepSearch(SearchDirectory, Query, Includes, MatchPerLine, CaseInsensit
     if (MatchPerLine) {
       cmd += " -o";
     }
-    // Append include patterns
-    (Includes || []).forEach(pattern => {
-      cmd += ` --include="${pattern}"`;
-    });
+    
+    // Append include patterns if provided
+    if (Includes && Includes.length > 0) {
+      Includes.forEach(pattern => {
+        cmd += ` --include="${pattern}"`;
+      });
+    } else {
+      // Exclude common binary and large files to reduce output size
+      cmd += ` --exclude="*.min.js" --exclude="*.map" --exclude="node_modules/**" --exclude=".git/**"` +
+             ` --exclude="*.jpg" --exclude="*.png" --exclude="*.gif" --exclude="*.svg"` +
+             ` --exclude="*.pdf" --exclude="*.zip" --exclude="*.tar" --exclude="*.gz"`;
+    }
+    
     // Append the query and search directory
     cmd += ` "${Query}" "${SearchDirectory}"`;
     
-    exec(cmd, (err, stdout, stderr) => {
+    // Increase maxBuffer to handle large outputs
+    exec(cmd, { maxBuffer: maxBufferSize }, (err, stdout, stderr) => {
       // grep returns exit code 1 when no matches found, which is not an error for our use case
       if (err && err.code !== 1) {
-        reject({ error: stderr || err.message });
+        reject({ 
+          error: stderr || err.message,
+          command: cmd,
+          code: err.code
+        });
       } else {
         const results = stdout ? stdout.split("\n").filter(Boolean) : [];
-        resolve({ matches: results });
+        const wasLimited = results.length >= maxResults;
+        
+        resolve({ 
+          matches: results,
+          metadata: {
+            totalMatches: results.length,
+            wasLimited,
+            searchCommand: cmd
+          }
+        });
       }
     });
   });
