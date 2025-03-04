@@ -38,6 +38,8 @@ node src/index.js analyze -q "explain codebase"
 node src/index.js analyze --query "What files are in src folder?" --provider openai
 
 node src/index.js analyze --query "read this file package.json"
+
+node src/index.js analyze --query "do a web search for top 5 social medias and create a json with that info"
 ```
 
 ## Options
