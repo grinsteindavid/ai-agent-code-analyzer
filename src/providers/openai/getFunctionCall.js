@@ -101,7 +101,7 @@ async function getFunctionCall(options) {
         }
       } catch (e) {
         // If parsing fails, it's not a JSON string with function call info
-        addMessage('assistant', `${message.content} \n ERROR Failed to parse function call: ${e.message}`);
+        addMessage('assistant', `ERROR Failed to parse function call`);
       }
     }
     

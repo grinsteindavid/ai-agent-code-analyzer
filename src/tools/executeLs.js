@@ -5,7 +5,7 @@ const lsSchema = {
   type: "object",
   properties: {
     path: { type: "string", description: "Directory path to list" },
-    options: { type: "string", description: "Options for ls command" },
+    options: { type: "string", description: "The ls command in Linux many options" },
   },
   required: ["path", "options"],
   additionalProperties: false,
