@@ -9,7 +9,7 @@ const tools = {
   ls: {
     schema: lsSchema,
     execute: executeLs,
-    description: "List files and directories in the specified path",
+    description: "List files and directories in the specified path, distinguish between files and directories",
     format: (result) => {
       return result.directories;
     }
@@ -19,7 +19,7 @@ const tools = {
     execute: readFile,
     description: "Read ONLY the contents of a file at the specified path. DO NOT TRY TO READ FOLDERS",
     format: (result) => {
-      return result;
+      return result.content;
     }
   },
   searchGrep: {
