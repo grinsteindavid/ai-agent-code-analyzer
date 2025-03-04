@@ -44,7 +44,6 @@ node src/index.js analyze --query "do a web search for top 5 social medias and c
 
 ## Options
 - `-q, --query <query>`: Question about your codebase (required)
-- `-m, --max-tokens <number>`: Maximum tokens in the AI response (default: 4000)
 - `-p, --provider <provider>`: AI provider to use (default: openai)
 - `-h, --help`: Display help information
 - `-V, --version`: Display version information
