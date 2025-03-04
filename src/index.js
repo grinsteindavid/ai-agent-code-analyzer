@@ -60,20 +60,24 @@ program
     
     do {
       
-      // Get the next function call
-      functionCall = await selectedProvider.getFunctionCall({
-        functions: functionSchemas,
-      });
-      
-      // Execute the function if we have one
-      if (functionCall) {
-        console.log(`\n ** Tool: ${functionCall.name}`);
-        console.log(`Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
-        await executeTool(functionCall.name, functionCall.arguments);
-      } else {
-        console.log("Generating summary...");
-        const summary = await selectedProvider.getSummary();
-        console.log(summary);
+      try {
+        // Get the next function call
+        functionCall = await selectedProvider.getFunctionCall({
+          functions: functionSchemas,
+        });
+        
+        // Execute the function if we have one
+        if (functionCall) {
+          console.log(`\n ** Tool: ${functionCall.name}`);
+          console.log(`Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
+          await executeTool(functionCall.name, functionCall.arguments);
+        } else {
+          console.log("\n Generating summary... \n");
+          const summary = await selectedProvider.getSummary();
+          console.log(summary);
+        }
+      } catch (error) {
+        console.error(`Retrying...`);
       }
     } while (functionCall); // Continue until no more function calls
 
