@@ -1,4 +1,4 @@
-const { executeLs, lsSchema } = require('../tools/executeLs');
+const { listDirectories, listDirectoriesSchema } = require('../tools/listDirectories');
 const { readFile, readFileSchema } = require('../tools/readFile');
 const { grepSearch, grepSearchSchema } = require('../tools/searchGrep');
 const { findFiles, findFilesSchema } = require('../tools/findFiles');
@@ -10,9 +10,9 @@ const { addMessage } = require('./context');
 // Define available tools and their schemas
 const tools = {
   list_directories: {
-    schema: lsSchema,
-    execute: executeLs,
-    description: "Lists files and directories in the specified path.",
+    schema: listDirectoriesSchema,
+    execute: listDirectories,
+    description: "Lists files and directories in the specified path using native Node.js.",
     format: (result) => {
       console.log(`-- Matches: ${result.directories.length}`);
       return result.directories;

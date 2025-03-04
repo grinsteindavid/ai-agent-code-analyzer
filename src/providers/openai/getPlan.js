@@ -1,7 +1,7 @@
 const { OpenAI } = require("openai");
 const { setPlan, getCurrentDirectory } = require("../../utils/context");
 const { tools } = require("../../utils/tools");
-const { executeLs } = require("../../tools/executeLs");
+const { listDirectories } = require("../../tools/listDirectories");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -19,7 +19,7 @@ async function getPlan(options) {
   } = options;
 
   // Get file listing for current directory
-  const result = await executeLs(getCurrentDirectory());
+  const result = await listDirectories(getCurrentDirectory());
   const currentDirectory = getCurrentDirectory();
 
   try {
