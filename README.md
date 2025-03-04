@@ -1,10 +1,17 @@
-# Autonomous Code Analyzer
+# Autonomous Code Analyzer: AI-Powered Codebase Intelligence
 
-A simple Node.js tool that uses multiple providers like OpenAI's GPT-4 to intelligently analyze codebases based on natural language questions.
+An advanced command-line tool that leverages the power of AI models like OpenAI's GPT-4 to analyze and interact with your codebase through natural language. Go beyond simple code analysis with intelligent search, web research capabilities, and file operations - all from your terminal.
 
 ## Features
 
-- Ask natural language questions about your codebase
+- **Natural Language Understanding**: Ask questions about your codebase in plain English
+- **Intelligent Codebase Analysis**: Get insights about your code structure, patterns, and organization
+- **Web Research Integration**: Search the web directly from your terminal with DuckDuckGo Lite
+- **File Operations**: Find files, read content, and create new files - all through conversational commands
+- **Pattern Search**: Use grep-like functionality through simple queries
+- **Execution Planning**: Advanced AI planning capabilities to break down complex requests into manageable steps
+- **Extensible Architecture**: Easy to add new tools and AI providers to enhance functionality
+- **Markdown-Formatted Results**: Clean and readable output for improved developer experience
 
 ## Installation
 
@@ -35,18 +42,46 @@ A simple Node.js tool that uses multiple providers like OpenAI's GPT-4 to intell
 # Basic usage - ask a question about your codebase
 node src/index.js analyze -q "explain codebase"
 
+# Specify AI provider (default: openai)
 node src/index.js analyze --query "What files are in src folder?" --provider openai
 
+# Read file contents
 node src/index.js analyze --query "read this file package.json"
 
+# Perform web searches and generate structured output
 node src/index.js analyze --query "do a web search for top 5 social medias and create a json with that info"
+
+# Find specific patterns in your code
+node src/index.js analyze --query "find all files that import axios"
+
+# Get insights about your codebase architecture
+node src/index.js analyze --query "explain the directory structure and key components"
+
+# Create documentation based on your code
+node src/index.js analyze --query "generate documentation for the tools directory"
 ```
 
 ## Options
-- `-q, --query <query>`: Question about your codebase (required)
+- `-q, --query <query>`: Question or instruction about your codebase (required)
 - `-p, --provider <provider>`: AI provider to use (default: openai)
 - `-h, --help`: Display help information
 - `-V, --version`: Display version information
+
+## Tool Capabilities
+
+### Codebase Navigation
+- **list_directories**: Browse your file system and find directories
+- **find_files**: Locate files matching specified patterns
+- **read_file_content**: View the contents of any file
+
+### Code Analysis
+- **grep_search**: Search for specific patterns across your codebase
+
+### Web Integration
+- **web_search**: Perform web searches directly from your terminal using DuckDuckGo Lite
+
+### File Operations
+- **create_file**: Generate new files with specified content
 
 ## Example Output
 
