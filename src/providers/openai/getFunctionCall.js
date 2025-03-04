@@ -52,6 +52,7 @@ async function getFunctionCall(options) {
       model: "gpt-4o-mini",
       messages,
       tools: functions,
+      parallel_tool_calls: false,
     });
 
     const message = response.choices[0]?.message;
@@ -84,21 +85,23 @@ async function getFunctionCall(options) {
       try {
         // Try to parse the content as JSON
         const contentJson = JSON.parse(message.content);
+        const toolName = contentJson.name;
+        const args = typeof contentJson.arguments === 'string' 
+        ? JSON.parse(contentJson.arguments) 
+        : contentJson.arguments;
         
         // Check if the parsed content has the expected function call structure
-        if (contentJson.name && contentJson.arguments) {
+        if (toolName && args) {
           addMessage('assistant', message.content);
           
           return {
-            name: contentJson.name,
-            arguments: typeof contentJson.arguments === 'string' 
-              ? JSON.parse(contentJson.arguments) 
-              : contentJson.arguments,
+            name: toolName,
+            arguments: args,
           };
         }
       } catch (e) {
         // If parsing fails, it's not a JSON string with function call info
-        console.log('\n', message?.content, '\n');
+        addMessage('assistant', `${message.content} \n ERROR Failed to parse function call: ${e.message}`);
       }
     }
     
