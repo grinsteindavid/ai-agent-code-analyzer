@@ -2,6 +2,7 @@ const { executeLs, lsSchema } = require('../tools/executeLs');
 const { readFile, readFileSchema } = require('../tools/readFile');
 const { searchGrep, searchGrepSchema } = require('../tools/searchGrep');
 const { findFiles, findFilesSchema } = require('../tools/findFiles');
+const { createFile, createFileSchema } = require('../tools/createFile');
 const { validateSchema } = require('./validation');
 const { addMessage } = require('./context');
 
@@ -40,6 +41,14 @@ const tools = {
     format: (result) => {
       console.log(`-- Matches: ${result.files.length}`);
       return result.files;
+    }
+  },
+  create_file: {
+    schema: createFileSchema,
+    execute: createFile,
+    description: "Creates a new file with the specified content at the given path.",
+    format: (result) => {
+      return result;
     }
   },
 };
