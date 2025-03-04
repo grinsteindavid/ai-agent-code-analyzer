@@ -16,10 +16,14 @@ const findFilesSchema = {
 // Function to find files by pattern
 function findFiles(pattern, path = ".", options = "", type = "") {
   return new Promise((resolve, reject) => {
-    let command = `find ${path} -name "${pattern}"`;
+    // Base command
+    let command = `find "${path}" -name "${pattern}"`;
     
     // Add type filter if specified
+    // On macOS, valid types include: b (block special), c (character special), d (directory), f (regular file),
+    // l (symbolic link), p (FIFO), or s (socket)
     if (type) {
+      // Ensure we have proper spacing
       command += ` -type ${type}`;
     }
     
