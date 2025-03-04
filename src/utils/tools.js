@@ -1,6 +1,7 @@
 const { executeLs, lsSchema } = require('../tools/executeLs');
 const { readFile, readFileSchema } = require('../tools/readFile');
 const { searchGrep, searchGrepSchema } = require('../tools/searchGrep');
+const { findFiles, findFilesSchema } = require('../tools/findFiles');
 const { validateSchema } = require('./validation');
 const { addMessage } = require('./context');
 
@@ -30,6 +31,15 @@ const tools = {
     format: (result) => {
       console.log(`-- Matches: ${result.matches.length}`);
       return result.matches;
+    }
+  },
+  find_files: {
+    schema: findFilesSchema,
+    execute: findFiles,
+    description: "Finds files matching a pattern in the specified directory.",
+    format: (result) => {
+      console.log(`-- Matches: ${result.files.length}`);
+      return result.files;
     }
   },
 };
