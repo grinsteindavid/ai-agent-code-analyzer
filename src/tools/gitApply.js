@@ -13,7 +13,7 @@ const gitApplySchema = {
   },
   required: ["patchContent"],
   additionalProperties: false,
-  description: "Schema for validating the input parameters of the git_apply function."
+  description: "Uses git apply with provided content to make files changes."
 };
 
 /**

@@ -66,7 +66,7 @@ const tools = {
   git_apply: {
     schema: gitApplySchema,
     execute: gitApply,
-    description: "Applies a git patch to a repository using the provided patch content directly via stdin.",
+    description: "Uses git apply with provided content to make files changes.",
     format: (result) => {
       console.log(`-- ${result.success ? 'Patch applied successfully' : 'Failed to apply patch'}`);
       return result.output;
