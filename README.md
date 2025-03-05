@@ -7,6 +7,8 @@ An advanced command-line tool that leverages the power of AI models like OpenAI'
 - **Natural Language Understanding**: Ask questions about your codebase in plain English
 - **Intelligent Codebase Analysis**: Get insights about your code structure, patterns, and organization
 - **Web Research Integration**: Search the web directly from your terminal with DuckDuckGo Lite
+  - Customizable search parameters including domain-specific queries
+  - Structured results with titles, URLs, and descriptions
 - **File Operations**: Find files, read content, and create new files - all through conversational commands
 - **Pattern Search**: Use grep-like functionality through simple queries
 - **Execution Planning**: Advanced AI planning capabilities to break down complex requests into manageable steps
@@ -51,6 +53,9 @@ node src/index.js analyze --query "read this file package.json"
 # Perform web searches and generate structured output
 node src/index.js analyze --query "do a web search for top 5 social medias and create a json with that info"
 
+# Perform domain-specific web search
+node src/index.js analyze --query "search for nodejs best practices on github.com"
+
 # Find specific patterns in your code
 node src/index.js analyze --query "find all files that import axios"
 
@@ -59,6 +64,9 @@ node src/index.js analyze --query "explain the directory structure and key compo
 
 # Create documentation based on your code
 node src/index.js analyze --query "generate documentation for the tools directory"
+
+# Update an existing file with new content
+node src/index.js analyze --query "update package.json to add axios dependency"
 ```
 
 ## Options
@@ -71,17 +79,36 @@ node src/index.js analyze --query "generate documentation for the tools director
 
 ### Codebase Navigation
 - **list_directories**: Browse your file system and find directories
+  - Supports options for showing hidden files and detailed information
+  - Returns organized file metadata including size, type, and modification time
 - **find_files**: Locate files matching specified patterns
+  - Supports glob patterns (*.js, *.md, etc.)
+  - Configurable depth for recursive searches
+  - Filter by file type (regular files, directories, symbolic links)
 - **read_file_content**: View the contents of any file
+  - Support for different file encodings
+  - Error handling for invalid files
 
 ### Code Analysis
 - **grep_search**: Search for specific patterns across your codebase
+  - Case-sensitive or case-insensitive search options
+  - Configurable pattern matching with support for regular expressions
+  - Ability to show matching lines or just file names
+  - Customizable maximum results limit
 
 ### Web Integration
 - **web_search**: Perform web searches directly from your terminal using DuckDuckGo Lite
+  - Domain-specific searching with customizable results count
+  - Returns structured data with titles, URLs, and descriptions
+  - Clean parsing of search results with proper error handling
 
 ### File Operations
 - **create_file**: Generate new files with specified content
+  - Automatic creation of parent directories if they don't exist
+  - Safety checks to prevent overwriting existing files
+- **update_file**: Update existing files with new content
+  - Preservation of original file permissions and metadata
+  - Error handling for missing files
 
 ## Example Output
 
