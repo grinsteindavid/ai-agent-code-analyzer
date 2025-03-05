@@ -66,7 +66,7 @@ const tools = {
     execute: updateFile,
     format: (result) => {
       if (result.status === 'error') {
-        console.error(` ❌ Error updating ${result.path}: ${result.error}`);
+        console.error(` ❌ Error updating ${result.path}`);
       } else {
         console.log(` ✅ ${result.path} updated successfully`);
       }
@@ -100,7 +100,7 @@ async function executeTool(toolName, args) {
     addMessage('user', `${toolName} RESULT: ${JSON.stringify(result)}`);
   } catch (error) {
     console.error(`Tool error:`, error || error.error || error.message);
-    addMessage('user', `${toolName} ERROR: ${error ||error.error || error.message}`);
+    addMessage('user', `${toolName} ERROR: ${JSON.stringify(error ||error.error || error.message)}`);
   }
 }
 
