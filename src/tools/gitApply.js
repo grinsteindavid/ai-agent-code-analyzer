@@ -13,7 +13,7 @@ const gitApplySchema = {
   },
   required: ["patchContent"],
   additionalProperties: false,
-  description: "Uses git apply with provided content to make files changes."
+  description: "Uses git apply with provided content to make file content changes."
 };
 
 /**

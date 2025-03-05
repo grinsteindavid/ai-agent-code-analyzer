@@ -25,6 +25,7 @@ const findFilesSchema = {
       description: "Type of items to find: 'f' for regular files, 'd' for directories, 'l' for symbolic links, etc."
     },
   },
+  description: "Finds files matching a pattern in the specified directory.",
   required: ["pattern", "dirPath"],
   additionalProperties: false,
 };

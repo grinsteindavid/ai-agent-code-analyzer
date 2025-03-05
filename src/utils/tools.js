@@ -13,7 +13,6 @@ const tools = {
   list_directories: {
     schema: listDirectoriesSchema,
     execute: listDirectories,
-    description: "Lists files and directories in the specified path using native Node.js.",
     format: (result) => {
       console.log(`-- Matches: ${result.directories.length}`);
       return result.directories;
@@ -22,7 +21,6 @@ const tools = {
   read_file_content: {
     schema: readFileSchema,
     execute: readFile,
-    description: "Reads and returns the contents of a file at the specified path.",
     format: (result) => {
       return result.content;
     }
@@ -30,7 +28,6 @@ const tools = {
   grep_search: {
     schema: grepSearchSchema,
     execute: grepSearch,
-    description: "Searches for a specified pattern in files using grep.",
     format: (result) => {
       console.log(`-- Matches: ${result.matches.length}`);
       return result.matches;
@@ -39,7 +36,6 @@ const tools = {
   find_files: {
     schema: findFilesSchema,
     execute: findFiles,
-    description: "Finds files matching a pattern in the specified directory.",
     format: (result) => {
       console.log(`-- Matches: ${result.files.length}`);
       return result.files;
@@ -48,7 +44,6 @@ const tools = {
   create_file: {
     schema: createFileSchema,
     execute: createFile,
-    description: "Creates a new file with the specified content at the given path.",
     format: (result) => {
       console.log(`-- ${result.message}`);
       return result;
@@ -57,7 +52,6 @@ const tools = {
   web_search: {
     schema: webSearchSchema,
     execute: webSearch,
-    description: "Performs a web search using DuckDuckGo Lite.",
     format: (result) => {
       console.log(`-- Results: ${result.results.length}`);
       return result.results;
@@ -66,7 +60,7 @@ const tools = {
   git_apply: {
     schema: gitApplySchema,
     execute: gitApply,
-    description: "Uses git apply with provided content to make files changes.",
+    description: "Uses git apply with provided content to make file content changes.",
     format: (result) => {
       console.log(`-- ${result.success ? 'Patch applied successfully' : 'Failed to apply patch'}`);
       return result.output;
