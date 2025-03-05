@@ -65,7 +65,11 @@ const tools = {
     schema: updateFileSchema,
     execute: updateFile,
     format: (result) => {
-      console.log(`-- Applied ${result.changesApplied} changes to ${result.path}`);
+      if (result.status === 'error') {
+        console.error(` ❌ Error updating ${result.path}: ${result.error}`);
+      } else {
+        console.log(` ✅ ${result.path} updated successfully`);
+      }
       return result;
     }
   },
