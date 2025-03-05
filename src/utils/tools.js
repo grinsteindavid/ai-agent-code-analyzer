@@ -62,8 +62,8 @@ const tools = {
     execute: gitApply,
     description: "Uses git apply with provided content to make file content changes.",
     format: (result) => {
-      console.log(`-- ${result.success ? 'Patch applied successfully' : 'Failed to apply patch'}`);
-      return result.output;
+      console.log(`-- ${result ? 'Patch applied successfully' : 'Failed to apply patch'}`);
+      return result;
     }
   },
 };

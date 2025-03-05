@@ -1,4 +1,6 @@
-const { spawn } = require('child_process');
+const fs = require('fs').promises;
+const Diff = require('diff');
+const { execSync } = require('child_process');
 
 /**
  * JSON Schema for git_apply function parameters.
@@ -9,62 +11,51 @@ const gitApplySchema = {
     patchContent: {
       type: "string",
       description: "The file content that will be passed to git apply as stdin."
+    },
+    filePath: {
+      type: "string",
+      description: "The path of the file to apply the patch to."
     }
   },
-  required: ["patchContent"],
+  required: ["patchContent", "filePath"],
   additionalProperties: false,
   description: "Uses git apply with provided content to make file content changes."
 };
 
 /**
+ * Checks if git is installed on the system
+ * @returns {boolean} - True if git is installed, false otherwise
+ */
+function isGitInstalled() {
+  try {
+    execSync('git --version', { stdio: 'ignore' });
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
  * Applies a git patch to a repository using the provided patch content directly via stdin.
  *
+ * @param {string} filePath - The path of the file to apply the patch to.
  * @param {string} patchContent - The content of the git patch to apply.
  * @returns {Promise<Object>} A promise that resolves to an object with success status and output.
+ * @throws {Error} If git is not installed or if the patch fails to apply.
  */
-async function gitApply(patchContent) {
-  return new Promise((resolve, reject) => {
-      
-    // Start git apply process with stdin pipe
-    const gitProcess = spawn('git', ['apply'], { 
-      stdio: ['pipe', 'pipe', 'pipe'] 
-    });
-    
-    let stdout = '';
-    let stderr = '';
-    
-    // Collect stdout
-    gitProcess.stdout.on('data', (data) => {
-      stdout += data.toString();
-    });
-    
-    // Collect stderr
-    gitProcess.stderr.on('data', (data) => {
-      stderr += data.toString();
-    });
-    
-    // Handle process completion
-    gitProcess.on('close', (code) => {
-      if (code !== 0) {
-        return reject(stderr || `Process exited with code ${code}`);
-      }
-      
-      resolve({
-        success: true,
-        output: stdout,
-        command: `git apply`
-      });
-    });
-    
-    // Handle any process error
-    gitProcess.on('error', (error) => {
-      reject(error.message || 'Failed to start git apply process');
-    });
-    
-    // Write patch data to stdin and close the stream
-    gitProcess.stdin.write(patchContent);
-    gitProcess.stdin.end();
-  });
+async function gitApply(patchContent, filePath) {
+  // Check if git is installed
+  if (!isGitInstalled()) {
+    throw new Error('Git is not installed on the system. Please install git to use this feature.');
+  }
+  
+  const originalContent = await fs.readFile(filePath, 'utf8');
+  const patchedContent = Diff.applyPatch(originalContent, patchContent);
+  if (patchedContent === false) {
+    throw new Error("Failed to apply patch. The patch might be invalid or not applicable.");
+  }
+
+  return "Git diff applied successfully.";
 }
 
 module.exports = {
