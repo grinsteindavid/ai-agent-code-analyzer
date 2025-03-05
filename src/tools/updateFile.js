@@ -27,35 +27,27 @@ const updateFileSchema = {
  */
 function updateFile(filePath, content) {
   return new Promise((resolve, reject) => {
-    try {
-      // Check if file exists
-      if (!fs.existsSync(filePath)) {
-        return reject({
-          status: 'error',
-          path: filePath,
-          error: 'File does not exist'
-        });
-      }
-
-      // Write the new content to the file
-      fs.writeFileSync(filePath, content, 'utf8');
-      
-      // Get updated file stats
-      const stats = fs.statSync(filePath);
-      
-      resolve({
-        status: 'success',
-        path: filePath,
-        size: stats.size,
-        updated: new Date(stats.mtime).toISOString()
-      });
-    } catch (error) {
-      reject({
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      return reject({
         status: 'error',
         path: filePath,
-        error: error.message || 'Failed to update file'
+        error: 'File does not exist'
       });
     }
+
+    // Write the new content to the file
+    fs.writeFileSync(filePath, content, 'utf8');
+    
+    // Get updated file stats
+    const stats = fs.statSync(filePath);
+    
+    resolve({
+      status: 'success',
+      path: filePath,
+      size: stats.size,
+      updated: new Date(stats.mtime).toISOString()
+    });
   });
 }
 

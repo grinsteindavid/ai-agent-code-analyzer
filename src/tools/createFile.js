@@ -24,35 +24,29 @@ function createFile(filePath, content) {
     // Ensure the directory exists
     const directory = path.dirname(filePath);
     
-    try {
-      // Check if file already exists
-      if (fs.existsSync(filePath)) {
-        resolve({
-          status: 'warning',
-          path: filePath,
-          message: `File already exists at ${filePath}. Skipping creation.`
-        });
-        return;
-      }
-      
-      // Create directory recursively if it doesn't exist
-      if (!fs.existsSync(directory)) {
-        fs.mkdirSync(directory, { recursive: true });
-      }
-      
-      // Write content to the file
-      fs.writeFileSync(filePath, content, 'utf8');
-      
-      resolve({
-        status: 'success',
-        path: filePath,
-        message: `File created successfully at ${filePath}`
-      });
-    } catch (error) {
+    // Check if file already exists
+    if (fs.existsSync(filePath)) {
       reject({
-        error: error.message || 'Failed to create file'
+        status: 'warning',
+        path: filePath,
+        message: `File already exists at ${filePath}. Skipping creation.`
       });
+      return;
     }
+    
+    // Create directory recursively if it doesn't exist
+    if (!fs.existsSync(directory)) {
+      fs.mkdirSync(directory, { recursive: true });
+    }
+    
+    // Write content to the file
+    fs.writeFileSync(filePath, content, 'utf8');
+    
+    resolve({
+      status: 'success',
+      path: filePath,
+      message: `File created successfully at ${filePath}`
+    });
   });
 }
 
