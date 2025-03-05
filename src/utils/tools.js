@@ -92,8 +92,8 @@ async function executeTool(toolName, args) {
     const result = tool.format(rawResult);
     addMessage('user', `${toolName} RESULT: ${JSON.stringify(result)}`);
   } catch (error) {
-    console.error("Error:", error.error || error.message);
-    addMessage('user', `${toolName} ERROR: ${error.error || error.message}`);
+    console.error(`Tool error:`, error || error.error || error.message);
+    addMessage('user', `${toolName} ERROR: ${error ||error.error || error.message}`);
   }
 }
 
