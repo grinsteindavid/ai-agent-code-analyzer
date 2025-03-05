@@ -36,7 +36,7 @@ async function getFunctionCall(options) {
       2. If the plan has been fully executed, do NOT return any more function calls
       3. If the plan has been partially executed, only return a function call for the next step in the plan
       4. If no steps of the plan have been executed yet, return a function call for the first step
-      5. avoid repeating steps with same arguments if they failed
+      5. avoid repeating steps with same arguments
      ` 
     },
     {

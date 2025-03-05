@@ -25,8 +25,7 @@
     "commander": "9.4.0",
     "dotenv": "16.0.3",
     "glob": "8.0.3",
-    "openai": "4.86.1",
-    "diff": "3.5.0"
+    "openai": "4.86.1"
   },
   "devDependencies": {
     "prettier": "3.3.3"
