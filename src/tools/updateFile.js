@@ -15,7 +15,7 @@ const updateFileSchema = {
       description: 'New content to write to the file'
     }
   },
-  description: 'Updates the entire content of an existing file',
+  description: 'Updates the entire content of an existing file, respect end of lines',
   additionalProperties: false
 };
 
