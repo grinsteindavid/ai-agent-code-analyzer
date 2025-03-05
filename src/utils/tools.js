@@ -44,7 +44,11 @@ const tools = {
     schema: createFileSchema,
     execute: createFile,
     format: (result) => {
-      console.log(`-- ${result.message}`);
+      if (result.status === 'warning') {
+        console.log(` ⚠️ ${result.message}`);
+      } else {
+        console.log(` ✅ ${result.message}`);
+      }
       return result;
     }
   },

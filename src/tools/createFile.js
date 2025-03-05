@@ -25,6 +25,16 @@ function createFile(filePath, content) {
     const directory = path.dirname(filePath);
     
     try {
+      // Check if file already exists
+      if (fs.existsSync(filePath)) {
+        resolve({
+          status: 'warning',
+          path: filePath,
+          message: `File already exists at ${filePath}. Skipping creation.`
+        });
+        return;
+      }
+      
       // Create directory recursively if it doesn't exist
       if (!fs.existsSync(directory)) {
         fs.mkdirSync(directory, { recursive: true });
