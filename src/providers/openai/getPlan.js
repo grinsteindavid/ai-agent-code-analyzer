@@ -29,16 +29,22 @@ async function getPlan(options) {
       // System message with planning instructions
       {
         role: "system",
-        content: `You are an AI code analyzer tasked with creating execution plans.
+        content: `You are a helpful assistant tasked with creating execution plans.
+
+        Operating system info:
+        ${process.platform} (${process.arch})
+
+        Node.js version: ${process.version}
+
 
         Current working directory: ${currentDirectory}
         
-        Files and directories in ${currentDirectory}:
+        Files and directories in the current working directory:
         ${result.directories.map(item => `- ${item}`).join('\n')}
         
         Available tools:
         ${Object.entries(tools).map(([name, {schema}]) => 
-          `${name}: ${schema}`
+          `${name}: ${schema.description}`
         ).join('\n')}
 
         Respond with a short goal statement summarizing what you aim to accomplish, followed by a numbered list of steps (STEPS CAN ONLY USE AVAILABLE TOOLS), each using a specific tool. For example:

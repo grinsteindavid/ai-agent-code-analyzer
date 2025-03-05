@@ -29,11 +29,11 @@ program
     }
     
     // Get available tool schemas for AI
-    const functionSchemas = Object.entries(tools).map(([name, { schema, description }]) => ({
+    const functionSchemas = Object.entries(tools).map(([name, { schema }]) => ({
       type: "function",
       function: {
         name,
-        description: description || `Execute the ${name} function`,
+        description: schema.description,
         parameters: schema
       }
     }));

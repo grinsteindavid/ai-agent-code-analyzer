@@ -8,6 +8,7 @@ const readFileSchema = {
     encoding: { type: "string", description: "Encoding type", default: "utf-8" },
   },
   required: ["path"],
+  description: "Reads and returns the contents of a file at the specified path.",
   additionalProperties: false,
 };
 

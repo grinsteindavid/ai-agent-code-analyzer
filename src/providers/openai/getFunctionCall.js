@@ -24,19 +24,19 @@ async function getFunctionCall(options) {
   const messages = [
     // System message with instructions
     { role: 'system', content: `
-      You are an AI code analyzer. \n
+      You are a helpful assistant. \n
 
       Always include the Current directory for paths: ${getCurrentDirectory()} \n
 
       You can ONLY use Availabl tools:
-      ${Object.entries(tools).map(([name, {schema}]) => `${name}`).join(',')}
+      ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
 
       IMPORTANT: Follow the execution plan EXACTLY. You MUST:
       1. Check if all previous function calls already fulfill the plan
       2. If the plan has been fully executed, do NOT return any more function calls
       3. If the plan has been partially executed, only return a function call for the next step in the plan
       4. If no steps of the plan have been executed yet, return a function call for the first step
-      5. avoid repeating steps with same arguments
+      5. avoid repeating steps with same arguments if they failed
      ` 
     },
     {
