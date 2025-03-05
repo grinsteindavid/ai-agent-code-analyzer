@@ -4,7 +4,6 @@ const { grepSearch, grepSearchSchema } = require('../tools/searchGrep');
 const { findFiles, findFilesSchema } = require('../tools/findFiles');
 const { createFile, createFileSchema } = require('../tools/createFile');
 const { webSearch, webSearchSchema } = require('../tools/webSearch');
-const { gitApply, gitApplySchema } = require('../tools/gitApply');
 const { validateSchema } = require('./validation');
 const { addMessage } = require('./context');
 
@@ -55,15 +54,6 @@ const tools = {
     format: (result) => {
       console.log(`-- Results: ${result.results.length}`);
       return result.results;
-    }
-  },
-  git_apply: {
-    schema: gitApplySchema,
-    execute: gitApply,
-    description: "Uses git apply with provided content to make file content changes.",
-    format: (result) => {
-      console.log(`-- ${result ? 'Patch applied successfully' : 'Failed to apply patch'}`);
-      return result;
     }
   },
 };
