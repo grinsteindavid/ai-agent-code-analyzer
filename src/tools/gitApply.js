@@ -50,7 +50,7 @@ async function gitApply(patchContent, filePath) {
   }
   
   const originalContent = await fs.readFile(filePath, 'utf8');
-  const patchedContent = Diff.applyPatch(originalContent, patchContent);
+  const patchedContent = Diff.applyPatch(originalContent, patchContent.replaceAll('\n', ''));
   if (patchedContent === false) {
     throw new Error("Failed to apply patch. The patch might be invalid or not applicable.");
   }
