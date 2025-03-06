@@ -44,6 +44,22 @@ async function getFunctionCall(options) {
     // Include conversation history
     ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
   ];
+
+  const nextThought = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      { role: 'system', content: `
+        You are a helpful assistant.
+
+      You can ONLY use Availabl tools:
+      ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
+
+        Return only the a next thought of how you are going to proceed based on the plan and previous messages. Be as short as possible.
+        ` },
+      { role: 'user', content: `Execution plan: ${plan}` },
+      ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
+    ],
+  });
   
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
@@ -51,6 +67,9 @@ async function getFunctionCall(options) {
     tools: functions,
     parallel_tool_calls: false,
   });
+
+  addMessage('assistant', JSON.stringify(nextThought.choices[0]?.message?.content));
+  addMessage('user', `Continue`);
 
   const message = response.choices[0]?.message;
   
@@ -60,10 +79,12 @@ async function getFunctionCall(options) {
     if (toolCall.type === 'function') {
       const functionCall = toolCall.function;
       addMessage('assistant', JSON.stringify(functionCall));
+      console.log(`* ${nextThought.choices[0]?.message?.content}`);
 
       return {
         name: functionCall.name,
         arguments: JSON.parse(functionCall.arguments),
+        nextThought: nextThought.choices[0]?.message?.content
       };
     }
   }
@@ -71,10 +92,12 @@ async function getFunctionCall(options) {
   else if (message?.function_call) {
     const functionCall = message.function_call;
     addMessage('assistant', JSON.stringify(functionCall));
+    console.log(`* ${nextThought.choices[0]?.message?.content}`);;
 
     return {
       name: functionCall.name,
       arguments: JSON.parse(functionCall.arguments),
+      nextThought: nextThought.choices[0]?.message?.content
     };
   } 
   // Check if the content field contains function call information as a JSON string
@@ -96,10 +119,12 @@ async function getFunctionCall(options) {
       // Check if the parsed content has the expected function call structure
       if (toolName && args) {
         addMessage('assistant', message.content);
+        console.log(`* ${nextThought.choices[0]?.message?.content}`);
         
         return {
           name: toolName,
           arguments: args,
+          nextThought: nextThought.choices[0]?.message?.content
         };
       }
     } catch (error) {
