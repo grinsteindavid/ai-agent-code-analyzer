@@ -47,15 +47,16 @@ async function getPlan(options) {
           `${name}: ${schema.description}`
         ).join('\n')}
         
-        Respond with a short goal statement summarizing what you aim to accomplish, followed by a numbered list of steps (STEPS CAN ONLY USE AVAILABLE TOOLS), each using a specific tool. For example:
-        
-        Goal: Find all JavaScript files that import specific packages.
+        IMPORTANT:
 
-        Steps:
-        1. Use the 'ls' tool to list contents of directory X.
-        2. Use the 'readFile' tool to read file Y.
+        1. Respond with a short goal statement summarizing what you aim to accomplish.
+        2. Be as precise as possible to the user's query.
+        3. Do not use a list just a description of how you are going to takle the task.
         
-        Do not include any explanations or additional text outside of the goal and numbered steps. Avoid mentioning creating files or directories, or using tools or directions that are not part of the goal. Max 300 tokens.`
+        For example:
+        
+        Goal: The user wants me to move a code snippet from src/index.js to src/utils/tools.js to reduce the code length in the main index file. I need to:
+        `
       },
       {
         role: "user",
@@ -67,7 +68,7 @@ async function getPlan(options) {
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages,
-      max_tokens: 300,
+      max_completion_tokens: 200,
     });
 
     const messageContent = response.choices[0]?.message?.content;

@@ -66,19 +66,6 @@ function clearMessages() {
   context.messages = [];
 }
 
-/**
- * Get the appropriate role for the next message based on the previous message
- * @returns {string} The role for the next message ('user' or 'assistant')
- */
-function getNextMessageRole() {
-  if (context.messages.length === 0) {
-    return 'user'; // Default to user if no previous messages
-  }
-  
-  const lastMessage = context.messages[context.messages.length - 1];
-  return lastMessage.role === 'user' ? 'assistant' : 'user';
-}
-
 module.exports = {
   context,
   getPlan,
@@ -88,5 +75,4 @@ module.exports = {
   getMessages,
   addMessage,
   clearMessages,
-  getNextMessageRole,
 };

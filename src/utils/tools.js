@@ -6,7 +6,7 @@ const { createFile, createFileSchema } = require('../tools/createFile');
 const { updateFile, updateFileSchema } = require('../tools/updateFile');
 const { webSearch, webSearchSchema } = require('../tools/webSearch');
 const { validateSchema } = require('./validation');
-const { getNextMessageRole, addMessage } = require('./context');
+const { addMessage } = require('./context');
 
 // Define available tools and their schemas
 const tools = {
@@ -80,27 +80,43 @@ async function executeTool(toolName, args) {
   const tool = tools[toolName];
   if (!tool) {
     console.error(`Unknown tool: ${toolName}`);
-    addMessage(getNextMessageRole(), `Unknown tool: ${toolName}`);
+    addMessage('user', `Unknown tool: ${toolName}`);
     return;
   }
 
   if (!validateSchema(args, tool.schema)) {
     console.error(`Invalid arguments for '${toolName}'`);
-    addMessage(getNextMessageRole(), `Invalid arguments for '${toolName}'`);
+    addMessage('user', `Invalid arguments for '${toolName}'`);
     return;
   }
 
   try {
     const rawResult = await tool.execute(...Object.values(args));
     const result = tool.format(rawResult);
-    addMessage(getNextMessageRole(), `${toolName} RESULT: ${JSON.stringify(result)}`);
+    addMessage('user', `${toolName} RESULT: ${JSON.stringify(result)}`);
   } catch (error) {
     console.error(`Tool error:`, error || error.error || error.message);
-    addMessage(getNextMessageRole(), `${toolName} ERROR: ${JSON.stringify(error ||error.error || error.message)}`);
+    addMessage('user', `${toolName} ERROR: ${JSON.stringify(error ||error.error || error.message)}`);
   }
+}
+
+/**
+ * Get available tool schemas for AI in the format required by providers
+ * @returns {Array} Array of function schemas
+ */
+function getFunctionSchemas() {
+  return Object.entries(tools).map(([name, { schema }]) => ({
+    type: "function",
+    function: {
+      name,
+      description: schema.description,
+      parameters: schema
+    }
+  }));
 }
 
 module.exports = {
   tools,
-  executeTool
+  executeTool,
+  getFunctionSchemas
 };

@@ -25,18 +25,18 @@ async function getNextThought() {
         You can ONLY use Availabl tools:
         ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
   
-        IMPORTANT: Follow the execution plan EXACTLY. You MUST:
-        1. Check if all previous function calls already fulfill the plan
-        2. If the plan has been fully executed, do NOT return any more function calls
-        3. If the plan has been partially executed, only return a function call for the next step in the plan
-        4. If no steps of the plan have been executed yet, return a function call for the first step
-        5. avoid repeating steps with same arguments
-
-        Return ONLY the next thought of how you are going to proceed based on the plan and previous messages, be as short as possible and do not include any additional text.
+        IMPORTANT:
+        
+        1. DO NOT CREATE OR UPDATE FILES IF NOT EXPLICITLY REQUESTED OR IF NOT EXPLICITLY IN THE EXECUTION PLAN GOAL
+        2. Always check project structure before taking action.
+        3. Return ONLY the next thought of how are you going to proceed next to achieve the execution plan goal based on previous messages
+        4. Be as short and brief as possible and do not include any additional text
+        6. Beware of the Current directory for paths and Operating system info.
+        7. Do not use a list just a description of how you are going to take action.
 
         For example:
 
-        I'll proceed with the first step of the execution plan and create a new file named 'file4.csv' in the root project folder.
+        I'll help you move that function schema mapping code to the tools.js utility file. Let me first examine both files to understand the context better.
 
         ` },
       { role: 'user', content: `Execution plan: ${plan}` },

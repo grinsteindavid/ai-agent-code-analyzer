@@ -2,11 +2,11 @@ require('dotenv').config();
 const { Command } = require("commander");
 
 // Import utilities
-const { tools, executeTool } = require("./utils/tools");
+const { executeTool, getFunctionSchemas } = require("./utils/tools");
 
 // Import providers
 const { providers } = require("./providers");
-const { setPlan, getNextMessageRole, addMessage } = require('./utils/context');
+const { setPlan, addMessage } = require('./utils/context');
 
 // CLI Setup
 const program = new Command();
@@ -29,14 +29,7 @@ program
     }
     
     // Get available tool schemas for AI
-    const functionSchemas = Object.entries(tools).map(([name, { schema }]) => ({
-      type: "function",
-      function: {
-        name,
-        description: schema.description,
-        parameters: schema
-      }
-    }));
+    const functionSchemas = getFunctionSchemas();
     
     // First, generate a plan using the getPlan function
     console.log("Generating plan...");
@@ -77,7 +70,7 @@ program
         
         // Execute the function if we have one
         if (functionCall) {
-          addMessage(getNextMessageRole(), `${nextThought}`);
+          addMessage('assistant', `${nextThought}`);
           console.log(`\n ** ${nextThought}`);
           console.log(`\n-- Tool: ${functionCall.name}`);
           console.log(`--Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
