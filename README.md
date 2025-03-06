@@ -46,6 +46,17 @@ The Autonomous Code Analyzer is an AI-powered CLI tool that uses OpenAI's GPT mo
    chmod +x src/index.js
    ```
 
+5. Link the package:
+   ```bash
+   npm link
+   ```
+
+6. Check the installation:
+   ```bash
+   which code-analyzer
+   code-analyzer --version
+   ```
+
 ## Usage
 
 ```bash
@@ -53,13 +64,13 @@ The Autonomous Code Analyzer is an AI-powered CLI tool that uses OpenAI's GPT mo
 node src/index.js analyze -q "explain codebase"
 
 # Specify AI provider (default: openai)
-node src/index.js analyze --query "What files are in src folder?" --provider openai
+code-analyzer analyze --query "What files are in src folder?" --provider openai
 
 # Read file contents
 node src/index.js analyze --query "read this file package.json"
 
 # Perform web searches and generate structured output
-node src/index.js analyze --query "do a web search for top 5 social medias and create a json with that info"
+code-analyzer analyze --query "do a web search for top 5 social medias and create a json with that info"
 
 # Perform domain-specific web search
 node src/index.js analyze --query "search for nodejs best practices on github.com"
@@ -68,13 +79,13 @@ node src/index.js analyze --query "search for nodejs best practices on github.co
 node src/index.js analyze --query "find all files that import axios"
 
 # Get insights about your codebase architecture
-node src/index.js analyze --query "explain the directory structure and key components"
+code-analyzer analyze --query "explain the directory structure and key components"
 
 # Create documentation based on your code
 node src/index.js analyze --query "generate documentation for the tools directory"
 
 # Update an existing file with new content
-node src/index.js analyze --query "update package.json to add axios dependency"
+code-analyzer analyze --query "update package.json to add axios dependency"
 ```
 
 ## Options
