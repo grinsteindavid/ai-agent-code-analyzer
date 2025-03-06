@@ -61,17 +61,26 @@ program
     do {
       
       try {
-        // Get the next function call
+        // Get the next thought based on the plan and previous messages
+        const nextThought = await selectedProvider.getNextThought();
+
+        if(!nextThought) {
+          console.error("Error getting next thought");
+          return;
+        }
+        
+        // Get the next function call using the nextThought
         functionCall = await selectedProvider.getFunctionCall({
           functions: functionSchemas,
+          nextThought: nextThought,
         });
         
         // Execute the function if we have one
         if (functionCall) {
-          addMessage(getNextMessageRole(), `${Boolean(functionCall.nextThought) ? `${JSON.stringify(functionCall.nextThought)}` : `${JSON.stringify(functionCall)}`}`);
-          console.log(`\n ** ${functionCall.nextThought}`);
-          console.log(`\n * Tool: ${functionCall.name}`);
-          console.log(`Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
+          addMessage(getNextMessageRole(), `${nextThought}`);
+          console.log(`\n ** ${nextThought}`);
+          console.log(`\n-- Tool: ${functionCall.name}`);
+          console.log(`--Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
           await executeTool(functionCall.name, functionCall.arguments);
         } else {
           console.log("\n Generating summary... \n");
