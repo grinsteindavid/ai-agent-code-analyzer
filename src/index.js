@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
 require('dotenv').config();
+
 const { Command } = require("commander");
 
 // Import utilities
 const { executeTool, getFunctionSchemas } = require("./utils/tools");
+const logger = require('./utils/logger');
 
 // Import providers
 const { providers } = require("./providers");
@@ -26,7 +28,7 @@ program
     // Select the AI provider
     const selectedProvider = providers[provider];
     if (!selectedProvider) {
-      console.error(`Unknown provider: ${provider}. Available providers: ${Object.keys(providers).join(', ')}`);
+      logger.error(` Unknown provider: ${provider}. Available providers: ${Object.keys(providers).join(', ')}`);
       return;
     }
     
@@ -34,18 +36,18 @@ program
     const functionSchemas = getFunctionSchemas();
     
     // First, generate a plan using the getPlan function
-    console.log("Generating plan...");
+    logger.info(" Generating plan...");
     const plan = await selectedProvider.getPlan({
       userInput: query
     });
 
     if(!plan) {
-      console.log("Error generating plan");
+      logger.error( "Error generating plan");
       return;
     }
     
     // Log the generated plan
-    console.log("\n", plan, "\n");
+    logger.info(` ${plan}\n`);
     
     // Add the plan to context for function calls to access
     setPlan(plan);
@@ -60,7 +62,7 @@ program
         const nextThought = await selectedProvider.getNextThought();
 
         if(!nextThought) {
-          console.error("Error getting next thought");
+          logger.error(" Error getting next thought");
           return;
         }
         
@@ -73,20 +75,22 @@ program
         // Execute the function if we have one
         if (functionCall) {
           addMessage('assistant', `${nextThought}`);
-          console.log(`\n ** ${nextThought}`);
-          console.log(`\n-- Tool: ${functionCall.name}`);
-          console.log(`-- Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
+          logger.info(` ${nextThought}\n`);
+          
+          logger.debug(` Tool: ${functionCall.name}`);
+          logger.debug(` Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
+          
           const result = await executeTool(functionCall.name, functionCall.arguments);
           const lastActionSummary = await selectedProvider.getLastActionSummary(result);
-          console.log(`${lastActionSummary}\n`);
+          logger.info(` ${lastActionSummary}\n`);
           addMessage('user', `${lastActionSummary}\n OUTPUT: ${result}`);
         } else {
-          console.log("\n Generating summary... \n");
+          logger.info(" Generating summary... \n");
           const summary = await selectedProvider.getSummary();
-          console.log(summary);
+          logger.info(` ${summary}`);
         }
       } catch (error) {
-        console.error(`Retrying...`, error);
+        logger.error(`Retrying... ${error}`)
       }
     } while (functionCall); // Continue until no more function calls
 

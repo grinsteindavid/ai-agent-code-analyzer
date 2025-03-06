@@ -25,7 +25,7 @@ async function getSummary(options = {}) {
       // System message with instructions
       { 
         role: 'system', 
-        content: `You are an AI code analyzer assistant.
+        content: `You are a helpful assistant.
         
         Original execution plan:
         ${plan}
@@ -33,8 +33,6 @@ async function getSummary(options = {}) {
         Your task is to:
         1. Review the conversation history and the original execution plan
         2. Summarize the results of the tools that were executed and how they align with the plan
-        3. Provide a clear, concise and very short summary of what was found or accomplished
-        4. Provide the information requested in the goal of the plan
 
         Keep your summary professional. Max ${parseInt(maxTokens)} tokens.`
       },
@@ -45,7 +43,7 @@ async function getSummary(options = {}) {
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages,
-      max_tokens: parseInt(maxTokens),
+      max_completion_tokens: parseInt(maxTokens),
     });
 
     const summaryContent = response.choices[0]?.message?.content;

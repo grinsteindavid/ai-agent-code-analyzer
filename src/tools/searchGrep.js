@@ -105,12 +105,12 @@ function grepSearch(SearchDirectory, Query, Includes, MatchPerLine, CaseInsensit
       await walkDir(SearchDirectory);
       
       // Return results
-      const wasLimited = results.length >= maxResults;
+      const wasLimitedByMaxResultsOption = results.length >= maxResults;
       resolve({
         matches: results.slice(0, maxResults),
         metadata: {
-          totalMatches: results.length,
-          wasLimited,
+          originalTotalMatches: results.length,
+          wasLimitedByMaxResultsOption,
           searchCommand: `Native Node.js search in ${SearchDirectory} for "${Query}"`,
         }
       });

@@ -103,7 +103,7 @@ async function getFunctionCall(options) {
         };
       }
     } catch (error) {
-      addMessage(getNextMessageRole(), `ERROR: ${error.message}`);
+      addMessage(`user`, `ERROR: ${JSON.stringify(error)}`);
       throw error;
     }
     

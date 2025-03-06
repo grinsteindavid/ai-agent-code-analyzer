@@ -2,6 +2,7 @@ const { OpenAI } = require("openai");
 const { setPlan, getCurrentDirectory } = require("../../utils/context");
 const { tools } = require("../../utils/tools");
 const { listDirectories } = require("../../tools/listDirectories");
+const logger = require("../../utils/logger");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -36,10 +37,9 @@ async function getPlan(options) {
 
         Node.js version: ${process.version}
 
-
         Current working directory: ${currentDirectory}
         
-        Files and directories in the current working directory:
+        Files and directories in the current working directory at the moment of plan generation:
         ${result.directories.map(item => `- ${item}`).join('\n')}
         
         Available tools:
@@ -50,13 +50,14 @@ async function getPlan(options) {
         IMPORTANT:
 
         1. Respond with a short goal statement summarizing what you aim to accomplish.
-        2. YOUR ACTIONS MUST BE ONLY USING Available tools.
-        3. Be as precise as possible to the user's query.
-        4. Do not use a list just a description of how you are going to takle the task.
+        2. YOUR ACTIONS CAN ONLY BE COMPLETED USING the Available tools AND NOTHING ELSE.
+        3. DO NOT SHOW A LIST OF ACTIONS OR STEPS.
+        4. DO NOT PROVIDE ADDITIONAL INFORMATION OR EXPLANATIONS.
         
-        For example:
+        FORMAT EXAMPLE:
         
-        Goal: The user wants me to move a code snippet from src/index.js to src/utils/tools.js to reduce the code length in the main index file. I need to:
+        Goal: The user wants me to create a logger using chalk with similar logic to the existing showInfo functionality. They also want me to update the files src/index.js and src/utils/tools.js to avoid DEBUG conditions and encapsulate logging functionality in the logger. First, I need to examine the current files to understand their structure and how showInfo is implemented.
+
         `
       },
       {
@@ -81,11 +82,11 @@ async function getPlan(options) {
       
         return messageContent
     } else {
-      console.log("No valid plan generated.");
+      logger.log(" No valid plan generated.");
       return  null
     }
   } catch (error) {
-    console.error("OpenAI Plan Generation Error:", error.message);
+    logger.error(" OpenAI Plan Generation Error:", error.message);
     return null
   }
 }

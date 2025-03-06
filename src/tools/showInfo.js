@@ -1,10 +1,10 @@
 /**
  * Print information to the console with color formatting
- * Uses chalk for colored output: https://github.com/chalk/chalk
+ * Uses logger utility for colored output
  * Intended for showing a portion or summary of content to avoid displaying large messages
  */
 
-const chalk = require('chalk');
+const logger = require('../utils/logger');
 
 // Define JSON schema for the tool
 const showInfoSchema = {
@@ -31,48 +31,10 @@ const showInfoSchema = {
  * @returns {Object} Result object containing the message and type
  */
 async function showInfo(message, type = 'info') {
-  // Define color schemes for different message types
-  const colorSchemes = {
-    info: chalk.blue,
-    success: chalk.green,
-    warning: chalk.yellow,
-    error: chalk.red,
-    debug: chalk.cyan,
-  };
-
-  // Get the appropriate color function or default to white
-  const colorFn = colorSchemes[type.toLowerCase()] || chalk.white;
-
-  // Format prefix based on message type
-  let prefix = '';
-  switch (type.toLowerCase()) {
-    case 'success':
-      prefix = '✅ ';
-      break;
-    case 'warning':
-      prefix = '⚠️ ';
-      break;
-    case 'error':
-      prefix = '❌ ';
-      break;
-    case 'debug':
-      prefix = '🔍 ';
-      break;
-    case 'info':
-    default:
-      prefix = 'ℹ️ ';
-      break;
-  }
-
-  // Print the colored message
-  console.log(colorFn(`${prefix}${message}`));
-
-  // Return result object
-  return {
-    message,
-    type,
-    timestamp: new Date().toISOString()
-  };
+  // Use the logger to display the message and get the result
+  const result = logger.log(message, type);
+  
+  return result;
 }
 
 

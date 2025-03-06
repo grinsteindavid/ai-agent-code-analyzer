@@ -7,7 +7,8 @@ const { updateFile, updateFileSchema } = require('../tools/updateFile');
 const { webSearch, webSearchSchema } = require('../tools/webSearch');
 const { showInfo, showInfoSchema } = require('../tools/showInfo');
 const { validateSchema } = require('./validation');
-const { addMessage } = require('./context');
+const logger = require('./logger');
+
 
 // Define available tools and their schemas
 const tools = {
@@ -15,7 +16,7 @@ const tools = {
     schema: listDirectoriesSchema,
     execute: listDirectories,
     format: (result) => {
-      console.log(`-- Matches: ${result.directories.length}`);
+      logger.debug(`-- Matches: ${result.directories.length}`);
       return result;
     }
   },
@@ -30,7 +31,7 @@ const tools = {
     schema: grepSearchSchema,
     execute: grepSearch,
     format: (result) => {
-      console.log(`-- Matches: ${result.matches.length}`);
+      logger.debug(`-- Matches: ${result.matches.length}`);
       return result;
     }
   },
@@ -38,7 +39,7 @@ const tools = {
     schema: findFilesSchema,
     execute: findFiles,
     format: (result) => {
-      console.log(`-- Matches: ${result.files.length}`);
+      logger.debug(`-- Matches: ${result.files.length}`);
       return result;
     }
   },
@@ -46,7 +47,7 @@ const tools = {
     schema: createFileSchema,
     execute: createFile,
     format: (result) => {
-      console.log(` ✅ ${result.message}`);
+      logger.debug(` ✅ ${result.message}`);
       return result;
     }
   },
@@ -54,7 +55,7 @@ const tools = {
     schema: webSearchSchema,
     execute: webSearch,
     format: (result) => {
-      console.log(`-- Results: ${result.results.length}`);
+      logger.debug(`-- Results: ${result.results.length}`);
       return result;
     }
   },
@@ -63,9 +64,9 @@ const tools = {
     execute: updateFile,
     format: (result) => {
       if (result.status === 'error') {
-        console.error(` ❌ Error updating ${result.path}`);
+        logger.debug(` ❌ Error updating ${result.path}`);
       } else {
-        console.log(` ✅ ${result.path} updated successfully`);
+        logger.debug(` ✅ ${result.path} updated successfully`);
       }
       return result;
     }
@@ -102,7 +103,7 @@ async function executeTool(toolName, args) {
     const result = tool.format(rawResult);
     return `${toolName} RESULT: ${JSON.stringify(result)}`;
   } catch (error) {
-    console.error(`Tool error:`, error || error.error || error.message);
+    logger.error(`Tool error: ${JSON.stringify(error)}`);
     return `${toolName} ERROR: ${JSON.stringify(error ||error.error || error.message)}`;
   }
 }
