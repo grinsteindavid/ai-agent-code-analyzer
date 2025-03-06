@@ -6,7 +6,7 @@ const { tools, executeTool } = require("./utils/tools");
 
 // Import providers
 const { providers } = require("./providers");
-const { setPlan } = require('./utils/context');
+const { setPlan, getNextMessageRole, addMessage } = require('./utils/context');
 
 // CLI Setup
 const program = new Command();
@@ -68,6 +68,7 @@ program
         
         // Execute the function if we have one
         if (functionCall) {
+          addMessage(getNextMessageRole(), `${JSON.stringify(functionCall.nextThought)}\n\n** Tool: ${functionCall.name}\nArguments: ${JSON.stringify(functionCall.arguments)}`);
           console.log(`\n ** Tool: ${functionCall.name}`);
           console.log(`Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
           await executeTool(functionCall.name, functionCall.arguments);
@@ -77,7 +78,7 @@ program
           console.log(summary);
         }
       } catch (error) {
-        console.error(`Retrying...`);
+        console.error(`Retrying...`, error);
       }
     } while (functionCall); // Continue until no more function calls
 

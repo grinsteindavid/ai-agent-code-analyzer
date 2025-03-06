@@ -1,5 +1,5 @@
 const { OpenAI } = require("openai");
-const { getMessages, addMessage, getPlan } = require("../../utils/context");
+const { getMessages, addMessage, getPlan, getNextMessageRole } = require("../../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -52,7 +52,7 @@ async function getSummary(options = {}) {
     
     if (summaryContent) {
       // Add summary to conversation history
-      addMessage('assistant', summaryContent);
+      addMessage(getNextMessageRole(), summaryContent);
       return summaryContent;
     } else {
       return "Could not generate a summary of the analysis.";
