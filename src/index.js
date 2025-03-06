@@ -68,7 +68,7 @@ program
         
         // Execute the function if we have one
         if (functionCall) {
-          addMessage(getNextMessageRole(), `${JSON.stringify(functionCall.nextThought)}\n\n** Tool: ${functionCall.name}\nArguments: ${JSON.stringify(functionCall.arguments)}`);
+          addMessage(getNextMessageRole(), `${functionCall.nextThought ? `[]${JSON.stringify(functionCall.nextThought)}\n\n` : ''} Tool: ${functionCall.name}\nArguments: ${JSON.stringify(functionCall.arguments)}`);
           console.log(`\n ** Tool: ${functionCall.name}`);
           console.log(`Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
           await executeTool(functionCall.name, functionCall.arguments);

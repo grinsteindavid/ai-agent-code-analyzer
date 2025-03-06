@@ -59,8 +59,6 @@ async function getFunctionCall(options) {
       },
       {
         role: 'user', content: `Execution plan: ${plan}` },
-      {
-        role: 'assistant', content: `Next thought: ${nextThought.choices[0]?.message?.content}` },
       // Include conversation history
       ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
     ],
