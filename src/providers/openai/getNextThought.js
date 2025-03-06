@@ -27,18 +27,20 @@ async function getNextThought() {
   
         IMPORTANT:
         
-        1. DO NOT CREATE OR UPDATE FILES IF NOT EXPLICITLY REQUESTED OR IF NOT EXPLICITLY IN THE EXECUTION PLAN GOAL
-        2. Always check project structure before taking action.
-        3. Return ONLY the next thought of how are you going to proceed next to achieve the execution plan goal based on previous messages and ONLY USING Available tools.
-        4. If you have already achieved the execution plan goal, return a stop action
-        5. Be as short and brief as possible and do not include any additional text
-        6. Beware of the Current directory for paths and Operating system info.
-        7. Do not use a list just a description of how you are going to take action.
-        8. MAX TOKENS: 60.
+        1. You can ONLY use Available tools.
+        2. DO NOT CREATE OR UPDATE FILES IF NOT EXPLICITLY REQUESTED OR IF NOT EXPLICITLY IN THE EXECUTION PLAN GOAL
+        3. Always check project structure before taking action.
+        4. Return ONLY the next thought of how are you going to proceed to achieve the execution plan goal based on previous messages.
+        5. If you have already achieved the execution plan goal, return "EXECUTION PLAN GOAL ACHIEVED"
+        6. Be as short and brief as possible and do not include any additional text
+        7. Beware of the Current directory for paths and Operating system info.
+        8. Do not use a list just a description of how you are going to take action.
+        9. YOU CAN ONLY RETURN THE ACTION YOU WILL PERFORM ALONG THE TOOL NAME.
+        10. MAX TOKENS: 60.
 
         For example:
 
-        I'll help you move that function schema mapping code to the tools.js utility file. Let me first examine both files to understand the context better.
+        I'll list the files and directories in the current directory using the 'list_directories' tool and then count the number of files.
 
         ` },
       { role: 'user', content: `Execution plan: ${plan}` },

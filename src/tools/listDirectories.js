@@ -13,7 +13,7 @@ const listDirectoriesSchema = {
     },
   },
   required: ["path", "options"],
-  description: "Lists files and directories in the specified path using native Node.js.",
+  description: "Lists and counts files and directories in the specified path",
   additionalProperties: false,
 };
 

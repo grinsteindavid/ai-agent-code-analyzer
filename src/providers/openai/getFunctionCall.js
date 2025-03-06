@@ -34,7 +34,7 @@ async function getFunctionCall(options) {
         IMPORTANT:
         1. Check if all previous function calls with their errors and results fullfill the plan goal
         2. If previous function calls have failed, try a different approach
-        3. If the plan goal has been fully achieved, do NOT return any more function calls
+        3. If the plan goal has been fully achieved or next thought is "EXECUTION PLAN GOAL ACHIEVED", do NOT return any more function calls
         4. If the plan goal has not been achieved, return a function call
         5. If no steps of the plan goal have been executed yet, return a function call
         6. Return ONLY the function call with name and arguments, do not include any additional text
