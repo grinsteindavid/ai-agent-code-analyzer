@@ -1,6 +1,8 @@
 # Autonomous Code Analyzer: AI-Powered Codebase Intelligence
 
-An advanced command-line tool that leverages the power of AI models like OpenAI's GPT-4 to analyze and interact with your codebase through natural language. Go beyond simple code analysis with intelligent search, web research capabilities, and file operations - all from your terminal.
+## Overview
+
+The Autonomous Code Analyzer is an AI-powered CLI tool that uses OpenAI's GPT models to analyze codebases, search for specific patterns, and perform operations on files. The system follows an agent-based architecture where the AI creates a plan, executes a series of tools according to that plan, and then summarizes the findings.
 
 ## Features
 
@@ -74,6 +76,158 @@ node src/index.js analyze --query "update package.json to add axios dependency"
 - `-p, --provider <provider>`: AI provider to use (default: openai)
 - `-h, --help`: Display help information
 - `-V, --version`: Display version information
+
+
+## System Components
+
+### Core Components
+
+1. **Entry Point (index.js)**
+   - Initializes the CLI command structure
+   - Orchestrates the overall execution flow
+   - Manages the loop of function calls until completion
+
+2. **AI Provider (OpenAI)**
+   - Handles communication with OpenAI APIs
+   - Implements three key functions:
+     - `getPlan`: Generates an execution plan
+     - `getFunctionCall`: Determines the next tool to execute
+     - `getSummary`: Summarizes findings after execution
+
+3. **Context Management (context.js)**
+   - Maintains state throughout execution
+   - Stores conversation history, current directory, and plan
+   - Provides utility functions for state management
+
+4. **Tools Management (tools.js)**
+   - Registers available tools with their schemas and execution functions
+   - Validates tool arguments against schemas
+   - Handles tool execution and formatting of results
+
+### Available Tools
+
+1. **list_directories**: Lists files and directories in a specified path
+2. **read_file_content**: Reads the content of a file
+3. **grep_search**: Searches for patterns in files
+4. **find_files**: Finds files matching specific patterns
+5. **create_file**: Creates a new file with specified content
+6. **update_file**: Updates the content of an existing file
+7. **web_search**: Performs web searches using DuckDuckGo Lite
+
+## Execution Flow Sequence
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant CLI as CLI Interface
+    participant OpenAI as OpenAI Provider
+    participant Context as Context Manager
+    participant Tools as Tools Manager
+    participant FileSystem as File System
+    participant WebAPI as Web APIs
+
+    User->>CLI: Initiates query with 'analyze' command
+    CLI->>OpenAI: Calls getPlan with user query
+    OpenAI->>Tools: Retrieves current directory info
+    Tools->>FileSystem: Lists directory contents
+    FileSystem-->>Tools: Returns directory contents
+    Tools-->>OpenAI: Returns directory structure
+    OpenAI-->>CLI: Returns execution plan
+    CLI->>Context: Stores plan
+    
+    loop Until completion
+        CLI->>OpenAI: Calls getFunctionCall
+        OpenAI->>Context: Retrieves plan and history
+        Context-->>OpenAI: Returns plan and history
+        OpenAI->>OpenAI: Generates next thought
+        OpenAI->>OpenAI: Determines next function call
+        OpenAI-->>CLI: Returns function call details
+        CLI->>Tools: Executes specified tool
+        alt File System Operation
+            Tools->>FileSystem: Performs file operation
+            FileSystem-->>Tools: Returns result
+        else Web Search
+            Tools->>WebAPI: Performs web search
+            WebAPI-->>Tools: Returns search results
+        end
+        Tools-->>CLI: Returns formatted result
+        CLI->>Context: Stores result in conversation
+    end
+    
+    CLI->>OpenAI: Calls getSummary
+    OpenAI->>Context: Retrieves complete history
+    Context-->>OpenAI: Returns history
+    OpenAI-->>CLI: Returns final summary
+    CLI-->>User: Displays summary
+```
+
+## Prompt Structure and Tool Sequence
+
+### 1. Plan Generation
+
+The system starts with the `getPlan` function, which uses the following prompt structure:
+
+- **System Prompt**: Instructs the AI to create an execution plan based on:
+  - Operating system info
+  - Node.js version
+  - Current working directory and its contents
+  - Available tools and their descriptions
+- **User Message**: Contains the user's query
+
+The response is a structured plan with a goal statement and numbered steps.
+
+### 2. Function Call Generation
+
+The `getFunctionCall` function uses a two-stage process:
+
+1. **First Stage (Next Thought)**:
+   - System prompt contains context about directory, available tools, and instructions to follow the plan
+   - Previous messages are included for context
+   - Generates a "next thought" explaining what action will be taken
+
+2. **Second Stage (Tool Selection)**:
+   - Uses the next thought as guidance
+   - Selects the appropriate tool and arguments
+   - Returns a structured function call object
+
+### 3. Tool Execution
+
+Tools are executed based on their registered functions in the tools.js file:
+
+1. Each tool has a schema for argument validation
+2. The execution function is called with the provided arguments
+3. Results are formatted according to each tool's formatting function
+4. Results are added to the conversation history
+
+### 4. Summary Generation
+
+After all steps are completed, the `getSummary` function:
+
+- Reviews the entire conversation history
+- Compares actual execution against the original plan
+- Generates a concise summary of findings
+- Adds the summary to the conversation history
+
+## Special Focus: Web Search Implementation
+
+The web search tool (`web_search`) stands out as a particularly useful feature:
+
+- Uses DuckDuckGo Lite to avoid rate limiting issues
+- Parses HTML responses with Cheerio to extract structured results
+- Returns search results with titles, URLs, descriptions, and display URLs
+- Can be customized with a maximum number of results parameter
+
+## System Design Principles
+
+1. **Modular Architecture**: Each component has a single responsibility
+2. **Stateful Context**: Maintains state throughout execution
+3. **Tool Abstraction**: Tools are registered with a common interface
+4. **Validation**: Arguments are validated against schemas
+5. **Conversation Management**: All interactions are tracked as a conversation
+
+## Conclusion
+
+The Autonomous Code Analyzer demonstrates an effective architecture for AI-powered CLI tools. By separating planning, execution, and summarization into distinct phases, it provides a structured approach to solving complex code analysis tasks. The use of tool abstractions allows for easy extension with new capabilities while maintaining a consistent interface for the AI to interact with.
 
 ## Example Output
 
@@ -280,160 +434,3 @@ Accomplishments:
 
 The JSON file with this information is saved successfully for future reference.
 ```
-
-
-
-## Overview
-
-The Autonomous Code Analyzer is an AI-powered CLI tool that uses OpenAI's GPT models to analyze codebases, search for specific patterns, and perform operations on files. The system follows an agent-based architecture where the AI creates a plan, executes a series of tools according to that plan, and then summarizes the findings.
-
-## System Components
-
-### Core Components
-
-1. **Entry Point (index.js)**
-   - Initializes the CLI command structure
-   - Orchestrates the overall execution flow
-   - Manages the loop of function calls until completion
-
-2. **AI Provider (OpenAI)**
-   - Handles communication with OpenAI APIs
-   - Implements three key functions:
-     - `getPlan`: Generates an execution plan
-     - `getFunctionCall`: Determines the next tool to execute
-     - `getSummary`: Summarizes findings after execution
-
-3. **Context Management (context.js)**
-   - Maintains state throughout execution
-   - Stores conversation history, current directory, and plan
-   - Provides utility functions for state management
-
-4. **Tools Management (tools.js)**
-   - Registers available tools with their schemas and execution functions
-   - Validates tool arguments against schemas
-   - Handles tool execution and formatting of results
-
-### Available Tools
-
-1. **list_directories**: Lists files and directories in a specified path
-2. **read_file_content**: Reads the content of a file
-3. **grep_search**: Searches for patterns in files
-4. **find_files**: Finds files matching specific patterns
-5. **create_file**: Creates a new file with specified content
-6. **update_file**: Updates the content of an existing file
-7. **web_search**: Performs web searches using DuckDuckGo Lite
-
-## Execution Flow Sequence
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant CLI as CLI Interface
-    participant OpenAI as OpenAI Provider
-    participant Context as Context Manager
-    participant Tools as Tools Manager
-    participant FileSystem as File System
-    participant WebAPI as Web APIs
-
-    User->>CLI: Initiates query with 'analyze' command
-    CLI->>OpenAI: Calls getPlan with user query
-    OpenAI->>Tools: Retrieves current directory info
-    Tools->>FileSystem: Lists directory contents
-    FileSystem-->>Tools: Returns directory contents
-    Tools-->>OpenAI: Returns directory structure
-    OpenAI-->>CLI: Returns execution plan
-    CLI->>Context: Stores plan
-    
-    loop Until completion
-        CLI->>OpenAI: Calls getFunctionCall
-        OpenAI->>Context: Retrieves plan and history
-        Context-->>OpenAI: Returns plan and history
-        OpenAI->>OpenAI: Generates next thought
-        OpenAI->>OpenAI: Determines next function call
-        OpenAI-->>CLI: Returns function call details
-        CLI->>Tools: Executes specified tool
-        alt File System Operation
-            Tools->>FileSystem: Performs file operation
-            FileSystem-->>Tools: Returns result
-        else Web Search
-            Tools->>WebAPI: Performs web search
-            WebAPI-->>Tools: Returns search results
-        end
-        Tools-->>CLI: Returns formatted result
-        CLI->>Context: Stores result in conversation
-    end
-    
-    CLI->>OpenAI: Calls getSummary
-    OpenAI->>Context: Retrieves complete history
-    Context-->>OpenAI: Returns history
-    OpenAI-->>CLI: Returns final summary
-    CLI-->>User: Displays summary
-```
-
-## Prompt Structure and Tool Sequence
-
-### 1. Plan Generation
-
-The system starts with the `getPlan` function, which uses the following prompt structure:
-
-- **System Prompt**: Instructs the AI to create an execution plan based on:
-  - Operating system info
-  - Node.js version
-  - Current working directory and its contents
-  - Available tools and their descriptions
-- **User Message**: Contains the user's query
-
-The response is a structured plan with a goal statement and numbered steps.
-
-### 2. Function Call Generation
-
-The `getFunctionCall` function uses a two-stage process:
-
-1. **First Stage (Next Thought)**:
-   - System prompt contains context about directory, available tools, and instructions to follow the plan
-   - Previous messages are included for context
-   - Generates a "next thought" explaining what action will be taken
-
-2. **Second Stage (Tool Selection)**:
-   - Uses the next thought as guidance
-   - Selects the appropriate tool and arguments
-   - Returns a structured function call object
-
-### 3. Tool Execution
-
-Tools are executed based on their registered functions in the tools.js file:
-
-1. Each tool has a schema for argument validation
-2. The execution function is called with the provided arguments
-3. Results are formatted according to each tool's formatting function
-4. Results are added to the conversation history
-
-### 4. Summary Generation
-
-After all steps are completed, the `getSummary` function:
-
-- Reviews the entire conversation history
-- Compares actual execution against the original plan
-- Generates a concise summary of findings
-- Adds the summary to the conversation history
-
-## Special Focus: Web Search Implementation
-
-The web search tool (`web_search`) stands out as a particularly useful feature:
-
-- Uses DuckDuckGo Lite to avoid rate limiting issues
-- Parses HTML responses with Cheerio to extract structured results
-- Returns search results with titles, URLs, descriptions, and display URLs
-- Can be customized with a maximum number of results parameter
-
-## System Design Principles
-
-1. **Modular Architecture**: Each component has a single responsibility
-2. **Stateful Context**: Maintains state throughout execution
-3. **Tool Abstraction**: Tools are registered with a common interface
-4. **Validation**: Arguments are validated against schemas
-5. **Conversation Management**: All interactions are tracked as a conversation
-
-## Conclusion
-
-The Autonomous Code Analyzer demonstrates an effective architecture for AI-powered CLI tools. By separating planning, execution, and summarization into distinct phases, it provides a structured approach to solving complex code analysis tasks. The use of tool abstractions allows for easy extension with new capabilities while maintaining a consistent interface for the AI to interact with.
