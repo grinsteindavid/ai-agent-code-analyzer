@@ -23,6 +23,7 @@ async function getFunctionCall(options) {
 
   const nextThought = await openai.chat.completions.create({
     model: "gpt-4o-mini",
+    max_completion_tokens: 60,
     messages: [
       { role: 'system', content: `
         You are a helpful assistant. \n
@@ -39,7 +40,12 @@ async function getFunctionCall(options) {
         4. If no steps of the plan have been executed yet, return a function call for the first step
         5. avoid repeating steps with same arguments
 
-        Return the next thought of how you are going to proceed based on the plan and previous messages. Be as short as possible.
+        Return ONLY the next thought of how you are going to proceed based on the plan and previous messages, be as short as possible and do not include any additional text.
+
+        For example:
+
+        I'll proceed with the first step of the execution plan and create a new file named 'file4.csv' in the root project folder.
+
         ` },
       { role: 'user', content: `Execution plan: ${plan}` },
       ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
