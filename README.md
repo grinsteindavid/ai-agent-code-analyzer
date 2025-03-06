@@ -249,145 +249,145 @@ The Autonomous Code Analyzer demonstrates an effective architecture for AI-power
 ## Example Output
 
 ```bash
-node src/index.js analyze -q "explain codebase"
+ode-analyzer analyze --query "explain codebase"                    
 Generating plan...
 
- Goal: The user wants a detailed explanation of the codebase located in the specified directory. I will start by reading the README.md file to gather an overview of the project and its structure, then analyze the contents of the src directory to understand the main components and functionalities implemented in the codebase. This will involve examining key files and functions to provide a comprehensive explanation. 
+ Goal: The user wants me to provide an explanation of the codebase. To tackle this task, I will read the content of the README.md file to gather information about the project, and then I may explore the src directory for additional insights on the code structure and functionality. I will start by reading the README.md file to get an overview of the codebase. 
 
 
- ** I'll start by checking if the README.md file exists in the current directory to gather an overview of the project.
-
--- Tool: find_files
---Arguments: {"pattern":"README.md","dirPath":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer","options":"","type":"f"}
-
--- Matches: 74
-
- ** I'll read the content of the README.md file to gather information about the project and its structure.
+ ** I'll read the content of the README.md file using the 'read_file_content' tool.
 
 -- Tool: read_file_content
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/README.md"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/README.md","encoding":"utf-8"}
 
 
- ** I'll now analyze the contents of the `src` directory to further understand its structure and main components, specifically looking into the key files and their functionalities.
+ ** I'll now explore the `src` directory to understand its structure and main components by listing the directories and files present in it using the 'list_directories' tool.
 
 -- Tool: list_directories
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src","options":"al"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src","options":"al"}
 
 -- Matches: 4
 
- ** I'll read the `index.js` file first to understand its role as the main entry point of the codebase and how it orchestrates the CLI functionality.
+ ** I'll read the `src/index.js` file to understand its role as the main entry point of the codebase and how it orchestrates the CLI functionality using the 'read_file_content' tool.
 
 -- Tool: read_file_content
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/index.js"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/index.js"}
 
 
- ** Next, I'll explore the contents of the `src/providers` directory to understand the available AI providers, particularly focusing on the implementation related to OpenAI.
+ ** I'll explore the contents of the `src/providers` directory to understand the available AI providers, focusing on the implementation related to OpenAI by listing the directories and files present using the 'list_directories' tool.
 
 -- Tool: list_directories
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers","options":"a"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers","options":"a"}
 
 -- Matches: 2
 
- ** I'll read the `src/providers/index.js` file to understand how the AI providers, especially OpenAI, are structured and integrated into the project.
+ ** I'll read the `src/providers/index.js` file to understand how the AI providers, especially OpenAI, are structured and integrated into the project using the 'read_file_content' tool.
 
 -- Tool: read_file_content
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/index.js"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/index.js"}
 
 
- ** Next, I'll look into the `src/providers/openai` directory to analyze the specific implementation of the OpenAI provider and its functionalities.
+ ** I'll explore the `src/providers/openai` directory to analyze the specific implementation of the OpenAI provider and its functionalities by listing the directories and files present using the 'list_directories' tool.
 
 -- Tool: list_directories
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/openai","options":"a"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/openai","options":"a"}
 
 -- Matches: 5
 
- ** I'll read the `src/providers/openai/getPlan.js` file to understand how the plan generation function works within the OpenAI provider context.
+ ** I'll read the `src/providers/openai/getPlan.js` file to understand how the plan generation function works within the OpenAI provider context using the 'read_file_content' tool.
 
 -- Tool: read_file_content
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/openai/getPlan.js"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/openai/getPlan.js"}
 
 
- ** Next, I'll read the `src/providers/openai/getFunctionCall.js` file to understand how the function call generation is implemented within the OpenAI provider.
-
--- Tool: read_file_content
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/openai/getFunctionCall.js"}
-
-
- ** I'll now read the `src/providers/openai/getNextThought.js` file to understand how the system generates the next thought based on the current context in the OpenAI provider.
+ ** I'll read the `src/providers/openai/getFunctionCall.js` file to understand how the function call generation is implemented within the OpenAI provider using the 'read_file_content' tool.
 
 -- Tool: read_file_content
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/openai/getNextThought.js"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/openai/getFunctionCall.js"}
 
 
- ** Next, I'll read the `src/providers/openai/getSummary.js` file to see how the summary generation is handled within the OpenAI provider.
+ ** I'll read the `src/providers/openai/getNextThought.js` file to understand how the system generates the next thought based on the current context in the OpenAI provider using the 'read_file_content' tool.
 
 -- Tool: read_file_content
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/openai/getSummary.js"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/openai/getNextThought.js"}
 
 
- ** Next, I'll explore the `src/tools` directory to analyze the available tools implemented in the project and their respective functionalities. I'll start by listing the files in this directory.
+ ** I'll read the `src/providers/openai/getSummary.js` file to see how the summary generation is handled within the OpenAI provider using the 'read_file_content' tool.
+
+-- Tool: read_file_content
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/openai/getSummary.js"}
+
+
+ ** I'll explore the `src/tools` directory to analyze the available tools implemented in the project and their respective functionalities by listing the directories and files present using the 'list_directories' tool.
 
 -- Tool: list_directories
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools","options":"a"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools","options":"a"}
 
 -- Matches: 7
 
- ** I'll read the `src/tools/createFile.js` file to understand how the file creation functionality is implemented in the tools module.
+ ** I'll read the `src/tools/createFile.js` file to understand how the file creation functionality is implemented in the tools module using the 'read_file_content' tool.
 
 -- Tool: read_file_content
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools/createFile.js"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools/createFile.js"}
 
 
- ** I'll now read the `src/tools/findFiles.js` file to understand how the functionality for searching files is implemented within the tools module.
-
--- Tool: read_file_content
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools/findFiles.js"}
-
-
- ** Next, I'll read the `src/tools/listDirectories.js` file to understand how the functionality for listing directories is implemented in the tools module.
+ ** I'll read the `src/tools/findFiles.js` file to understand how the functionality for searching files is implemented within the tools module using the 'read_file_content' tool.
 
 -- Tool: read_file_content
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools/listDirectories.js"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools/findFiles.js"}
 
 
- ** Next, I'll read the `src/tools/readFile.js` file to understand the implementation of the file reading functionality within the tools module.
-
--- Tool: read_file_content
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools/readFile.js"}
-
-
- ** I'll now read the `src/tools/searchGrep.js` file to understand how the text searching functionality is implemented within the tools module.
+ ** I'll read the `src/tools/listDirectories.js` file to understand how the functionality for listing directories is implemented in the tools module using the 'read_file_content' tool.
 
 -- Tool: read_file_content
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools/searchGrep.js"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools/listDirectories.js"}
 
 
- ** I'll now read the `src/tools/updateFile.js` file to understand how the functionality for updating files is implemented within the tools module.
+ ** I'll read the `src/tools/readFile.js` file to understand the implementation of the file reading functionality within the tools module using the 'read_file_content' tool.
 
 -- Tool: read_file_content
---Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools/updateFile.js"}
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools/readFile.js"}
+
+
+ ** I'll read the `src/tools/searchGrep.js` file to understand how the text searching functionality is implemented within the tools module using the 'read_file_content' tool.
+
+-- Tool: read_file_content
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools/searchGrep.js"}
+
+
+ ** I'll read the `src/tools/updateFile.js` file to understand how the functionality for updating files is implemented within the tools module using the 'read_file_content' tool.
+
+-- Tool: read_file_content
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools/updateFile.js"}
+
+
+ ** I'll read the `src/tools/webSearch.js` file to understand how the web searching functionality is implemented within the tools module using the 'read_file_content' tool.
+
+-- Tool: read_file_content
+-- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools/webSearch.js"}
 
 
  Generating summary... 
 
-### Summary of Findings:
+### Summary of Findings
 
-The Autonomous Code Analyzer is an AI-powered command-line interface (CLI) tool designed to analyze codebases. It leverages OpenAI's models to enhance interaction and provide insights into code structures. Here are the main components and functionalities:
+The **Autonomous Code Analyzer** is an AI-powered CLI tool designed for analyzing codebases using OpenAI's models. Here are the main components and functionalities identified from the README.md file and subsequent explorations of the source code:
 
 1. **Main Components**:
-   - **Entry Point (`src/index.js`)**: Initializes the CLI, orchestrates user commands, and manages the execution flow.
-   - **AI Providers (`src/providers`)**: Currently includes the OpenAI provider, which communicates with OpenAI APIs for plan generation, function calls, and summarization.
-   - **Toolset (`src/tools`)**: Contains various tools for file and directory operations (e.g., create, read, update, find).
+   - **Entry Point (`src/index.js`)**: Initializes the CLI and orchestrates user commands.
+   - **AI Providers (`src/providers`)**: Currently supports OpenAI for execution planning, function calls, and summarization of actions taken based on user queries.
+   - **Tool Set (`src/tools`)**: Contains various tools that perform functions such as file operations, pattern searching, and web searching.
 
 2. **Key Functionalities**:
-   - **Natural Language Queries**: Users can interact with the tool via natural language to inquire about the codebase, perform operations, and get insights.
-   - **Execution Planning**: The tool generates a detailed plan based on user input using OpenAI's capabilities, executed in a structured manner.
-   - **File Operations**: The tool can create, read, and update files, and perform complex file searches using regex-like pattern matching.
-   - **Web Search Integration**: The tool allows users to search the web directly from the CLI, enhancing the ability to find specific information.
+   - **Natural Language Queries**: Users can ask questions and issue commands in plain English to interact with the tool.
+   - **Execution Planning**: The AI generates a structured execution plan based on user input and context.
+   - **File Operations**: Supports creating, reading, updating, and finding files, along with searching content through regex-like patterns.
+   - **Web Search Capability**: Integrates web searches using DuckDuckGo Lite, allowing users to find information directly from the CLI.
 
 3. **Modular Architecture**:
-   - Each component (CLI, AI provider, tools) follows a clear separation of responsibilities, making the system extensible and maintaining simplicity in implementation.
+   - The codebase exhibits a clear separation of concerns, with distinct modules for CLI interaction, AI processing, and functional tools, making it extensible for future development.
 
-### Conclusion:
-The Autonomous Code Analyzer showcases an advanced architecture for AI-powered CLI tools, combining natural language processing with structured programming capabilities to simplify code analysis tasks and enhance developer interaction with their codebases. The modular design allows for easy integration of new features or tools, ensuring versatility and adaptability in various development environments.
+### Conclusion
+
+The Autonomous Code Analyzer demonstrates an innovative architecture for AI-powered CLI tools that utilize natural language processing in conjunction with programming capabilities to enhance code analysis and developer productivity. The flexible design allows for easy integration of new features or additional AI providers, ensuring its adaptability in various development environments.
 ```
