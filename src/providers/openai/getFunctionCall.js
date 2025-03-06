@@ -82,7 +82,6 @@ async function getFunctionCall(options) {
     const toolCall = message.tool_calls[0];
     if (toolCall.type === 'function') {
       const functionCall = toolCall.function;
-      console.log(`\n * ${nextThought.choices[0]?.message?.content}`);
 
       return {
         name: functionCall.name,
@@ -94,7 +93,6 @@ async function getFunctionCall(options) {
   // Check for direct function_call property (legacy format)
   else if (message?.function_call) {
     const functionCall = message.function_call;
-    console.log(`\n * ${nextThought.choices[0]?.message?.content}`);
 
     return {
       name: functionCall.name,
@@ -120,7 +118,6 @@ async function getFunctionCall(options) {
 
       // Check if the parsed content has the expected function call structure
       if (toolName && args) {
-        console.log(`\n * ${nextThought.choices[0]?.message?.content}`);
         
         return {
           name: toolName,
