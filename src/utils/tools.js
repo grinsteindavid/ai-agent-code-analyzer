@@ -80,23 +80,21 @@ async function executeTool(toolName, args) {
   const tool = tools[toolName];
   if (!tool) {
     console.error(`Unknown tool: ${toolName}`);
-    addMessage('user', `Unknown tool: ${toolName}`);
-    return;
+    return `Unknown tool: ${toolName}`;
   }
 
   if (!validateSchema(args, tool.schema)) {
     console.error(`Invalid arguments for '${toolName}'`);
-    addMessage('user', `Invalid arguments for '${toolName}'`);
-    return;
+    return `Invalid arguments for '${toolName}'`;
   }
 
   try {
     const rawResult = await tool.execute(...Object.values(args));
     const result = tool.format(rawResult);
-    addMessage('user', `${toolName} RESULT: ${JSON.stringify(result)}`);
+    return `${toolName} RESULT: ${JSON.stringify(result)}`;
   } catch (error) {
     console.error(`Tool error:`, error || error.error || error.message);
-    addMessage('user', `${toolName} ERROR: ${JSON.stringify(error ||error.error || error.message)}`);
+    return `${toolName} ERROR: ${JSON.stringify(error ||error.error || error.message)}`;
   }
 }
 

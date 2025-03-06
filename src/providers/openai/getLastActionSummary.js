@@ -1,24 +1,16 @@
 const { OpenAI } = require("openai");
-const { getMessages } = require("../../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /**
  * Generate a brief summary of the last action taken
+ * @param {string} toolResponse - response from a tool that was used
  * @returns {Promise<string>} - A brief description of the last action
  */
-async function getLastActionSummary() {
-  // Get all messages from the conversation history
-  const messages = getMessages();
-  
-  // If there are no messages, return a default message
-  if (messages.length === 0) {
-    return null;
-  }
-  
-  // Get the last message from the conversation
-  const lastMessage = messages[messages.length - 1];
+async function getLastActionSummary(toolResponse) {
+
+
   
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
@@ -38,16 +30,16 @@ async function getLastActionSummary() {
         content: `
           Please provide a brief summary of this last action or message:
           
-          Role: ${lastMessage.role}
-          Content: ${lastMessage.content}
+          Tool Response: ${toolResponse}
           
           Describe in a single brief sentence what happened or what was done.
+          If applicable, include what the tool returned or found.
         `
       }
     ],
   });
   
-  return response.choices[0]?.message?.content || "Unable to summarize the last action.";
+  return response.choices[0]?.message?.content;
 }
 
 module.exports = getLastActionSummary;
