@@ -5,6 +5,7 @@ const { findFiles, findFilesSchema } = require('../tools/findFiles');
 const { createFile, createFileSchema } = require('../tools/createFile');
 const { updateFile, updateFileSchema } = require('../tools/updateFile');
 const { webSearch, webSearchSchema } = require('../tools/webSearch');
+const { showInfo, showInfoSchema } = require('../tools/showInfo');
 const { validateSchema } = require('./validation');
 const { addMessage } = require('./context');
 
@@ -15,7 +16,7 @@ const tools = {
     execute: listDirectories,
     format: (result) => {
       console.log(`-- Matches: ${result.directories.length}`);
-      return result.directories;
+      return result;
     }
   },
   read_file_content: {
@@ -30,7 +31,7 @@ const tools = {
     execute: grepSearch,
     format: (result) => {
       console.log(`-- Matches: ${result.matches.length}`);
-      return result.matches;
+      return result;
     }
   },
   find_files: {
@@ -38,7 +39,7 @@ const tools = {
     execute: findFiles,
     format: (result) => {
       console.log(`-- Matches: ${result.files.length}`);
-      return result.files;
+      return result;
     }
   },
   create_file: {
@@ -54,7 +55,7 @@ const tools = {
     execute: webSearch,
     format: (result) => {
       console.log(`-- Results: ${result.results.length}`);
-      return result.results;
+      return result;
     }
   },
   update_file: {
@@ -69,6 +70,14 @@ const tools = {
       return result;
     }
   },
+  show_info: {
+    schema: showInfoSchema,
+    execute: showInfo,
+    format: (result) => {
+      // Output already handled in the showInfo function
+      return result;
+    }
+  },
 };
 
 /**
@@ -80,23 +89,21 @@ async function executeTool(toolName, args) {
   const tool = tools[toolName];
   if (!tool) {
     console.error(`Unknown tool: ${toolName}`);
-    addMessage('user', `Unknown tool: ${toolName}`);
-    return;
+    return `Unknown tool: ${toolName}`;
   }
 
   if (!validateSchema(args, tool.schema)) {
     console.error(`Invalid arguments for '${toolName}'`);
-    addMessage('user', `Invalid arguments for '${toolName}'`);
-    return;
+    return `Invalid arguments for '${toolName}'`;
   }
 
   try {
     const rawResult = await tool.execute(...Object.values(args));
     const result = tool.format(rawResult);
-    addMessage('user', `${toolName} RESULT: ${JSON.stringify(result)}`);
+    return `${toolName} RESULT: ${JSON.stringify(result)}`;
   } catch (error) {
     console.error(`Tool error:`, error || error.error || error.message);
-    addMessage('user', `${toolName} ERROR: ${JSON.stringify(error ||error.error || error.message)}`);
+    return `${toolName} ERROR: ${JSON.stringify(error ||error.error || error.message)}`;
   }
 }
 

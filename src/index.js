@@ -76,7 +76,12 @@ program
           console.log(`\n ** ${nextThought}`);
           console.log(`\n-- Tool: ${functionCall.name}`);
           console.log(`-- Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
-          await executeTool(functionCall.name, functionCall.arguments);
+          const result = await executeTool(functionCall.name, functionCall.arguments);
+          const lastActionSummary = await selectedProvider.getLastActionSummary(result);
+          if(lastActionSummary) {
+            console.log(`${lastActionSummary}\n`);
+            addMessage('user', `${lastActionSummary}\n OUTPUT: ${result}`);
+          }
         } else {
           console.log("\n Generating summary... \n");
           const summary = await selectedProvider.getSummary();
