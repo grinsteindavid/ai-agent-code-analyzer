@@ -1,6 +1,6 @@
 const { OpenAI } = require("openai");
 const { tools } = require("../../utils/tools");
-const { getMessages, addMessage, getCurrentDirectory, getPlan } = require("../../utils/context");
+const { getMessages, addMessage, getCurrentDirectory, getPlan, getNextMessageRole } = require("../../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -19,38 +19,67 @@ async function getFunctionCall(options) {
 
   // Get the current plan from context
   const plan = getPlan();
-    
-  // Create messages array for the API call
-  const messages = [
-    // System message with instructions
-    { role: 'system', content: `
-      You are a helpful assistant. \n
+  
 
-      Always include the Current directory for paths: ${getCurrentDirectory()} \n
+  const nextThought = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    max_completion_tokens: 60,
+    messages: [
+      { role: 'system', content: `
+        You are a helpful assistant. \n
+  
+        Always include the Current directory for paths: ${getCurrentDirectory()} \n
+  
+        You can ONLY use Availabl tools:
+        ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
+  
+        IMPORTANT: Follow the execution plan EXACTLY. You MUST:
+        1. Check if all previous function calls already fulfill the plan
+        2. If the plan has been fully executed, do NOT return any more function calls
+        3. If the plan has been partially executed, only return a function call for the next step in the plan
+        4. If no steps of the plan have been executed yet, return a function call for the first step
+        5. avoid repeating steps with same arguments
 
-      You can ONLY use Availabl tools:
-      ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
+        Return ONLY the next thought of how you are going to proceed based on the plan and previous messages, be as short as possible and do not include any additional text.
 
-      IMPORTANT: Follow the execution plan EXACTLY. You MUST:
-      1. Check if all previous function calls already fulfill the plan
-      2. If the plan has been fully executed, do NOT return any more function calls
-      3. If the plan has been partially executed, only return a function call for the next step in the plan
-      4. If no steps of the plan have been executed yet, return a function call for the first step
-      5. avoid repeating steps with same arguments
-     ` 
-    },
-    {
-      role: 'user', content: `Execution plan: ${plan}` },
-    // Include conversation history
-    ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
-  ];
+        For example:
+
+        I'll proceed with the first step of the execution plan and create a new file named 'file4.csv' in the root project folder.
+
+        ` },
+      { role: 'user', content: `Execution plan: ${plan}` },
+      ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
+    ],
+  });
   
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
-    messages,
+    messages: [
+      // System message with instructions
+      { role: 'system', content: `
+        You are a helpful assistant. \n
+  
+        Always include the Current directory for paths: ${getCurrentDirectory()} \n
+  
+        You can ONLY use Availabl tools:
+        ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
+  
+        IMPORTANT: Follow the execution plan EXACTLY. You MUST:
+        1. Check if all previous function calls already fulfill the plan
+        2. If the plan has been fully executed, do NOT return any more function calls
+        3. If the plan has been partially executed, only return a function call for the next step in the plan
+        4. If no steps of the plan have been executed yet, return a function call for the first step
+        5. avoid repeating steps with same arguments
+       ` 
+      },
+      // Include conversation history
+      ...getMessages().map(msg => ({ role: msg.role, content: msg.content })),
+      { role: 'user', content: nextThought.choices[0]?.message?.content },
+    ],
     tools: functions,
     parallel_tool_calls: false,
   });
+  
 
   const message = response.choices[0]?.message;
   
@@ -59,22 +88,22 @@ async function getFunctionCall(options) {
     const toolCall = message.tool_calls[0];
     if (toolCall.type === 'function') {
       const functionCall = toolCall.function;
-      addMessage('assistant', JSON.stringify(functionCall));
 
       return {
         name: functionCall.name,
         arguments: JSON.parse(functionCall.arguments),
+        nextThought: nextThought.choices[0]?.message?.content
       };
     }
   }
   // Check for direct function_call property (legacy format)
   else if (message?.function_call) {
     const functionCall = message.function_call;
-    addMessage('assistant', JSON.stringify(functionCall));
 
     return {
       name: functionCall.name,
       arguments: JSON.parse(functionCall.arguments),
+      nextThought: nextThought.choices[0]?.message?.content
     };
   } 
   // Check if the content field contains function call information as a JSON string
@@ -95,15 +124,15 @@ async function getFunctionCall(options) {
 
       // Check if the parsed content has the expected function call structure
       if (toolName && args) {
-        addMessage('assistant', message.content);
         
         return {
           name: toolName,
           arguments: args,
+          nextThought: nextThought.choices[0]?.message?.content
         };
       }
     } catch (error) {
-      addMessage('assistant', `ERROR: ${error.message}`);
+      addMessage(getNextMessageRole(), `ERROR: ${error.message}`);
       throw error;
     }
     
