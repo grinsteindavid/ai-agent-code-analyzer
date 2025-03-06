@@ -30,7 +30,8 @@ async function getNextThought() {
         1. DO NOT CREATE OR UPDATE FILES IF NOT EXPLICITLY REQUESTED OR IF NOT EXPLICITLY IN THE EXECUTION PLAN GOAL
         2. Always check project structure before taking action.
         3. Return ONLY the next thought of how are you going to proceed next to achieve the execution plan goal based on previous messages
-        4. Be as short and brief as possible and do not include any additional text
+        4. If you have already achieved the execution plan goal, return a stop action
+        5. Be as short and brief as possible and do not include any additional text
         6. Beware of the Current directory for paths and Operating system info.
         7. Do not use a list just a description of how you are going to take action.
 
