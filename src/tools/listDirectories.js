@@ -6,9 +6,10 @@ const listDirectoriesSchema = {
   type: "object",
   properties: {
     path: { type: "string", description: "Directory path to list" },
-    options: { 
-      type: "string", 
-      description: "Options: 'a' for all files (including hidden), 'l' for detailed format" 
+    options: {
+      type: "string",
+      enum: ["a", "l", "al"],
+      description: "Options: 'a' for all files (including hidden), 'l' for detailed format, 'al' for both"
     },
   },
   required: ["path", "options"],
