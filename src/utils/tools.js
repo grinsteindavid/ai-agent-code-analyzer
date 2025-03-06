@@ -5,6 +5,7 @@ const { findFiles, findFilesSchema } = require('../tools/findFiles');
 const { createFile, createFileSchema } = require('../tools/createFile');
 const { updateFile, updateFileSchema } = require('../tools/updateFile');
 const { webSearch, webSearchSchema } = require('../tools/webSearch');
+const { showInfo, showInfoSchema } = require('../tools/showInfo');
 const { validateSchema } = require('./validation');
 const { addMessage } = require('./context');
 
@@ -66,6 +67,14 @@ const tools = {
       } else {
         console.log(` ✅ ${result.path} updated successfully`);
       }
+      return result;
+    }
+  },
+  show_info: {
+    schema: showInfoSchema,
+    execute: showInfo,
+    format: (result) => {
+      // Output already handled in the showInfo function
       return result;
     }
   },
