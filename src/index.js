@@ -77,6 +77,11 @@ program
           console.log(`\n-- Tool: ${functionCall.name}`);
           console.log(`-- Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
           await executeTool(functionCall.name, functionCall.arguments);
+          const lastActionSummary = await selectedProvider.getLastActionSummary();
+          if(lastActionSummary) {
+            console.log(`\n -- ${lastActionSummary}\n`);
+            addMessage('assistant', lastActionSummary);
+          }
         } else {
           console.log("\n Generating summary... \n");
           const summary = await selectedProvider.getSummary();

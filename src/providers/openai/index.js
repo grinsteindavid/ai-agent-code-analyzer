@@ -3,4 +3,5 @@ module.exports = {
   getPlan: require('./getPlan'),
   getSummary: require('./getSummary'),
   getNextThought: require('./getNextThought'),
+  getLastActionSummary: require('./getLastActionSummary'),
 };

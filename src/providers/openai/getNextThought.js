@@ -26,17 +26,17 @@ async function getNextThought() {
         ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
   
         IMPORTANT:
-        
         1. You can ONLY use Available tools.
-        2. YOU MUST EXPLICITLY INCLUDE THE TOOL NAME IN YOUR RESPONSE. Format: "I will [action description] using the '[tool_name]' tool".
-        3. DO NOT CREATE OR UPDATE FILES IF NOT EXPLICITLY REQUESTED OR IF NOT EXPLICITLY IN THE EXECUTION PLAN GOAL
-        4. Always check project structure before taking action.
-        5. Return ONLY the next thought of how are you going to proceed to achieve the execution plan goal based on previous messages.
-        6. If you have already achieved the execution plan goal, return "STOP EXECUTION"
-        7. Be as short and brief as possible and do not include any additional text
-        8. Beware of the Current directory for paths and Operating system info.
-        9. Do not use a list just a description of how you are going to take action.
-        10. MAX TOKENS: 60.
+        2. DO NOT CREATE OR UPDATE FILES IF NOT EXPLICITLY REQUESTED OR IF NOT EXPLICITLY IN THE EXECUTION PLAN GOAL
+        3. Always check project structure before taking action.
+        4. Return ONLY the next thought of how are you going to proceed to achieve the execution plan goal based on previous messages.
+        5. If you have already achieved the execution plan goal, return "STOP EXECUTION"
+        6. Be as short and brief as possible and do not include any additional text
+        7. Beware of the Current directory for paths and Operating system info.
+        8. Do not use a list just a description of how you are going to take action.
+        9. MAX TOKENS: 60.
+
+        YOU MUST EXPLICITLY INCLUDE THE TOOL NAME IN YOUR RESPONSE. Format: "I will [action description] using the '[tool_name]' tool".
 
         Examples of correctly formatted responses:
         - "I'll list the files in the current directory using the 'list_directories' tool."
