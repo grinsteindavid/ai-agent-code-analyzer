@@ -22,14 +22,14 @@ async function getNextThought() {
   
         Always include the Current directory for paths: ${getCurrentDirectory()} \n
   
-        You can ONLY use Availabl tools:
+        You can ONLY use Available tools:
         ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
   
         IMPORTANT:
         
         1. DO NOT CREATE OR UPDATE FILES IF NOT EXPLICITLY REQUESTED OR IF NOT EXPLICITLY IN THE EXECUTION PLAN GOAL
         2. Always check project structure before taking action.
-        3. Return ONLY the next thought of how are you going to proceed next to achieve the execution plan goal based on previous messages
+        3. Return ONLY the next thought of how are you going to proceed next to achieve the execution plan goal based on previous messages and ONLY USING Available tools.
         4. If you have already achieved the execution plan goal, return a stop action
         5. Be as short and brief as possible and do not include any additional text
         6. Beware of the Current directory for paths and Operating system info.

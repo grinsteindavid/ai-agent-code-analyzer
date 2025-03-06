@@ -49,7 +49,7 @@ async function getPlan(options) {
         
         IMPORTANT:
 
-        1. Respond with a short goal statement summarizing what you aim to accomplish.
+        1. Respond with a short goal statement summarizing what you aim to accomplish ONLY USING Available tools AND NOTHING ELSE.
         2. Be as precise as possible to the user's query.
         3. Do not use a list just a description of how you are going to takle the task.
         
