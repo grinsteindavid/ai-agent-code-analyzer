@@ -75,41 +75,6 @@ node src/index.js analyze --query "update package.json to add axios dependency"
 - `-h, --help`: Display help information
 - `-V, --version`: Display version information
 
-## Tool Capabilities
-
-### Codebase Navigation
-- **list_directories**: Browse your file system and find directories
-  - Supports options for showing hidden files and detailed information
-  - Returns organized file metadata including size, type, and modification time
-- **find_files**: Locate files matching specified patterns
-  - Supports glob patterns (*.js, *.md, etc.)
-  - Configurable depth for recursive searches
-  - Filter by file type (regular files, directories, symbolic links)
-- **read_file_content**: View the contents of any file
-  - Support for different file encodings
-  - Error handling for invalid files
-
-### Code Analysis
-- **grep_search**: Search for specific patterns across your codebase
-  - Case-sensitive or case-insensitive search options
-  - Configurable pattern matching with support for regular expressions
-  - Ability to show matching lines or just file names
-  - Customizable maximum results limit
-
-### Web Integration
-- **web_search**: Perform web searches directly from your terminal using DuckDuckGo Lite
-  - Domain-specific searching with customizable results count
-  - Returns structured data with titles, URLs, and descriptions
-  - Clean parsing of search results with proper error handling
-
-### File Operations
-- **create_file**: Generate new files with specified content
-  - Automatic creation of parent directories if they don't exist
-  - Safety checks to prevent overwriting existing files
-- **update_file**: Update existing files with new content
-  - Preservation of original file permissions and metadata
-  - Error handling for missing files
-
 ## Example Output
 
 ```bash
