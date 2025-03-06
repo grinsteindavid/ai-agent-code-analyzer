@@ -3,23 +3,26 @@
 ## Project Timeline
 
 - Started: March 2, 2025
+- Last Updated: March 6, 2025
 - Status: Ongoing
 
 
 ## Overview
 
-The Autonomous Code Analyzer is an AI-powered CLI tool that uses OpenAI's GPT models to analyze codebases, search for specific patterns, and perform operations on files. The system follows an agent-based architecture where the AI creates a plan, executes a series of tools according to that plan, and then summarizes the findings.
+The Autonomous Code Analyzer is an AI-powered CLI tool that uses OpenAI's GPT models to analyze codebases, search for specific patterns, and perform operations on files. The system follows an agent-based architecture where the AI creates a plan, executes a series of tools according to that plan, and then summarizes the findings with detailed action summaries for each executed step.
 
 ## Features
 
 - **Natural Language Understanding**: Ask questions about your codebase in plain English
 - **Intelligent Codebase Analysis**: Get insights about your code structure, patterns, and organization
 - **Web Research Integration**: Search the web directly from your terminal with DuckDuckGo Lite
-  - Customizable search parameters including domain-specific queries
+  - Customizable search parameters including number of results
   - Structured results with titles, URLs, and descriptions
 - **File Operations**: Find files, read content, and create new files - all through conversational commands
 - **Pattern Search**: Use grep-like functionality through simple queries
 - **Execution Planning**: Advanced AI planning capabilities to break down complex requests into manageable steps
+- **Action Summaries**: Get concise summaries of each executed step for better understanding
+- **Colored Output**: Color-coded information display for better readability
 - **Extensible Architecture**: Easy to add new tools and AI providers to enhance functionality
 - **Markdown-Formatted Results**: Clean and readable output for improved developer experience
 
@@ -106,10 +109,12 @@ code-analyzer analyze --query "update package.json to add axios dependency"
 
 2. **AI Provider (OpenAI)**
    - Handles communication with OpenAI APIs
-   - Implements three key functions:
+   - Implements five key functions:
      - `getPlan`: Generates an execution plan
-     - `getFunctionCall`: Determines the next tool to execute
-     - `getSummary`: Summarizes findings after execution
+     - `getNextThought`: Determines the next step based on the plan
+     - `getFunctionCall`: Selects the appropriate tool to execute
+     - `getLastActionSummary`: Provides a concise summary of each executed action
+     - `getSummary`: Summarizes all findings after execution completes
 
 3. **Context Management (context.js)**
    - Maintains state throughout execution
@@ -129,7 +134,8 @@ code-analyzer analyze --query "update package.json to add axios dependency"
 4. **find_files**: Finds files matching specific patterns
 5. **create_file**: Creates a new file with specified content
 6. **update_file**: Updates the content of an existing file
-7. **web_search**: Performs web searches using DuckDuckGo Lite
+7. **web_search**: Performs web searches using DuckDuckGo Lite with customizable result count
+8. **show_info**: Displays color-coded information messages with appropriate icons
 
 ## Execution Flow Sequence
 
@@ -153,11 +159,14 @@ sequenceDiagram
     CLI->>Context: Stores plan
     
     loop Until completion
-        CLI->>OpenAI: Calls getFunctionCall
+        CLI->>OpenAI: Calls getNextThought
         OpenAI->>Context: Retrieves plan and history
         Context-->>OpenAI: Returns plan and history
         OpenAI->>OpenAI: Generates next thought
-        OpenAI->>OpenAI: Determines next function call
+        OpenAI-->>CLI: Returns next thought
+        
+        CLI->>OpenAI: Calls getFunctionCall with next thought
+        OpenAI->>OpenAI: Determines appropriate function call
         OpenAI-->>CLI: Returns function call details
         CLI->>Tools: Executes specified tool
         alt File System Operation
@@ -168,7 +177,11 @@ sequenceDiagram
             WebAPI-->>Tools: Returns search results
         end
         Tools-->>CLI: Returns formatted result
-        CLI->>Context: Stores result in conversation
+        
+        CLI->>OpenAI: Calls getLastActionSummary
+        OpenAI->>OpenAI: Generates concise summary of the executed action
+        OpenAI-->>CLI: Returns action summary
+        CLI->>Context: Stores result and summary in conversation
     end
     
     CLI->>OpenAI: Calls getSummary
@@ -195,17 +208,23 @@ The response is a structured plan with a goal statement and numbered steps.
 
 ### 2. Function Call Generation
 
-The `getFunctionCall` function uses a two-stage process:
+The system now uses a more structured three-stage process:
 
-1. **First Stage (Next Thought)**:
+1. **First Stage (Next Thought Generation)**:
+   - The `getNextThought` function generates the next step based on the plan
    - System prompt contains context about directory, available tools, and instructions to follow the plan
    - Previous messages are included for context
    - Generates a "next thought" explaining what action will be taken
 
 2. **Second Stage (Tool Selection)**:
-   - Uses the next thought as guidance
+   - The `getFunctionCall` function uses the next thought as guidance
    - Selects the appropriate tool and arguments
    - Returns a structured function call object
+
+3. **Third Stage (Action Summary)**:
+   - After tool execution, the `getLastActionSummary` function provides a concise summary
+   - Makes the execution more transparent and easier to follow
+   - Adds the summary to the conversation history
 
 ### 3. Tool Execution
 
@@ -225,14 +244,34 @@ After all steps are completed, the `getSummary` function:
 - Generates a concise summary of findings
 - Adds the summary to the conversation history
 
-## Special Focus: Web Search Implementation
+## Special Focus: Key Features
 
-The web search tool (`web_search`) stands out as a particularly useful feature:
+### 1. Web Search Implementation
+
+The web search tool (`web_search`) provides powerful web research capabilities:
 
 - Uses DuckDuckGo Lite to avoid rate limiting issues
 - Parses HTML responses with Cheerio to extract structured results
 - Returns search results with titles, URLs, descriptions, and display URLs
 - Can be customized with a maximum number of results parameter
+
+### 2. Information Display
+
+The show info tool (`show_info`) enhances the user experience:
+
+- Uses chalk for colored console output
+- Provides visual indicators with emoji prefixes based on message type
+- Supports various message types: info, success, warning, error, and debug
+- Makes complex information more digestible with formatted output
+
+### 3. Action Summaries
+
+The action summary feature (`getLastActionSummary`) improves transparency:
+
+- Provides immediate feedback after each tool execution
+- Summarizes what was accomplished in natural language
+- Creates a more conversational and intuitive experience
+- Helps track progress through complex multi-step operations
 
 ## System Design Principles
 
