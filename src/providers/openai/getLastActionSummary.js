@@ -23,7 +23,6 @@ async function getLastActionSummary(toolResponse) {
           Your job is to briefly describe the last action that was taken in the conversation.
           Be concise and focus only on what was done, without any fluff or explanation.
           Keep your summary to a single sentence if possible.
-          If the action was to use a specific tool, mention the tool name in your summary.
           Include if result was successful or not.
           
         `
