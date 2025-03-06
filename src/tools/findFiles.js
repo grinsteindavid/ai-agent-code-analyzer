@@ -132,7 +132,7 @@ function findFiles(pattern, dirPath = ".", options = "", type = "") {
       
       // Start the traversal from the specified path
       traverseDirectory(dirPath);
-      resolve({ files: results });
+      resolve({ files: results, metadata: { total: results.length } });
       
     } catch (error) {
       reject({ error: error.message });

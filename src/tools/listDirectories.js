@@ -62,7 +62,7 @@ function listDirectories(dirPath = ".", options = "") {
         }
       }
       
-      resolve({ directories: showDetailed ? files : files.sort() });
+      resolve({ directories: showDetailed ? files : files.sort(), metadata: { total: files.length } });
     } catch (error) {
       reject({ error: error.message });
     }

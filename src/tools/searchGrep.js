@@ -112,7 +112,6 @@ function grepSearch(SearchDirectory, Query, Includes, MatchPerLine, CaseInsensit
           totalMatches: results.length,
           wasLimited,
           searchCommand: `Native Node.js search in ${SearchDirectory} for "${Query}"`,
-          fileCount
         }
       });
       
