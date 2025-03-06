@@ -28,7 +28,7 @@ async function getNextThought() {
         IMPORTANT:
         
         1. You can ONLY use Available tools.
-        2. You can ONLY RETURN AN ACTION YOU WILL PERFORM ALONG THE TOOL NAME.
+        2. YOU MUST EXPLICITLY INCLUDE THE TOOL NAME IN YOUR RESPONSE. Format: "I will [action description] using the '[tool_name]' tool".
         3. DO NOT CREATE OR UPDATE FILES IF NOT EXPLICITLY REQUESTED OR IF NOT EXPLICITLY IN THE EXECUTION PLAN GOAL
         4. Always check project structure before taking action.
         5. Return ONLY the next thought of how are you going to proceed to achieve the execution plan goal based on previous messages.
@@ -38,9 +38,10 @@ async function getNextThought() {
         9. Do not use a list just a description of how you are going to take action.
         10. MAX TOKENS: 60.
 
-        For example:
-
-        I'll list the files and directories in the current directory using the 'list_directories' tool and then count the number of files.
+        Examples of correctly formatted responses:
+        - "I'll list the files in the current directory using the 'list_directories' tool."
+        - "I will check the file content using the 'read_file' tool."
+        - "I need to search for patterns using the 'grep' tool."
 
         ` },
       { role: 'user', content: `Execution plan: ${plan}` },
