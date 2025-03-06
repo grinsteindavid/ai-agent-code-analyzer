@@ -1,4 +1,5 @@
 const { OpenAI } = require("openai");
+const { getMessages } = require("../../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -25,6 +26,7 @@ async function getLastActionSummary(toolResponse) {
           If the action was to use a specific tool, mention the tool name in your summary.
         `
       },
+      ...getMessages().map(msg => ({ role: msg.role, content: msg.content })),
       { 
         role: 'user', 
         content: `
@@ -33,7 +35,10 @@ async function getLastActionSummary(toolResponse) {
           Tool Response: ${toolResponse}
           
           Describe in a single brief sentence what happened or what was done.
-          If applicable, include what the tool returned or found.
+
+          FORMAT:
+
+          I've updated the getLastActionSummary.js file to include a tool response parameter.
         `
       }
     ],
