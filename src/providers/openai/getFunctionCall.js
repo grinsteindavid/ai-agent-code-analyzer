@@ -25,12 +25,21 @@ async function getFunctionCall(options) {
     model: "gpt-4o-mini",
     messages: [
       { role: 'system', content: `
-        You are a helpful assistant.
+        You are a helpful assistant. \n
+  
+        Always include the Current directory for paths: ${getCurrentDirectory()} \n
+  
+        You can ONLY use Availabl tools:
+        ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
+  
+        IMPORTANT: Follow the execution plan EXACTLY. You MUST:
+        1. Check if all previous function calls already fulfill the plan
+        2. If the plan has been fully executed, do NOT return any more function calls
+        3. If the plan has been partially executed, only return a function call for the next step in the plan
+        4. If no steps of the plan have been executed yet, return a function call for the first step
+        5. avoid repeating steps with same arguments
 
-      You can ONLY use Availabl tools:
-      ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
-
-        Return only the a next thought of how you are going to proceed based on the plan and previous messages. Be as short as possible.
+        Return the next thought of how you are going to proceed based on the plan and previous messages. Be as short as possible.
         ` },
       { role: 'user', content: `Execution plan: ${plan}` },
       ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
@@ -57,10 +66,9 @@ async function getFunctionCall(options) {
         5. avoid repeating steps with same arguments
        ` 
       },
-      {
-        role: 'user', content: `Execution plan: ${plan}` },
       // Include conversation history
-      ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
+      ...getMessages().map(msg => ({ role: msg.role, content: msg.content })),
+      { role: 'user', content: nextThought.choices[0]?.message?.content },
     ],
     tools: functions,
     parallel_tool_calls: false,
