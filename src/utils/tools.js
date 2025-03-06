@@ -15,7 +15,7 @@ const tools = {
     execute: listDirectories,
     format: (result) => {
       console.log(`-- Matches: ${result.directories.length}`);
-      return result.directories;
+      return result;
     }
   },
   read_file_content: {
@@ -30,7 +30,7 @@ const tools = {
     execute: grepSearch,
     format: (result) => {
       console.log(`-- Matches: ${result.matches.length}`);
-      return result.matches;
+      return result;
     }
   },
   find_files: {
@@ -38,7 +38,7 @@ const tools = {
     execute: findFiles,
     format: (result) => {
       console.log(`-- Matches: ${result.files.length}`);
-      return result.files;
+      return result;
     }
   },
   create_file: {
@@ -54,7 +54,7 @@ const tools = {
     execute: webSearch,
     format: (result) => {
       console.log(`-- Results: ${result.results.length}`);
-      return result.results;
+      return result;
     }
   },
   update_file: {

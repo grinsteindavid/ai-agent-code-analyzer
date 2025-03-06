@@ -24,6 +24,8 @@ async function getLastActionSummary(toolResponse) {
           Be concise and focus only on what was done, without any fluff or explanation.
           Keep your summary to a single sentence if possible.
           If the action was to use a specific tool, mention the tool name in your summary.
+          Include if result was successful or not.
+          
         `
       },
       ...getMessages().map(msg => ({ role: msg.role, content: msg.content })),
