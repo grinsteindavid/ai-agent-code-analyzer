@@ -79,7 +79,7 @@ program
           const result = await executeTool(functionCall.name, functionCall.arguments);
           const lastActionSummary = await selectedProvider.getLastActionSummary(result);
           if(lastActionSummary) {
-            console.log(`\n-- ${lastActionSummary}\n`);
+            console.log(`${lastActionSummary}\n`);
             addMessage('user', `${lastActionSummary}\n OUTPUT: ${result}`);
           }
         } else {
