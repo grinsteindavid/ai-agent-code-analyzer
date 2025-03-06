@@ -34,6 +34,7 @@ async function getNextThought() {
         5. Be as short and brief as possible and do not include any additional text
         6. Beware of the Current directory for paths and Operating system info.
         7. Do not use a list just a description of how you are going to take action.
+        8. MAX TOKENS: 60.
 
         For example:
 

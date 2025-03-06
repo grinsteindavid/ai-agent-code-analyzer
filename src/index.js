@@ -73,7 +73,7 @@ program
           addMessage('assistant', `${nextThought}`);
           console.log(`\n ** ${nextThought}`);
           console.log(`\n-- Tool: ${functionCall.name}`);
-          console.log(`--Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
+          console.log(`-- Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
           await executeTool(functionCall.name, functionCall.arguments);
         } else {
           console.log("\n Generating summary... \n");
