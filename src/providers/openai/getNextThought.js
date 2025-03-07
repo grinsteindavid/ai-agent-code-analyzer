@@ -13,7 +13,7 @@ async function getNextThought() {
   // Get the current plan from context
   const plan = getPlan();
 
-  const maxTokens = 60;
+  const maxTokens = 80;
   
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
@@ -44,7 +44,8 @@ async function getNextThought() {
         6. Be as short and brief as possible and do not include any additional text
         7. Beware of the Current directory for paths and Operating system info.
         8. Do not use a list just a description of how you are going to take action.
-        9. MAX TOKENS: ${maxTokens}.
+        9. If a tool uses arguments to iterate over content chunks, then iterate as needed to accomplish the execution plan goal.
+        10. MAX TOKENS: ${maxTokens}.
 
         YOU MUST EXPLICITLY INCLUDE THE TOOL NAME IN YOUR RESPONSE AND ABSOLUTE PATHS FOR FILES AND FOLDERS. Format: "I will [action description] using the '[tool_name]' tool".
 

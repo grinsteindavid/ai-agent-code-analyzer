@@ -39,7 +39,8 @@ async function getSummary(options = {}) {
         2. EXPLAIN WHY each tool was used to accomplish the task
         3. Provide metadata if needed
         4. Keep your summary professional. 
-        5. Max ${parseInt(maxTokens)} tokens.
+        5. If "show_info" tool was used then DO NOT SUMMARIZE THE SAME DATA, AVOID DUPLICATION
+        6. Max ${parseInt(maxTokens)} tokens.
 
         `
       },
