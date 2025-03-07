@@ -28,7 +28,7 @@ async function getNextThought() {
         IMPORTANT:
         1. You can ONLY use Available tools.
         2. DO NOT CREATE OR UPDATE FILES IF NOT EXPLICITLY REQUESTED OR IF NOT EXPLICITLY IN THE EXECUTION PLAN GOAL
-        3. Always check project structure before taking action.
+        3. Always check project structure or absolute paths for files and folders before taking actions.
         4. Return ONLY the next thought of how are you going to proceed to achieve the execution plan goal based on previous messages.
         5. If you have already achieved the execution plan goal, return "STOP EXECUTION"
         6. Be as short and brief as possible and do not include any additional text
@@ -36,12 +36,16 @@ async function getNextThought() {
         8. Do not use a list just a description of how you are going to take action.
         9. MAX TOKENS: 60.
 
-        YOU MUST EXPLICITLY INCLUDE THE TOOL NAME IN YOUR RESPONSE. Format: "I will [action description] using the '[tool_name]' tool".
+        YOU MUST EXPLICITLY INCLUDE THE TOOL NAME IN YOUR RESPONSE AND ABSOLUTE PATHS FOR FILES AND FOLDERS. Format: "I will [action description] using the '[tool_name]' tool".
 
         Examples of correctly formatted responses:
         - "I'll list the files in the current directory using the 'list_directories' tool."
-        - "I will check the file content using the 'read_file' tool."
+        - "I will check the file content in '/Users/x/workshop/autonomous-code-analyzer/src' using the 'read_file' tool."
         - "I need to search for patterns using the 'grep' tool."
+        - "I will update the file content in '/Users/x/workshop/autonomous-code-analyzer/src' using the 'update_file' tool."
+        - "I will create a new file in '/Users/x/workshop/autonomous-code-analyzer/src' using the 'create_file' tool."
+        - "I will delete the file in '/Users/x/workshop/autonomous-code-analyzer/src' using the 'delete_file' tool."
+        - "I will find files in '/Users/x/workshop/autonomous-code-analyzer/src' using the 'find_files' tool."
 
         ` },
       { role: 'user', content: `Execution plan: ${plan}` },
