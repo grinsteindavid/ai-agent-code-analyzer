@@ -32,7 +32,7 @@ const webSearchSchema = {
 async function webSearch(query, maxResults = 10) {
   return new Promise(async (resolve, reject) => {
     try {
-      // Format query with domain restriction if provided
+      // Format query  
       const url = `https://lite.duckduckgo.com/lite/?q=${encodeURIComponent(query)}`;
       
       // Fetch search results

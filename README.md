@@ -71,6 +71,9 @@ node src/index.js analyze -q "explain codebase"
 # Specify AI provider (default: openai)
 code-analyzer analyze --query "What files are in src folder?" --provider openai
 
+# Execute system commands
+node src/index.js analyze --query "run ls -la and summarize the output"
+
 # Read file contents
 node src/index.js analyze --query "read this file package.json"
 
@@ -144,6 +147,8 @@ code-analyzer analyze --query "read pages 5-10 from my-documentation.pdf"
 7. **web_search**: Performs web searches using DuckDuckGo Lite with customizable max result count
 8. **show_info**: Displays color-coded information messages with appropriate icons
 9. **read_pdf_file**: Extracts text content from PDF files with options for page selection
+10. **get_website_content**: Fetches and processes content from specified websites
+11. **execute_command**: Executes system commands with user confirmation for safety
 
 ## Execution Flow Sequence
 
