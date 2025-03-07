@@ -4,6 +4,7 @@
 const context = {
   currentDirectory: process.cwd(),
   plan: null,
+  debug: false, // Debug flag
   messages: [
     
   ], // Store conversation history
@@ -66,6 +67,22 @@ function clearMessages() {
   context.messages = [];
 }
 
+/**
+ * Get the debug status
+ * @returns {boolean} The current debug status
+ */
+function getDebug() {
+  return context.debug;
+}
+
+/**
+ * Set the debug status
+ * @param {boolean} debugStatus - The debug status to set
+ */
+function setDebug(debugStatus) {
+  context.debug = !!debugStatus; // Convert to boolean
+}
+
 module.exports = {
   context,
   getPlan,
@@ -75,4 +92,6 @@ module.exports = {
   getMessages,
   addMessage,
   clearMessages,
+  getDebug,
+  setDebug,
 };

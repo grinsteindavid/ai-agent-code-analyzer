@@ -10,7 +10,7 @@ const logger = require('./utils/logger');
 
 // Import providers
 const { providers } = require("./providers");
-const { setPlan, addMessage } = require('./utils/context');
+const { setPlan, addMessage, setDebug } = require('./utils/context');
 
 // CLI Setup
 const program = new Command();
@@ -22,8 +22,12 @@ program
   .description("Analyze your codebase using AI")
   .requiredOption("-q, --query <query>", "Question about your codebase")
   .option("-p, --provider <provider>", "AI provider to use (openai)", "openai")
+  .option("-d, --debug", "Enable debug mode", false)
   .action(async (options) => {
-    const { query, provider } = options;
+    const { query, provider, debug } = options;
+    
+    // Set debug flag in global context
+    setDebug(debug);
     
     // Select the AI provider
     const selectedProvider = providers[provider];

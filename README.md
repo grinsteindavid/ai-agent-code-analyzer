@@ -268,7 +268,7 @@ The Autonomous Code Analyzer demonstrates an effective architecture for AI-power
 ## Example Output
 
 ```bash
-CHAT_DEBUG=false code-analyzer analyze --query "how many jpeg and pdf do i have in the old dir"
+code-analyzer analyze --query "how many jpeg and pdf do i have in the old dir"
 ℹ️  Generating plan...
 ℹ️  I aim to determine the number of JPEG and PDF files in the "old" directory. First, I will explore the working directory to locate the "old" directory.
 
@@ -302,86 +302,47 @@ This approach effectively combined directory exploration and file discovery to m
 ---------------------------------------------
 
 ```bash
-code-analyzer analyze --query "explain ENTIRE codebase"
+analyze --query "explain codebase"
 ℹ️  Generating plan...
-ℹ️  Goal: The user wants me to explain the entire codebase. First, I need to explore the working directory to understand its structure and gather relevant information about the files within it.
+ℹ️  The goal is to explain the codebase by examining its structure and ideally understanding the main components and their functionalities. I will start by exploring the working directory to get an overview of the files and directories present. 
 
-ℹ️  I will list the files and directories in the current directory using the 'list_directories' tool.
+Let's proceed with that.
 
-🔍  Tool: list_directories
-🔍  Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer","options":"al"}
+ℹ️  I will list the files in the current directory using the 'list_directories' tool.
 
-🔍 -- Matches: 11
-ℹ️  I will explore the 'src' directory to gather more information about the codebase using the 'list_directories' tool.
+ℹ️  I will examine the 'README.md' file in '/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer' to gain insights into the codebase and its main components using the 'read_file_content' tool.
 
-🔍  Tool: list_directories
-🔍  Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src","options":"a"}
+ℹ️  I will explore the 'src' directory in '/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer' to gather more information about the codebase using the 'list_directories' tool.
 
-🔍 -- Matches: 4
-ℹ️  I will list the files and directories in the 'providers' directory to gather more information about the codebase using the 'list_directories' tool.
+ℹ️  I will check the 'providers' directory in '/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src' to further analyze the codebase structure using the 'list_directories' tool.
 
-🔍  Tool: list_directories
-🔍  Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers","options":"a"}
+ℹ️  I will explore the 'openai' directory in '/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers' to gather more information about the codebase using the 'list_directories' tool.
 
-🔍 -- Matches: 2
-ℹ️  I will list the files and directories in the 'openai' directory to gather more information about the codebase using the 'list_directories' tool.
+ℹ️  I will check the 'tools' directory in '/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src' to gather more information about the codebase using the 'list_directories' tool.
 
-🔍  Tool: list_directories
-🔍  Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/openai","options":"a"}
+ℹ️  I will check the 'utils' directory in '/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src' to gather more information about the codebase using the 'list_directories' tool.
 
-🔍 -- Matches: 6
-ℹ️  I will list the files and directories in the 'tools' directory to gather more information about the codebase using the 'list_directories' tool.
+ℹ️  I have gathered the structure and key components of the codebase. I will now stop execution.
 
-🔍  Tool: list_directories
-🔍  Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/tools","options":"a"}
-
-🔍 -- Matches: 8
-ℹ️  I will list the files and directories in the 'utils' directory to gather more information about the codebase using the 'list_directories' tool.
-
-🔍  Tool: list_directories
-🔍  Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/utils","options":"a"}
-
-🔍 -- Matches: 4
-ℹ️  I will list the files and directories in the 'index.js' file located in the 'src' directory to further understand the codebase using the 'read_file_content' tool.
-
-🔍  Tool: read_file_content
-🔍  Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/index.js","encoding":"utf-8"}
-
-ℹ️  I will now analyze the 'README.md' file to gather more information about the codebase using the 'read_file_content' tool.
-
-🔍  Tool: read_file_content
-🔍  Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/README.md"}
-
+✅ Analysis of the Autonomous Code Analyzer codebase has been completed. The directory structure and key components have been outlined.
 ℹ️  Generating summary... 
 
-ℹ️  ### Summary of Codebase Analysis
+ℹ️  ### Summary of Analysis on Autonomous Code Analyzer Codebase
 
-#### Overview
-The **Autonomous Code Analyzer** is a sophisticated AI-driven command-line interface (CLI) tool designed to analyze codebases utilizing OpenAI's technology. This project enables users to engage with their code in natural language, receiving insights into structure, patterns, and functionality, while also providing various file operations and web search capabilities.
+**Objective & Scope:**
+The goal was to understand the structure and key components of the Autonomous Code Analyzer, an AI-powered CLI tool designed to analyze codebases.
 
-#### Directory Structure and Key Components
-1. **Project Structure**:
-   - The primary entry point is `src/index.js`, responsible for initializing the CLI commands and managing the interaction flow.
-   - `src/providers` houses the implementations for AI providers, specifically OpenAI, which facilitates planning, function calls, and result summarization.
-   - `src/tools` includes various utility functions for managing files and directories (creation, reading, updating) and performing searches.
+**Key Findings / Insights:**
+- **Structure Overview:** The codebase primarily consists of several directories—`src`, `providers`, `tools`, and `utils`, with critical components for AI execution scattered throughout.
+- **Core Components:**
+  - **Entry Point:** `src/index.js` initializes the CLI.
+  - **AI Provider:** The `src/providers/openai` directory manages communication with OpenAI APIs.
+  - **Tool Management:** `src/tools` handles various file and operation management features.
 
-2. **Core Functionality**:
-   - The CLI allows natural language queries about the codebase. It generates structured execution plans, which guide the AI through necessary actions.
-   - Features rich functionality, including generating summaries of actions taken, web searches using DuckDuckGo Lite, and pattern matching, all while producing well-formatted output.
+**Steps Taken / Process Overview:**
+1. Explored the top-level directory to identify its structure.
+2. Delved into the `src` directory and its subdirectories: `providers`, `tools`, and `utils`, systematically reviewing their contents to understand functionality.
 
-#### Command Functionality
-- The command `analyze` is pivotal to user interaction, enabling them to ask questions and request operations on their code. It requires a query (`-q`) and optionally allows specification of the AI provider (`-p`).
-- Various tools are available which include:
-  - **list_directories**: Lists files and directories.
-  - **read_file_content**: Reads the content of specified files.
-  - **web_search**: Executes web searches and retrieves information.
-
-#### Execution Flow
-The code follows a mapped execution flow:
-1. **Plan Generation**: The system begins by formulating a plan based on user input and context.
-2. **Function Execution**: Tools are executed based on the generated plan, with contextual information retained throughout the process.
-3. **Summary Generation**: After completing tasks, the system collates and returns a final summary of actions taken.
-
-### Conclusion
-The Autonomous Code Analyzer exemplifies a thoughtful architecture suited for AI-enhanced code analysis and manipulation. Its modular design, maintainability, and user-friendly interface promise to enhance developer productivity. Furthermore, its extensible nature allows easy introduction of new tools and AI providers, broadening its applicability in diverse programming environments. The project stands as a testament to integrating AI with practical software development tools, paving the way for future innovations in the domain.
+**Conclusion & Recommendations:**
+The Autonomous Code Analyzer exemplifies a robust architecture for AI-enhanced code analysis. It is modular and extensible, making it suited for integration with additional tools or AI capabilities. Future efforts should focus on expanding functionality
 ```

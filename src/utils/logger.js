@@ -4,7 +4,7 @@
  */
 
 const chalk = require('chalk');
-const { CHAT_DEBUG } = process.env;
+const { getDebug } = require('./context');
 
 /**
  * Logger class for consistent logging with color formatting
@@ -87,11 +87,11 @@ class Logger {
   }
 
   /**
-   * Log debug message (cyan) if DEBUG is enabled
+   * Log debug message (cyan) if debug mode is enabled
    * @param {string} message - The message to display
    */
   debug(message) {
-    if (CHAT_DEBUG === 'true') {
+    if (getDebug()) {
       return this.log(message, 'debug');
     }
     return null;
