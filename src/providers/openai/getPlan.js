@@ -57,11 +57,12 @@ async function getPlan(options) {
         3. DO NOT SHOW A LIST OF ACTIONS OR STEPS UNLESS STRICTLY NECESSARY.
         4. DO NOT PROVIDE ADDITIONAL INFORMATION OR EXPLANATIONS.
         5. EXPLORE WORKING DIRECTORY IF NECESSARY TO UNDERSTAND THE WORKING DIRECTORY AND THEN TAKE FURTHER ACTIONS.
-        6. ALWAYS INCLUDE VARIABLES OR ARGUMENTS FROM USER QUERY IN THE GOAL SO IT CAN BE USE FOR FURTHER ACTIONS.
+        6. ALWAYS INCLUDE VARIABLES OR ARGUMENTS OR URLS FROM USER QUERY IN THE GOAL SO IT CAN BE USE FOR FURTHER ACTIONS.
         
         FORMAT EXAMPLE:
         
-        The user wants me to create a logger using chalk with similar logic to the existing showInfo functionality. They also want me to update the files src/index.js and src/utils/tools.js to avoid DEBUG conditions and encapsulate logging functionality in the logger. First, I need to examine the current files to understand their structure and how showInfo is implemented.
+        - "The user wants me to explain the website at the URL https://jsonplaceholder.typicode.com/todos/. First, I need to retrieve the content of the website to analyze and summarize its features and functionalities."
+        - "The user wants me to create a logger using chalk with similar logic to the existing showInfo functionality. They also want me to update the files src/index.js and src/utils/tools.js to avoid DEBUG conditions and encapsulate logging functionality in the logger. First, I need to examine the current files to understand their structure and how showInfo is implemented."
 
         `
       },

@@ -7,13 +7,13 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 /**
  * Generate a summary of the execution results or code analysis
  * @param {Object} options - Options object
- * @param {number} [options.maxTokens=2000] - Maximum tokens in the response
+ * @param {number} [options.maxTokens=400] - Maximum tokens in the response
  * @returns {string} - The generated summary text
  */
 async function getSummary(options = {}) {
   // Default options
   const {
-    maxTokens = 300,
+    maxTokens = 400,
   } = options;
 
   try {
