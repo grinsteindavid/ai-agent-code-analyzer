@@ -8,6 +8,23 @@ const context = {
   messages: [
     
   ], // Store conversation history
+  websiteContent: {}, // Store website content chunks by URL
+  /* Example structure:
+  websiteContent: {
+    'https://example.com': {
+      url: 'https://example.com',
+      title: 'Example Website',
+      totalChunks: 3,
+      chunks: [
+        'Chunk 1 content here...',
+        'Chunk 2 content here...',
+        'Chunk 3 content here...'
+      ],
+      fetchedAt: '2025-03-07T11:26:11-05:00',
+      chunkSize: 1000
+    }
+  }
+  */
 };
 
 /**
@@ -83,6 +100,44 @@ function setDebug(debugStatus) {
   context.debug = !!debugStatus; // Convert to boolean
 }
 
+/**
+ * Get website content for a specific URL
+ * @param {string} url - The URL to get content for
+ * @returns {Object|null} The website content with chunks, if available
+ */
+function getWebsiteContent(url) {
+  return context.websiteContent[url] || null;
+}
+
+/**
+ * Store website content for a specific URL
+ * @param {string} url - The URL to store content for
+ * @param {Object} content - The content object with chunks and metadata
+ */
+function storeWebsiteContent(url, content) {
+  context.websiteContent[url] = content;
+}
+
+/**
+ * Get all stored website content
+ * @returns {Object} All stored website content by URL
+ */
+function getAllWebsiteContent() {
+  return context.websiteContent;
+}
+
+/**
+ * Clear website content for a specific URL
+ * @param {string} url - The URL to clear content for
+ */
+function clearWebsiteContent(url) {
+  if (url) {
+    delete context.websiteContent[url];
+  } else {
+    context.websiteContent = {};
+  }
+}
+
 module.exports = {
   context,
   getPlan,
@@ -94,4 +149,8 @@ module.exports = {
   clearMessages,
   getDebug,
   setDebug,
+  getWebsiteContent,
+  storeWebsiteContent,
+  getAllWebsiteContent,
+  clearWebsiteContent,
 };

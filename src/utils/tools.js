@@ -7,6 +7,7 @@ const { updateFile, updateFileSchema } = require('../tools/updateFile');
 const { webSearch, webSearchSchema } = require('../tools/webSearch');
 const { showInfo, showInfoSchema } = require('../tools/showInfo');
 const { readPdfFile, readPdfFileSchema } = require('../tools/readPdfFile');
+const { getWebsiteContent, getWebsiteContentSchema } = require('../tools/getWebsiteContent');
 const { validateSchema } = require('./validation');
 const logger = require('./logger');
 
@@ -89,6 +90,14 @@ const tools = {
       } else {
         logger.debug(` ✅ Read PDF: ${result.path} (${result.pages} pages, ${result.size} bytes)`);
       }
+      return result;
+    }
+  },
+  get_website_content: {
+    schema: getWebsiteContentSchema,
+    execute: getWebsiteContent,
+    format: (result) => {
+      logger.debug(` ✅ Got content from ${result.url} (${result.chunks.length}/${result.totalChunks} chunks)`);
       return result;
     }
   },
