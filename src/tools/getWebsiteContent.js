@@ -1,8 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { storeWebsiteContent, getWebsiteContent } = require('../utils/context');
-const stream = require('stream');
-const util = require('util');
 
 /**
  * JSON Schema for get_website_content function parameters.
@@ -16,13 +14,13 @@ const getWebsiteContentSchema = {
     },
     chunkSize: {
       type: "number",
-      description: "Size of each content chunk in number of characters.",
-      default: 100
+      description: "Size of each content chunk in number of lines.",
+      default: 100,
     },
     maxChunks: {
       type: "number",
       description: "Maximum number of chunks to return.",
-      default: 5
+      default: 1,
     },
     chunkIndex: {
       type: "number",
@@ -34,22 +32,22 @@ const getWebsiteContentSchema = {
       default: false
     }
   },
-  required: ["url"],
+  required: ["url", "chunkSize", "maxChunks", "chunkIndex", "forceRefresh"],
   additionalProperties: false,
-  description: "Retrieves the text content from a website URL, splits it into manageable chunks, stores it in context, and returns the requested chunks."
+  description: "Gets the entire content from a website URL and retrives only a partial chunk of it."
 };
 
 /**
  * Fetches website content, chunks it, and returns specified chunks
  *
  * @param {string} url - The URL to fetch content from
- * @param {number} [chunkSize=100] - Size of each content chunk in characters
- * @param {number} [maxChunks=5] - Maximum number of chunks to return
+ * @param {number} [chunkSize=100] - Size of each content chunk in number of lines
+ * @param {number} [maxChunks=1] - Maximum number of chunks to return
  * @param {number} [chunkIndex] - Index of specific chunk to retrieve
  * @param {boolean} [forceRefresh=false] - Force refresh content even if cached
  * @returns {Promise<Object>} A promise that resolves to an object with chunks and metadata
  */
-async function getWebsiteContentTool(url, chunkSize = 100, maxChunks = 5, chunkIndex = undefined, forceRefresh = false) {
+async function getWebsiteContentTool(url, chunkSize = 100, maxChunks = 1, chunkIndex = undefined, forceRefresh = false) {
   return new Promise(async (resolve, reject) => {
     try {
       // Validate URL
@@ -152,10 +150,11 @@ async function getWebsiteContentTool(url, chunkSize = 100, maxChunks = 5, chunkI
           fullText = `[Content type: ${contentType}]\n` + String(response.data);
         }
         
-        // Divide content into chunks of approximately chunkSize characters
+        // Divide content into chunks of approximately chunkSize lines
+        const lines = fullText.split('\n');
         const chunks = [];
-        for (let i = 0; i < fullText.length; i += chunkSize) {
-          chunks.push(fullText.substring(i, i + chunkSize));
+        for (let i = 0; i < lines.length; i += chunkSize) {
+          chunks.push(lines.slice(i, i + chunkSize).join('\n'));
         }
         
         // Store content data in context
@@ -196,7 +195,7 @@ async function getWebsiteContentTool(url, chunkSize = 100, maxChunks = 5, chunkI
         contentType: contentData.contentType,
         statusCode: contentData.statusCode,
         byteSize: contentData.byteSize,
-        summary: contentData.chunks[0].substring(0, 200) + '...' // First 200 chars as a preview
+        message: `Retrieved ${chunksToReturn.length} of ${contentData.totalChunks} chunks (lines of text)`
       });
     } catch (error) {
       // Provide more descriptive error messages based on the error type
