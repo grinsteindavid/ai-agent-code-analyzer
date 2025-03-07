@@ -9,7 +9,7 @@ const createFileSchema = {
     content: { type: "string", description: "Content to write to the file" },
   },
   required: ["filePath", "content"],
-  description: "Creates a new file with the specified content at the given path.",
+  description: "Creates a new file with the specified content at the given path if it does not exist. If the file already exists, it will be skipped.",
   additionalProperties: false,
 };
 

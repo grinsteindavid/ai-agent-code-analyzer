@@ -72,7 +72,7 @@ const grepSearchSchema = {
   },
   required: ["SearchDirectory", "Query", "Includes", "MatchPerLine", "CaseInsensitive"],
   additionalProperties: false,
-  description: "Performs text searching and matching text patterns in files and directories contained in the regular expressions."
+  description: "Searches text patterns in files, filtering lines from input based on a specified pattern."
 };
 
 /**

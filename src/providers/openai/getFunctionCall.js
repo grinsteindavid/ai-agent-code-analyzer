@@ -32,18 +32,13 @@ async function getFunctionCall(options) {
   
         Always include the Current directory for paths: ${getCurrentDirectory()} \n
   
-        You can ONLY use Availabl tools:
+        You can ONLY use Available tools:
         ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
   
         IMPORTANT:
         1. If "Next thought" is equal to "STOP EXECUTION" then STOP and NEVER return a function call
-        2. Check if all previous function calls with their errors and results fullfill the plan goal
-        3. If previous function calls have failed, try a different approach
-        4. If the plan goal has been fully achieved or next thought is "EXECUTION PLAN GOAL ACHIEVED", do NOT return any more function calls
-        5. If the plan goal has not been achieved, return a function call
-        6. If no steps of the plan goal have been executed yet, return a function call
-        7. Return ONLY the function call with name and arguments, do not include any additional text
-        8. Craft your arguments wisely based on the next thought
+        2. Return ONLY the function call with name and arguments, do not include any additional text
+        3. Craft your arguments wisely based on the provided "Next thought"
        ` 
       },
       // Include conversation history

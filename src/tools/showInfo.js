@@ -21,7 +21,7 @@ const showInfoSchema = {
       description: 'The type of message affecting its color (info=blue, success=green, warning=yellow, error=red, debug=cyan)'
     }
   },
-  description: 'Print a summary or portion of content to the console with color formatting to avoid displaying large messages'
+  description: 'Print a summary or portion of content to the console with color formatting.'
 };
 
 /**

@@ -19,7 +19,7 @@ const webSearchSchema = {
   },
   required: ["query"],
   additionalProperties: false,
-  description: "Schema for validating the input parameters of the web_search function."
+  description: "Performs a web search using DuckDuckGo Lite and returns the search results."
 };
 
 /**

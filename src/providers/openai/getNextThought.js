@@ -12,10 +12,12 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 async function getNextThought() {
   // Get the current plan from context
   const plan = getPlan();
+
+  const maxTokens = 60;
   
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
-    max_completion_tokens: 60,
+    max_completion_tokens: maxTokens,
     messages: [
       { role: 'system', content: `
         You are a helpful assistant. \n
@@ -24,17 +26,25 @@ async function getNextThought() {
   
         You can ONLY use Available tools:
         ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
+
+        What makes a successful plan:
+        - Clear and Specific Goals
+        - Thorough Research and Analysis
+        - Breaking the plan into manageable steps
+        - Proper Resource Allocation
+        - Flexibility and Adaptability
+        - Setting up checkpoints to review progress allows you to correct course if needed
   
         IMPORTANT:
         1. You can ONLY use Available tools.
         2. DO NOT CREATE OR UPDATE FILES IF NOT EXPLICITLY REQUESTED OR IF NOT EXPLICITLY IN THE EXECUTION PLAN GOAL
         3. Always check project structure or absolute paths for files and folders before taking actions.
-        4. Return ONLY the next thought of how are you going to proceed to achieve the execution plan goal based on previous messages.
-        5. If you have already achieved the execution plan goal, return "STOP EXECUTION"
+        4. Return ONLY the next thought of how are you going to proceed to achieve the execution plan goal based on previous actions.
+        5. If you have already achieved the entire execution plan goal, return "STOP EXECUTION"
         6. Be as short and brief as possible and do not include any additional text
         7. Beware of the Current directory for paths and Operating system info.
         8. Do not use a list just a description of how you are going to take action.
-        9. MAX TOKENS: 60.
+        9. MAX TOKENS: ${maxTokens}.
 
         YOU MUST EXPLICITLY INCLUDE THE TOOL NAME IN YOUR RESPONSE AND ABSOLUTE PATHS FOR FILES AND FOLDERS. Format: "I will [action description] using the '[tool_name]' tool".
 

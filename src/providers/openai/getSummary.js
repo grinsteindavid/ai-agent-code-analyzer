@@ -13,7 +13,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 async function getSummary(options = {}) {
   // Default options
   const {
-    maxTokens = 120,
+    maxTokens = 250,
   } = options;
 
   try {
@@ -27,11 +27,17 @@ async function getSummary(options = {}) {
         role: 'system', 
         content: `You are a helpful assistant.
         
+        Key points to include:
+        - Objective & Scope
+        - Key Findings / Insights
+        - Steps Taken / Process Overview
+        - Conclusion & Recommendations
+        - Supporting Data / References (if needed)
+
         IMPORTANT:
         1. Review the conversation history and how it aligned with the original execution plan
         2. EXPLAIN WHY each tool was used to accomplish the task
         3. Provide metadata if needed
-        3. BE BRIEF AND CONSISE
         4. Keep your summary professional. 
         5. Max ${parseInt(maxTokens)} tokens.
 

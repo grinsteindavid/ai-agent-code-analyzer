@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 
 // JSON Schema Definition
 const updateFileSchema = {
@@ -15,7 +14,7 @@ const updateFileSchema = {
       description: 'New content to write to the file'
     }
   },
-  description: 'Updates the entire content of an existing file, respect end of lines',
+  description: 'Updates the entire content of an existing file (respect end of lines).',
   additionalProperties: false
 };
 
