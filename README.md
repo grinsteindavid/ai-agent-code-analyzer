@@ -17,6 +17,9 @@ The Autonomous Code Analyzer is an AI-powered CLI tool that uses OpenAI's GPT mo
 - **Web Research Integration**: Search the web directly from your terminal with DuckDuckGo Lite
   - Customizable search parameters including number of results
   - Structured results with titles, URLs, and descriptions
+- **PDF Document Processing**: Extract and analyze text content from PDF files
+  - Specify page ranges to extract content from specific pages
+  - Get metadata about PDFs including page count and information
 - **File Operations**: Find files, read content, and create new files - all through conversational commands
 - **Pattern Search**: Use grep-like functionality through simple queries
 - **Execution Planning**: Advanced AI planning capabilities to break down complex requests into manageable steps
@@ -88,6 +91,12 @@ node src/index.js analyze --query "generate documentation for the tools director
 
 # Update an existing file with new content
 code-analyzer analyze --query "update package.json to add axios dependency"
+
+# Extract content from a PDF file
+node src/index.js analyze --query "extract text from document.pdf"
+
+# Extract specific pages from a PDF file
+code-analyzer analyze --query "read pages 5-10 from my-documentation.pdf"
 ```
 
 ## Options
@@ -134,6 +143,7 @@ code-analyzer analyze --query "update package.json to add axios dependency"
 6. **update_file**: Updates the content of an existing file
 7. **web_search**: Performs web searches using DuckDuckGo Lite with customizable max result count
 8. **show_info**: Displays color-coded information messages with appropriate icons
+9. **read_pdf_file**: Extracts text content from PDF files with options for page selection
 
 ## Execution Flow Sequence
 
