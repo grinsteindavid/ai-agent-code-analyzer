@@ -26,8 +26,9 @@
     "commander": "9.4.0",
     "dotenv": "16.0.3",
     "glob": "8.0.3",
+    "inquirer": "^8.2.5",
     "openai": "4.86.1",
-    "pdf-parse": "^1.1.1"
+    "pdf-parse": "1.1.1"
   },
   "devDependencies": {
     "prettier": "3.3.3"

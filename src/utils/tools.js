@@ -8,8 +8,10 @@ const { webSearch, webSearchSchema } = require('../tools/webSearch');
 const { showInfo, showInfoSchema } = require('../tools/showInfo');
 const { readPdfFile, readPdfFileSchema } = require('../tools/readPdfFile');
 const { getWebsiteContent, getWebsiteContentSchema } = require('../tools/getWebsiteContent');
+const { executeCommand, executeCommandSchema } = require('../tools/executeCommand');
 const { validateSchema } = require('./validation');
 const logger = require('./logger');
+const inquirer = require('inquirer');
 
 
 // Define available tools and their schemas
@@ -101,7 +103,45 @@ const tools = {
       return result;
     }
   },
+  execute_command: {
+    schema: executeCommandSchema,
+    execute: executeCommand,
+    format: (result) => {
+      if (result.status === 'error') {
+        logger.debug(` ❌ Command execution failed: ${result.error}`);
+      } else {
+        logger.debug(` ✅ Command executed: ${result.command}`);
+      }
+      return result;
+    },
+    requiresConfirmation: true
+  },
 };
+
+/**
+ * Ask for user confirmation before executing a tool
+ * @param {string} toolName - Name of the tool to execute
+ * @param {Object} args - Arguments to pass to the tool
+ * @returns {Promise<boolean>} - Whether the user confirmed the action
+ */
+async function confirmToolExecution(toolName, args) {
+  try {
+    const answers = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'confirm',
+        message: `Do you want to execute ${toolName} with arguments: ${JSON.stringify(args)}?`,
+        default: false
+      }
+    ]);
+    
+    return answers.confirm;
+  } catch (error) {
+    logger.error(`Error during user confirmation: ${error.message}`);
+    // Return false on error to safely abort the action
+    return false;
+  }
+}
 
 /**
  * Execute a tool with the provided arguments
@@ -118,6 +158,15 @@ async function executeTool(toolName, args) {
   if (!validateSchema(args, tool.schema)) {
     console.error(`Invalid arguments for '${toolName}'`);
     return `Invalid arguments for '${toolName}'`;
+  }
+  
+  // Check if the tool requires confirmation
+  if (tool.requiresConfirmation) {
+    const confirmed = await confirmToolExecution(toolName, args);
+    if (!confirmed) {
+      logger.debug(` ❌ User aborted execution of ${toolName}`);
+      return `${toolName} ERROR: USER ABORT ACTION`;
+    }
   }
 
   try {
