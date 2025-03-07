@@ -32,9 +32,12 @@ async function getSummary(options = {}) {
         
         Your task is to:
         1. Review the conversation history and the original execution plan
-        2. Summarize the results of the tools that were executed and how they align with the plan
+        2. Summarize the results of each tool that was executed and how they align with the plan
+        3. Provide a concise summary of the analysis
 
-        Keep your summary professional. Max ${parseInt(maxTokens)} tokens.`
+        Keep your summary professional. Max ${parseInt(maxTokens)} tokens.
+
+        `
       },
       // Include conversation history
       ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))

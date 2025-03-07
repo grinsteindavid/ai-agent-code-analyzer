@@ -43,8 +43,6 @@ async function getNextThought() {
         - "I will check the file content in '/Users/x/workshop/autonomous-code-analyzer/src' using the 'read_file' tool."
         - "I need to search for patterns using the 'grep' tool."
         - "I will update the file content in '/Users/x/workshop/autonomous-code-analyzer/src' using the 'update_file' tool."
-        - "I will create a new file in '/Users/x/workshop/autonomous-code-analyzer/src' using the 'create_file' tool."
-        - "I will delete the file in '/Users/x/workshop/autonomous-code-analyzer/src' using the 'delete_file' tool."
         - "I will find files in '/Users/x/workshop/autonomous-code-analyzer/src' using the 'find_files' tool."
 
         ` },

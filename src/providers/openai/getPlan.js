@@ -1,7 +1,6 @@
 const { OpenAI } = require("openai");
 const { setPlan, getCurrentDirectory } = require("../../utils/context");
 const { tools } = require("../../utils/tools");
-const { listDirectories } = require("../../tools/listDirectories");
 const logger = require("../../utils/logger");
 
 // Initialize OpenAI
@@ -19,8 +18,6 @@ async function getPlan(options) {
     userInput,
   } = options;
 
-  // Get file listing for current directory
-  const result = await listDirectories(getCurrentDirectory());
   const currentDirectory = getCurrentDirectory();
 
   try {
@@ -39,9 +36,6 @@ async function getPlan(options) {
 
         Current working directory: ${currentDirectory}
         
-        Files and directories in the current working directory at the moment of plan generation:
-        ${result.directories.map(item => `- ${item}`).join('\n')}
-        
         Available tools:
         ${Object.entries(tools).map(([name, {schema}]) => 
           `${name}: ${schema.description}`
@@ -53,6 +47,7 @@ async function getPlan(options) {
         2. YOUR ACTIONS CAN ONLY BE COMPLETED USING the Available tools AND NOTHING ELSE.
         3. DO NOT SHOW A LIST OF ACTIONS OR STEPS.
         4. DO NOT PROVIDE ADDITIONAL INFORMATION OR EXPLANATIONS.
+        5. EXPLORE WORKING DIRECTORY IF NECESSARY TO UNDERSTAND THE CODEBASE AND THEN TAKE FURTHER ACTIONS.
         
         FORMAT EXAMPLE:
         

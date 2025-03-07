@@ -81,9 +81,9 @@ program
           logger.debug(` Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
           
           const result = await executeTool(functionCall.name, functionCall.arguments);
-          const lastActionSummary = await selectedProvider.getLastActionSummary(result);
-          logger.info(` ${lastActionSummary}\n`);
-          addMessage('user', `${lastActionSummary}\n OUTPUT: ${result}`);
+          // const lastActionSummary = await selectedProvider.getLastActionSummary(result);
+          // logger.info(` ${lastActionSummary}\n`);
+          addMessage('user', `${result}`);
         } else {
           logger.info(" Generating summary... \n");
           const summary = await selectedProvider.getSummary();
