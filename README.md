@@ -268,6 +268,40 @@ The Autonomous Code Analyzer demonstrates an effective architecture for AI-power
 ## Example Output
 
 ```bash
+CHAT_DEBUG=false code-analyzer analyze --query "how many jpeg and pdf do i have in the old dir"
+ℹ️  Generating plan...
+ℹ️  I aim to determine the number of JPEG and PDF files in the "old" directory. First, I will explore the working directory to locate the "old" directory.
+
+ℹ️  I will list the files in the current directory using the 'list_directories' tool.
+
+ℹ️  I will find files in '/Users/looper/Desktop/old' directory for both JPEG and PDF patterns using the 'find_files' tool.
+
+ℹ️  I will find files in '/Users/looper/Desktop/old' directory for PDF pattern using the 'find_files' tool.
+
+ℹ️  Generating summary...
+
+ℹ️  **Objective & Scope**: The objective was to determine the number of JPEG and PDF files in the "old" directory.
+
+**Key Findings / Insights**:
+- **JPEG Files**: 15 files found.
+- **PDF Files**: 38 files found.
+
+**Steps Taken / Process Overview**:
+1. **Directory Exploration**: Initially, the working directory was explored to locate the "old" directory using the 'list_directories' tool, which confirmed its existence.
+2. **File Discovery**: Subsequently, the 'find_files' tool was employed twice: first to locate JPEG files and then to locate PDF files within the identified "old" directory.
+
+**Conclusion & Recommendations**:
+- The directory contains a substantial number of image (JPEG) and document (PDF) files. It is advisable to organize these files if they are to be maintained, particularly concerning ease of access and retrieval.
+
+**Supporting Data / References**:
+- Metadata indicates a total of 15 JPEG and 38 PDF files found within the "old" directory.
+
+This approach effectively combined directory exploration and file discovery to meet the project requirements comprehensively.
+```
+
+---------------------------------------------
+
+```bash
 code-analyzer analyze --query "explain ENTIRE codebase"
 ℹ️  Generating plan...
 ℹ️  Goal: The user wants me to explain the entire codebase. First, I need to explore the working directory to understand its structure and gather relevant information about the files within it.
@@ -350,43 +384,4 @@ The code follows a mapped execution flow:
 
 ### Conclusion
 The Autonomous Code Analyzer exemplifies a thoughtful architecture suited for AI-enhanced code analysis and manipulation. Its modular design, maintainability, and user-friendly interface promise to enhance developer productivity. Furthermore, its extensible nature allows easy introduction of new tools and AI providers, broadening its applicability in diverse programming environments. The project stands as a testament to integrating AI with practical software development tools, paving the way for future innovations in the domain.
-```
-
-
-
-```bash
-code-analyzer analyze --query "CODE REVIEW BASED ON THE FOLLOWING GIT DIFF: $(git diff)"
-Generating plan...
-
- Goal: The user wants me to carry out a code review based on a provided Git diff. To accomplish this, I will need to read the relevant files and analyze the changes indicated in the diff. I will begin by identifying the files affected by the diff and reviewing their current content. 
-
-
- ** I'll use the 'grep_search' tool to look for the relevant files that the Git diff affects within the current directory.
-
--- Tool: grep_search
--- Arguments: {"SearchDirectory":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer","Query":"diff","Includes":["**/*.js","**/*.ts","**/*.py","**/*.java"],"MatchPerLine":false,"CaseInsensitive":true}
-
--- Matches: 1
-
- ** I'll read the content of the file "/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/openai/getFunctionCall.js" using the 'read_file_content' tool to analyze the changes indicated in the diff.
-
--- Tool: read_file_content
--- Arguments: {"path":"/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers/openai/getFunctionCall.js"}
-
-
- Generating summary... 
-
-The file in question is `getFunctionCall.js`, which contains a function that interacts with the OpenAI API to retrieve function call responses based on user instructions and converses history. Specifically, it formats a system message that outlines important conditions to manage function calls, including when to stop execution, whether to attempt different approaches, and criteria for returning function calls.
-
-The diff involves a section of the system message that emphasizes important conditions regarding function calls. The changes specify the protocol for handling previous failures and indicate that multiple steps should be tracked to ensure the goals of the execution plan are met.
-
-### Summary of Findings:
-
-1. **Context and Functionality**: The function `getFunctionCall` is designed to generate responses from the OpenAI API based on input options and user interactions, following specific rules laid out in the comments.
-
-2. **Notable Changes**: Enhanced clarity in the conditions for executing function calls, especially how to handle failed previous calls and tracking the execution of plan goals.
-
-3. **Overall Impact**: The changes improve reliability and effectiveness in interaction with the OpenAI API by ensuring responses align with structured execution goals, likely aimed at optimizing user-centric functionality.
-
-This assessment aligns with the original plan's goal of conducting a thorough review of the file impacted by the Git diff, ensuring the code’s functionality adheres to best practices while considering user experience. The results demonstrate careful consideration in the design of the function, enhancing the clarity and robustness of interaction logistics with the OpenAI service.
 ```
