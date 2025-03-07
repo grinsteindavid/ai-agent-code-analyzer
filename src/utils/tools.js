@@ -6,6 +6,7 @@ const { createFile, createFileSchema } = require('../tools/createFile');
 const { updateFile, updateFileSchema } = require('../tools/updateFile');
 const { webSearch, webSearchSchema } = require('../tools/webSearch');
 const { showInfo, showInfoSchema } = require('../tools/showInfo');
+const { readPdfFile, readPdfFileSchema } = require('../tools/readPdfFile');
 const { validateSchema } = require('./validation');
 const logger = require('./logger');
 
@@ -76,6 +77,18 @@ const tools = {
     execute: showInfo,
     format: (result) => {
       // Output already handled in the showInfo function
+      return result;
+    }
+  },
+  read_pdf_file: {
+    schema: readPdfFileSchema,
+    execute: readPdfFile,
+    format: (result) => {
+      if (result.status === 'error') {
+        logger.debug(` ❌ Error reading PDF ${result.path}`);
+      } else {
+        logger.debug(` ✅ Read PDF: ${result.path} (${result.pages} pages, ${result.size} bytes)`);
+      }
       return result;
     }
   },
