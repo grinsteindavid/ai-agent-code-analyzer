@@ -3,7 +3,6 @@
 ## Project Timeline
 
 - Started: March 2, 2025
-- Last Updated: March 6, 2025
 - Status: Ongoing
 
 
@@ -30,7 +29,7 @@ The Autonomous Code Analyzer is an AI-powered CLI tool that uses OpenAI's GPT mo
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/autonomous-code-analyzer.git
+   git clone https://github.com/grinsteindavid/ai-agent-code-analyzer.git
    cd autonomous-code-analyzer
    ```
 
@@ -109,11 +108,10 @@ code-analyzer analyze --query "update package.json to add axios dependency"
 
 2. **AI Provider (OpenAI)**
    - Handles communication with OpenAI APIs
-   - Implements five key functions:
+   - Implements four key functions:
      - `getPlan`: Generates an execution plan
      - `getNextThought`: Determines the next step based on the plan
      - `getFunctionCall`: Selects the appropriate tool to execute
-     - `getLastActionSummary`: Provides a concise summary of each executed action
      - `getSummary`: Summarizes all findings after execution completes
 
 3. **Context Management (context.js)**
@@ -134,7 +132,7 @@ code-analyzer analyze --query "update package.json to add axios dependency"
 4. **find_files**: Finds files matching specific patterns
 5. **create_file**: Creates a new file with specified content
 6. **update_file**: Updates the content of an existing file
-7. **web_search**: Performs web searches using DuckDuckGo Lite with customizable result count
+7. **web_search**: Performs web searches using DuckDuckGo Lite with customizable max result count
 8. **show_info**: Displays color-coded information messages with appropriate icons
 
 ## Execution Flow Sequence
@@ -177,11 +175,7 @@ sequenceDiagram
             WebAPI-->>Tools: Returns search results
         end
         Tools-->>CLI: Returns formatted result
-        
-        CLI->>OpenAI: Calls getLastActionSummary
-        OpenAI->>OpenAI: Generates concise summary of the executed action
-        OpenAI-->>CLI: Returns action summary
-        CLI->>Context: Stores result and summary in conversation
+        CLI->>Context: Stores result in conversation
     end
     
     CLI->>OpenAI: Calls getSummary
@@ -221,11 +215,6 @@ The system now uses a more structured three-stage process:
    - Selects the appropriate tool and arguments
    - Returns a structured function call object
 
-3. **Third Stage (Action Summary)**:
-   - After tool execution, the `getLastActionSummary` function provides a concise summary
-   - Makes the execution more transparent and easier to follow
-   - Adds the summary to the conversation history
-
 ### 3. Tool Execution
 
 Tools are executed based on their registered functions in the tools.js file:
@@ -263,15 +252,6 @@ The show info tool (`show_info`) enhances the user experience:
 - Provides visual indicators with emoji prefixes based on message type
 - Supports various message types: info, success, warning, error, and debug
 - Makes complex information more digestible with formatted output
-
-### 3. Action Summaries
-
-The action summary feature (`getLastActionSummary`) improves transparency:
-
-- Provides immediate feedback after each tool execution
-- Summarizes what was accomplished in natural language
-- Creates a more conversational and intuitive experience
-- Helps track progress through complex multi-step operations
 
 ## System Design Principles
 

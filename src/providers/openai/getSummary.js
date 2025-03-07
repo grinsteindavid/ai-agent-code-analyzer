@@ -13,7 +13,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 async function getSummary(options = {}) {
   // Default options
   const {
-    maxTokens = 600,
+    maxTokens = 120,
   } = options;
 
   try {
@@ -27,18 +27,17 @@ async function getSummary(options = {}) {
         role: 'system', 
         content: `You are a helpful assistant.
         
-        Original execution plan:
-        ${plan}
-        
-        Your task is to:
-        1. Review the conversation history and the original execution plan
-        2. Summarize the results of each tool that was executed and how they align with the plan
-        3. Provide a concise summary of the analysis
-
-        Keep your summary professional. Max ${parseInt(maxTokens)} tokens.
+        IMPORTANT:
+        1. Review the conversation history and how it aligned with the original execution plan
+        2. EXPLAIN WHY each tool was used to accomplish the task
+        3. Provide metadata if needed
+        3. BE BRIEF AND CONSISE
+        4. Keep your summary professional. 
+        5. Max ${parseInt(maxTokens)} tokens.
 
         `
       },
+      { role: 'user', content: `Execution plan: ${plan}` },
       // Include conversation history
       ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
     ];
