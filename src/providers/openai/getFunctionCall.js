@@ -38,7 +38,7 @@ async function getFunctionCall(options) {
         IMPORTANT:
         1. If "Next thought" is equal to "STOP EXECUTION" then STOP and NEVER return a function call
         2. Return ONLY the function call with name and arguments, do not include any additional text
-        3. Craft your arguments wisely based on the provided "Next thought" AND PREVIOUS RESULTS
+        3. Craft your arguments wisely based on the provided "Next thought" AND ENTIRE CONVERSATION
        ` 
       },
       // Include conversation history
