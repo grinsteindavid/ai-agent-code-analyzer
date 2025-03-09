@@ -3,13 +3,13 @@ const fs = require("fs");
 // JSON Schema Definition
 const readFileSchema = {
   type: "object",
+  required: ["path", "encoding"],
+  additionalProperties: false,
   properties: {
     path: { type: "string", description: "Path of the file to read" },
-    encoding: { type: "string", description: "Encoding type", default: "utf-8" },
+    encoding: { type: "string", description: "Encoding type, default utf-8" },
   },
-  required: ["path"],
-  description: "Reads and returns the contents of a file at the specified path.",
-  additionalProperties: false,
+  description: "Reads and returns the contents of a file at the specified path, respecting end of lines using fs.readFile.",
 };
 
 // Function to read a file

@@ -37,6 +37,8 @@ function matchesAnyPattern(filePath, patterns) {
  */
 const grepSearchSchema = {
   type: "object",
+  required: ["SearchDirectory", "Query", "Includes", "MatchPerLine", "CaseInsensitive", "maxResults", "maxBufferSize"],
+  additionalProperties: false,
   properties: {
     SearchDirectory: {
       type: "string",
@@ -61,18 +63,14 @@ const grepSearchSchema = {
     },
     maxResults: {
       type: "integer",
-      description: "Maximum number of results to return.",
-      default: 50
+      description: "Maximum number of results to return. default 50",
     },
     maxBufferSize: {
       type: "integer",
-      description: "Maximum buffer size in bytes for reading files (default: 1MB).",
-      default: 1048576 // 1MB
+      description: "Maximum buffer size in bytes for reading files (default: 1048576 / 1mb).",
     }
   },
-  required: ["SearchDirectory", "Query", "Includes", "MatchPerLine", "CaseInsensitive"],
-  additionalProperties: false,
-  description: "Searches text patterns in files, filtering lines from input based on a specified pattern."
+  description: "(GREP) Search and find text patterns in files, filtering lines from input based on a specified pattern."
 };
 
 /**

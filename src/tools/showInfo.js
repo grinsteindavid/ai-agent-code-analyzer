@@ -10,6 +10,7 @@ const logger = require('../utils/logger');
 const showInfoSchema = {
   type: 'object',
   required: ['message', 'type'],
+  additionalProperties: false,
   properties: {
     message: {
       type: 'string',
@@ -21,7 +22,7 @@ const showInfoSchema = {
       description: 'The type of message affecting its color (info=blue, success=green, warning=yellow, error=red, debug=cyan)'
     }
   },
-  description: 'Print a summary or portion of content to the console with color formatting.'
+  description: 'Print text to the console with color formatting. Only use it for debugging.'
 };
 
 /**

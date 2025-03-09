@@ -4,20 +4,23 @@ const pdf = require('pdf-parse');
 // JSON Schema Definition
 const readPdfFileSchema = {
   type: 'object',
+  required: ['path', 'options'],
+  additionalProperties: false,
   properties: {
     path: { type: 'string', description: 'Path of the PDF file to read' },
     options: {
       type: 'object',
-      description: 'Optional configuration for PDF parsing',
+      description: 'Optional configuration for PDF parsing page range',
+      additionalProperties: false,
+      required: ['all', 'pageFrom', 'pageTo'],
       properties: {
-        pageFrom: { type: 'integer', description: 'First page to extract (1-based indexing)', minimum: 1 },
-        pageTo: { type: 'integer', description: 'Last page to extract (1-based indexing)' },
+        all: { type: 'boolean', description: 'Extract all pages, default true' },
+        pageFrom: { type: 'integer', description: 'First page to extract (1-based indexing), default to 1 pageFrom should always be same or less than pageTo' },
+        pageTo: { type: 'integer', description: 'Last page to extract (1-based indexing), default to 1 pageTo should always be same or greater than pageFrom' }
       }
     }
   },
-  required: ['path'],
-  description: 'Reads and extracts text content from a PDF file at the specified path.',
-  additionalProperties: false
+  description: 'Reads and extracts text content from a PDF file at the specified path using pdf-parse.'
 };
 
 /**
@@ -54,7 +57,7 @@ function readPdfFile(path, options = {}) {
     const pdfOptions = {};
     
     // Handle page range if specified
-    if (options.pageFrom !== undefined || options.pageTo !== undefined) {
+    if (options.all === false  && (options.pageFrom !== undefined || options.pageTo !== undefined)) {
       pdfOptions.pagerender = function(pageData) {
         const pageNum = pageData.pageIndex + 1; // Convert to 1-based indexing
         const pageFrom = options.pageFrom || 1;

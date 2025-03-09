@@ -9,12 +9,12 @@ const listDirectoriesSchema = {
     options: {
       type: "string",
       enum: ["a", "l", "al"],
-      description: "Options: 'a' for all files (including hidden), 'l' for detailed format, 'al' for both"
+      description: "Options: 'l' for detailed format, 'al' for all files (including hidden), default to l"
     },
   },
   required: ["path", "options"],
-  description: "It returns a list of files and directories in the specified path.",
   additionalProperties: false,
+  description: "It returns a list of files and directories in the specified path.",
 };
 
 /**

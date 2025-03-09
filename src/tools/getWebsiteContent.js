@@ -14,13 +14,11 @@ const getWebsiteContentSchema = {
     },
     chunkSize: {
       type: "number",
-      description: "Size of each content chunk in number of lines.",
-      default: 100,
+      description: "Size of each content chunk in number of lines. default 100",
     },
     maxChunks: {
       type: "number",
-      description: "Maximum number of chunks to return.",
-      default: 1,
+      description: "Maximum number of chunks to return. default 1",
     },
     chunkIndex: {
       type: "number",
@@ -28,9 +26,8 @@ const getWebsiteContentSchema = {
     },
     forceRefresh: {
       type: "boolean",
-      description: "Force refresh the content even if it's already stored.",
-      default: false
-    }
+      description: "Force refresh the content even if it's already stored. default false",
+    },
   },
   required: ["url", "chunkSize", "maxChunks", "chunkIndex", "forceRefresh"],
   additionalProperties: false,

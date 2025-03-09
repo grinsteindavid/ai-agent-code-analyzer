@@ -108,9 +108,9 @@ const tools = {
     execute: executeCommand,
     format: (result) => {
       if (result.status === 'error') {
-        logger.debug(` ❌ Command execution failed: ${result.error}`);
+        logger.error(` ❌ Command execution failed: ${result.error}`);
       } else {
-        logger.debug(` ✅ Command executed: ${result.command}`);
+        logger.info(` ✅ Command executed successfully: \n ${result.stdout}`);
       }
       return result;
     },
@@ -189,7 +189,8 @@ function getFunctionSchemas() {
     function: {
       name,
       description: schema.description,
-      parameters: schema
+      parameters: schema,
+      strict: true
     }
   }));
 }

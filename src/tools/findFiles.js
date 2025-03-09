@@ -7,6 +7,8 @@ const path = require('path');
  */
 const findFilesSchema = {
   type: "object",
+  required: ["pattern", "dirPath", "type", "options"],
+  additionalProperties: false,
   properties: {
     pattern: { 
       type: "string", 
@@ -27,8 +29,7 @@ const findFilesSchema = {
     },
   },
   description: "It returns a list of files and directories matching a pattern in the specified directory path.",
-  required: ["pattern", "dirPath", "type"],
-  additionalProperties: false,
+ 
 };
 
 /**

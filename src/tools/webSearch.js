@@ -6,6 +6,8 @@ const cheerio = require('cheerio');
  */
 const webSearchSchema = {
   type: "object",
+  required: ["query", "maxResults"],
+  additionalProperties: false,
   properties: {
     query: {
       type: "string",
@@ -13,12 +15,9 @@ const webSearchSchema = {
     },
     maxResults: {
       type: "number",
-      description: "Maximum number of search results to return.",
-      default: 10
+      description: "Maximum number of search results to return. default 10",
     }
   },
-  required: ["query"],
-  additionalProperties: false,
   description: "Performs a web search using DuckDuckGo Lite and returns the search results."
 };
 

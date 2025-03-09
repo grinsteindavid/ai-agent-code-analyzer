@@ -7,6 +7,8 @@ const logger = require('../utils/logger');
  */
 const executeCommandSchema = {
   type: "object",
+  required: ["command", "args", "timeout"],
+  additionalProperties: false,
   properties: {
     command: {
       type: "string",
@@ -18,16 +20,12 @@ const executeCommandSchema = {
       items: {
         type: "string"
       },
-      default: []
     },
     timeout: {
       type: "number",
-      description: "Timeout in milliseconds for the command execution.",
-      default: 30000
+      description: "Timeout in milliseconds for the command execution. default 900000ms (15 minutes)"
     }
   },
-  required: ["command"],
-  additionalProperties: false,
   description: "Executes a system command based on the user's operating system and returns the result."
 };
 

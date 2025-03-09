@@ -3,6 +3,7 @@ const fs = require('fs');
 // JSON Schema Definition
 const updateFileSchema = {
   type: 'object',
+  additionalProperties: false,
   required: ['filePath', 'content'],
   properties: {
     filePath: {
@@ -15,7 +16,7 @@ const updateFileSchema = {
     }
   },
   description: 'Updates the entire content of an existing file (respect end of lines).',
-  additionalProperties: false
+ 
 };
 
 /**
