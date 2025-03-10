@@ -50,6 +50,7 @@ const tools = {
   create_file: {
     schema: createFileSchema,
     execute: createFile,
+    requiresConfirmation: true,
     format: (result) => {
       logger.debug(` ✅ ${result.message}`);
       return result;
@@ -66,6 +67,7 @@ const tools = {
   update_file: {
     schema: updateFileSchema,
     execute: updateFile,
+    requiresConfirmation: true,
     format: (result) => {
       if (result.status === 'error') {
         logger.debug(` ❌ Error updating ${result.path}`);
@@ -130,7 +132,7 @@ async function confirmToolExecution(toolName, args) {
       {
         type: 'confirm',
         name: 'confirm',
-        message: `Do you want to execute ${toolName} with arguments: ${JSON.stringify(args)}?`,
+        message: `Do you want to execute ${toolName}${['create_file', 'update_file'].includes(toolName) ? '' : ` with arguments: ${JSON.stringify(args)}`}?`,
         default: false
       }
     ]);

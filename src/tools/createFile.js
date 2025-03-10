@@ -10,7 +10,7 @@ const createFileSchema = {
     filePath: { type: "string", description: "Path where the file should be created, absolute paths only" },
     content: { type: "string", description: "Content to write to the file, respecting end of lines" },
   },
-  description: "Creates a new file with the specified content at the given path if it does not exist. If the file already exists, it will be skipped. For summaries use showInfo tool unless user explicitly ask to write to a file.",
+  description: "Creates a new file with the specified content at the given path if it does not exist. If the file already exists, it will be skipped.",
 
 };
 

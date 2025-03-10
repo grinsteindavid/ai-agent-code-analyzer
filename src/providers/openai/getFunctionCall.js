@@ -19,7 +19,7 @@ async function getFunctionCall(options) {
     nextThought = "",
   } = options;
 
-  if(nextThought === "STOP EXECUTION") {
+  if(nextThought.toLowerCase().includes("@stop execution@")) {
     return null;
   }
   
@@ -36,7 +36,7 @@ async function getFunctionCall(options) {
         ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
   
         IMPORTANT:
-        1. If "Next thought" is equal to "STOP EXECUTION" or "stop execution" or say something about doing it then STOP and NEVER return a function call
+        1. If "Next thought" is equal to "@STOP EXECUTION@" or "@stop execution@" or say something about doing it then STOP and NEVER return a function call
         2. Return ONLY the function call with name and arguments, do not include any additional text
         3. Craft your arguments wisely based on the provided "Next thought" AND ENTIRE CONVERSATION
        ` 

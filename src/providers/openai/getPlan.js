@@ -2,6 +2,8 @@ const { OpenAI } = require("openai");
 const { setPlan, getCurrentDirectory } = require("../../utils/context");
 const { tools } = require("../../utils/tools");
 const logger = require("../../utils/logger");
+const os = require('os');
+
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -19,6 +21,7 @@ async function getPlan(options) {
   } = options;
 
   const currentDirectory = getCurrentDirectory();
+  const maxTokens = 200;
 
   try {
     
@@ -27,13 +30,11 @@ async function getPlan(options) {
       // System message with planning instructions
       {
         role: "system",
-        content: `You are a helpful assistant that generates an execution plan based on the user's query.
+        content: `You are a helpful assistant that generates an execution plan based on the user's query and will be executed in the terminal.
 
-        Operating system info:
-        ${process.platform} (${process.arch})
-
+        Operating system info: ${process.platform} (${process.arch}) ${os.release()}
+        Operating system user: ${JSON.stringify(os.userInfo())}
         Node.js version: ${process.version}
-
         Current working directory: ${currentDirectory}
         
         -----------------
@@ -52,12 +53,11 @@ async function getPlan(options) {
         - Setting up checkpoints to review progress allows you to correct course if needed
         
         IMPORTANT:
-        1. YOUR ACTIONS CAN ONLY BE COMPLETED USING the Available tools AND NOTHING ELSE.
-        2. Respond with a short goal statement summarizing what you aim to accomplish.
-        3. DO NOT SHOW A LIST OF ACTIONS OR STEPS UNLESS STRICTLY NECESSARY.
-        4. DO NOT PROVIDE ADDITIONAL INFORMATION OR EXPLANATIONS.
-        5. EXPLORE WORKING DIRECTORY IF NECESSARY TO UNDERSTAND THE WORKING DIRECTORY AND THEN TAKE FURTHER ACTIONS.
-        6. ALWAYS INCLUDE VARIABLES OR ARGUMENTS OR URLS FROM USER QUERY IN THE GOAL SO IT CAN BE USE FOR FURTHER ACTIONS.
+        1. YOUR ACTIONS CAN ONLY BE COMPLETED USING the Available tools
+        2. ALWAYS INCLUDE VARIABLES OR ARGUMENTS OR URLS FROM USER QUERY IN THE GOAL SO IT CAN BE USE FOR FURTHER ACTIONS.
+        3. Create a plan that can be executed by a bot.
+        4. Include a list of steps if needed. 
+        5. MAX TOKENS: ${maxTokens}.
         
         FORMAT EXAMPLE:
         
@@ -76,7 +76,7 @@ async function getPlan(options) {
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages,
-      max_completion_tokens: 200,
+      max_completion_tokens: maxTokens,
     });
 
     const messageContent = response.choices[0]?.message?.content;

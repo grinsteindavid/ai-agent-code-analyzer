@@ -22,7 +22,7 @@ const showInfoSchema = {
       description: 'The type of message affecting its color (info=blue, success=green, warning=yellow, error=red, debug=cyan)'
     }
   },
-  description: 'Print text to the console with color formatting. Only use it for debugging.'
+  description: 'Used to display information.'
 };
 
 /**

@@ -13,7 +13,7 @@ async function getNextThought() {
   // Get the current plan from context
   const plan = getPlan();
 
-  const maxTokens = 120;
+  const maxTokens = 200;
   
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
@@ -22,7 +22,7 @@ async function getNextThought() {
       { role: 'system', content: `
         You are a helpful assistant. \n
   
-        Always include the Current directory for paths: ${getCurrentDirectory()} \n
+       Current directory for paths: ${getCurrentDirectory()} \n
   
         You can ONLY use Available tools:
         ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
@@ -37,15 +37,16 @@ async function getNextThought() {
   
         IMPORTANT:
         1. You can ONLY use Available tools.
-        2. DO NOT CREATE OR UPDATE FILES IF NOT EXPLICITLY REQUESTED OR IF NOT EXPLICITLY IN THE EXECUTION PLAN GOAL
-        3. Always check project structure or absolute paths for files and folders before taking actions.
+        2. Always check absolute paths for files and folders.
+        3. Always check you have the necessary resources to continue.
         4. Return ONLY the next thought of how are you going to proceed to achieve the execution plan goal based on previous actions AND WHY you are going to take this action.
-        5. If you have already achieved the entire execution plan goal, return "STOP EXECUTION"
-        6. Be as short and brief as possible and do not include any additional text
-        7. Beware of the Current directory for paths and Operating system info.
-        8. DO NOT USE a list just a description of how you are going to take action.
-        9. If a tool uses arguments to iterate over content chunks, then iterate as needed to accomplish the execution plan goal.
-        10. MAX TOKENS: ${maxTokens}.
+        5. If you have already achieved the entire execution plan thoroughly, return "@STOP EXECUTION@"
+        6. DO NOT USE a list just a description of how you are going to take action.
+        7. If a tool uses arguments to iterate over content chunks, then iterate as needed to accomplish the execution plan goal.
+        8. Learn from your errors and try again.
+        9. Test your actions to ensure they are correct like testing a script or code.
+        10. You cannot interact directly with the terminal or run interactive commands such as "crontab -e" or execute shell commands that require user input.
+        11. MAX TOKENS: ${maxTokens}.
 
         YOU MUST EXPLICITLY INCLUDE THE TOOL NAME IN YOUR RESPONSE AND ABSOLUTE PATHS FOR FILES AND FOLDERS.
 
