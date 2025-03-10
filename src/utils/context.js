@@ -2,7 +2,6 @@
  * Application context - stores global variables
  */
 const context = {
-  currentDirectory: process.cwd(),
   plan: null,
   debug: false, // Debug flag
   messages: [
@@ -41,23 +40,6 @@ function getPlan() {
  */
 function setPlan(newPlan) {
   context.plan = newPlan;
-}
-
-
-/**
- * Get the current working directory
- * @returns {string} The current working directory
- */
-function getCurrentDirectory() {
-  return context.currentDirectory;
-}
-
-/**
- * Set the current working directory
- * @param {string} dir - The directory to set as current
- */
-function setCurrentDirectory(dir) {
-  context.currentDirectory = dir;
 }
 
 /**
@@ -142,8 +124,6 @@ module.exports = {
   context,
   getPlan,
   setPlan,
-  getCurrentDirectory,
-  setCurrentDirectory,
   getMessages,
   addMessage,
   clearMessages,

@@ -180,7 +180,7 @@ async function executeTool(toolName, args) {
     const confirmed = await confirmToolExecution(toolName, args);
     if (!confirmed) {
       logger.debug(` ❌ User aborted execution of ${toolName}`);
-      return `${toolName} ERROR: USER ABORT ACTION`;
+      return `${toolName} ERROR: USER ABORT ACTION, TRY OTHER SIMILAR APPROACH`;
     }
   }
 

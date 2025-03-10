@@ -1,5 +1,5 @@
 const { OpenAI } = require("openai");
-const { setPlan, getCurrentDirectory } = require("../../utils/context");
+const { setPlan } = require("../../utils/context");
 const { tools } = require("../../utils/tools");
 const logger = require("../../utils/logger");
 const os = require('os');
@@ -20,7 +20,6 @@ async function getPlan(options) {
     userInput,
   } = options;
 
-  const currentDirectory = getCurrentDirectory();
   const maxTokens = 200;
 
   try {
@@ -30,12 +29,12 @@ async function getPlan(options) {
       // System message with planning instructions
       {
         role: "system",
-        content: `You are a helpful bot assistant that generates an execution plan based on the user's query that can only be executed in this computer.
+        content: `You are a helpful bot assistant that generates an execution plan while running in this computer.
 
         Operating system info: ${process.platform} (${process.arch}) ${os.release()}
-        Operating system user: ${JSON.stringify(os.userInfo())}
+        Operating system user and home directory (global configurations): ${JSON.stringify(os.userInfo())}
         Node.js version: ${process.version}
-        Current working directory: ${currentDirectory}
+        Current working directory: ${process.cwd()}
         
         -----------------
         Available tools:

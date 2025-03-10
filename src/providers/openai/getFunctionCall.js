@@ -1,6 +1,7 @@
 const { OpenAI } = require("openai");
+const os = require('os');
 const { tools } = require("../../utils/tools");
-const { getMessages, addMessage, getCurrentDirectory} = require("../../utils/context");
+const { getMessages, addMessage} = require("../../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -29,8 +30,11 @@ async function getFunctionCall(options) {
       // System message with instructions
       { role: 'system', content: `
         You are a helpful assistant. \n
-  
-        Always include the Current directory for paths: ${getCurrentDirectory()} \n
+        
+        Operating system info: ${process.platform} (${process.arch}) ${os.release()}
+        Operating system user and home directory (global configurations): ${JSON.stringify(os.userInfo())}
+        Node.js version: ${process.version}
+        Current working directory: ${process.cwd()}
   
         You can ONLY use Available tools:
         ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}

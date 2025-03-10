@@ -1,6 +1,7 @@
 const { OpenAI } = require("openai");
+const os = require('os');
 const { tools } = require("../../utils/tools");
-const { getMessages, getCurrentDirectory, getPlan } = require("../../utils/context");
+const { getMessages, getPlan } = require("../../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -22,7 +23,10 @@ async function getNextThought() {
       { role: 'system', content: `
         You are a helpful bot assistant. Focus on automation of tasks so the user can be productive.\n
   
-       Current directory for paths: ${getCurrentDirectory()} \n
+       Current directory for paths: ${process.cwd()} \n
+       Operating system info: ${process.platform} (${process.arch}) ${os.release()}
+       Operating system user and home directory (global configurations): ${JSON.stringify(os.userInfo())}
+       Node.js version: ${process.version}
   
         You can ONLY use Available tools:
         ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
@@ -39,17 +43,16 @@ async function getNextThought() {
         1. You can ONLY use Available tools.
         2. Always check absolute paths for files and folders.
         3. Always check you have the necessary resources to continue.
-        4. Return ONLY the next thought of how are you going to proceed to achieve the execution plan goal based on previous actions AND WHY you are going to take this action.
-        5. If you have already achieved the entire execution plan thoroughly, return "@STOP EXECUTION@"
-        6. DO NOT USE a list just a description of how you are going to take action.
-        7. If a tool uses arguments to iterate over content chunks, then iterate over it as needed to accomplish the execution plan goal.
-        8. Learn from your errors and try again.
+        4. Learn from your errors and TRY DIFFERENT APPROACHES AS MANY TIMES AS NEEDED.
+        5. Return ONLY the next thought of how are you going to proceed to achieve the execution plan goal based on previous actions AND WHY you are going to take this action.
+        6. If you have already achieved the entire execution plan thoroughly, return "@STOP EXECUTION@"
+        7. DO NOT USE a list just a description of how you are going to take action.
+        8. If a tool uses arguments to iterate over chunks of content then iterate over it as needed to accomplish the execution plan goal.
         9. Test your actions to ensure they are correct like testing a script or code or configurations before going to next steps.
-        10. You cannot run interactive commands such as "crontab -e" but you can run commands that do not require user interaction.
+        10. Keep user operating system in mind for directories, paths, commands, configurations etc.
         11. MAX TOKENS: ${maxTokens}.
 
         YOU MUST EXPLICITLY INCLUDE THE TOOL NAME IN YOUR RESPONSE AND ABSOLUTE PATHS FOR FILES AND FOLDERS.
-
         Examples of correctly formatted responses:
         - "I'll proceed by searching for specific keywords related to market trends in the text files, specifically "Market_Search_Results.txt", "Stock_Market_News_Summary.txt", and "US_Stock_Market_News.md". This is necessary to compile the relevant information for the summary report later. I'll use the "grep_search" tool for this purpose."
         - "I'll compile the matches found from the "Market_Search_Results.txt", "Stock_Market_News_Summary.txt", and "US_Stock_Market_News.md" files into a summary format. This step is crucial to create a report that encapsulates the relevant information gathered from the previous search. Once compiled, I'll use the "create_file" tool to save this summary report to a new text file."

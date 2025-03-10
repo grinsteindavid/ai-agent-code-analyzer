@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const logger = require('../utils/logger');
 
 /**
  * JSON Schema for find_files function parameters.
@@ -106,12 +107,25 @@ function findFiles(pattern, dirPath = ".", options = "", type = "") {
       const parsedOptions = parseOptions(options);
       const patternRegex = globToRegExp(pattern);
       const results = [];
+      const errors = {
+        accessErrors: [],
+        traverseErrors: []
+      };
       
       // Define the recursive function to traverse directories
       function traverseDirectory(currentPath, depth = 0) {
         if (depth > parsedOptions.maxDepth) return;
         
-        const entries = fs.readdirSync(currentPath, { withFileTypes: true });
+        let entries = [];
+        try {
+          entries = fs.readdirSync(currentPath, { withFileTypes: true });
+        } catch (err) {
+          // Handle permission errors or other file system errors
+          const errorMsg = `Could not access directory ${currentPath}: ${err.message}`;
+          logger.debug(errorMsg);
+          errors.accessErrors.push(errorMsg);
+          return; // Skip this directory and continue with others
+        }
         
         for (const entry of entries) {
           const entryPath = path.join(currentPath, entry.name);
@@ -126,14 +140,27 @@ function findFiles(pattern, dirPath = ".", options = "", type = "") {
           
           // Recursively traverse subdirectories
           if (entry.isDirectory()) {
-            traverseDirectory(entryPath, depth + 1);
+            try {
+              traverseDirectory(entryPath, depth + 1);
+            } catch (err) {
+              // Handle any errors during directory traversal
+              const errorMsg = `Error traversing ${entryPath}: ${err.message}`;
+              logger.debug(errorMsg);
+              errors.traverseErrors.push(errorMsg);
+            }
           }
         }
       }
       
       // Start the traversal from the specified path
       traverseDirectory(dirPath);
-      resolve({ files: results, metadata: { total: results.length } });
+      resolve({ 
+        files: results, 
+        metadata: { 
+          total: results.length,
+          errors: errors.accessErrors.length > 0 || errors.traverseErrors.length > 0 ? errors : undefined
+        } 
+      });
       
     } catch (error) {
       reject({ error: error.message });
