@@ -42,10 +42,10 @@ async function getNextThought() {
         4. Return ONLY the next thought of how are you going to proceed to achieve the execution plan goal based on previous actions AND WHY you are going to take this action.
         5. If you have already achieved the entire execution plan thoroughly, return "@STOP EXECUTION@"
         6. DO NOT USE a list just a description of how you are going to take action.
-        7. If a tool uses arguments to iterate over content chunks, then iterate as needed to accomplish the execution plan goal.
+        7. If a tool uses arguments to iterate over content chunks, then iterate over it as needed to accomplish the execution plan goal.
         8. Learn from your errors and try again.
-        9. Test your actions to ensure they are correct like testing a script or code.
-        10. You cannot interact directly with the terminal or run interactive commands such as "crontab -e" or execute shell commands that require user input.
+        9. Test your actions to ensure they are correct like testing a script or code or configurations.
+        10. You cannot run interactive commands such as "crontab -e" but you can run commands that do not require user interaction.
         11. MAX TOKENS: ${maxTokens}.
 
         YOU MUST EXPLICITLY INCLUDE THE TOOL NAME IN YOUR RESPONSE AND ABSOLUTE PATHS FOR FILES AND FOLDERS.

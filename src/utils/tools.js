@@ -9,6 +9,7 @@ const { showInfo, showInfoSchema } = require('../tools/showInfo');
 const { readPdfFile, readPdfFileSchema } = require('../tools/readPdfFile');
 const { getWebsiteContent, getWebsiteContentSchema } = require('../tools/getWebsiteContent');
 const { executeCommand, executeCommandSchema } = require('../tools/executeCommand');
+const { askUser, askUserSchema } = require('../tools/askUser');
 const { validateSchema } = require('./validation');
 const logger = require('./logger');
 const inquirer = require('inquirer');
@@ -117,6 +118,18 @@ const tools = {
       return result;
     },
     requiresConfirmation: true
+  },
+  ask_user: {
+    schema: askUserSchema,
+    execute: askUser,
+    format: (result) => {
+      if (result.status === 'error') {
+        logger.error(` ❌ Failed to get user input: ${result.error}`);
+        return result;
+      }
+      logger.debug(` ✅ Received user input`);
+      return result;
+    }
   },
 };
 
