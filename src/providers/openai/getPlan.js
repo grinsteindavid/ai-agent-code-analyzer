@@ -30,7 +30,7 @@ async function getPlan(options) {
       // System message with planning instructions
       {
         role: "system",
-        content: `You are a helpful bot assistant that generates an execution plan based on the user's query and will be executed in the terminal.
+        content: `You are a helpful bot assistant that generates an execution plan based on the user's query that can only be executed in this computer.
 
         Operating system info: ${process.platform} (${process.arch}) ${os.release()}
         Operating system user: ${JSON.stringify(os.userInfo())}
@@ -55,7 +55,7 @@ async function getPlan(options) {
         IMPORTANT:
         1. YOUR ACTIONS CAN ONLY BE COMPLETED USING the Available tools
         2. ALWAYS INCLUDE VARIABLES OR ARGUMENTS OR URLS FROM USER QUERY IN THE GOAL SO IT CAN BE USE FOR FURTHER ACTIONS.
-        3. Create a plan that can be executed by a you (a bot running in the computer).
+        3. Create a plan that can be executed by you (a bot running in the computer).
         4. Include a list of steps if needed. 
         5. MAX TOKENS: ${maxTokens}.
         

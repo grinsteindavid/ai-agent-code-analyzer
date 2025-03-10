@@ -20,7 +20,7 @@ async function getNextThought() {
     max_completion_tokens: maxTokens,
     messages: [
       { role: 'system', content: `
-        You are a helpful assistant. \n
+        You are a helpful bot assistant. Focus on automation of tasks so the user can be productive.\n
   
        Current directory for paths: ${getCurrentDirectory()} \n
   
@@ -44,7 +44,7 @@ async function getNextThought() {
         6. DO NOT USE a list just a description of how you are going to take action.
         7. If a tool uses arguments to iterate over content chunks, then iterate over it as needed to accomplish the execution plan goal.
         8. Learn from your errors and try again.
-        9. Test your actions to ensure they are correct like testing a script or code or configurations.
+        9. Test your actions to ensure they are correct like testing a script or code or configurations before going to next steps.
         10. You cannot run interactive commands such as "crontab -e" but you can run commands that do not require user interaction.
         11. MAX TOKENS: ${maxTokens}.
 

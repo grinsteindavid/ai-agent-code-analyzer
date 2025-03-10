@@ -26,7 +26,7 @@ const executeCommandSchema = {
       description: "Timeout in milliseconds for the command execution. default 900000ms (15 minutes)"
     }
   },
-  description: "Executes a system command based on the user's operating system and returns the result. Beware to try Non-Interactive Mode because you are a bot."
+  description: "Executes a system command based on the user's operating system and returns the result. Cannot execute interactive commands but it can run commands that do not require user interaction"
 };
 
 /**
