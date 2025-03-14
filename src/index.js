@@ -49,9 +49,9 @@ const generatePlan = async (options) => {
 
 // AI analyze command
 program
-  .command("analyze")
-  .description("Analyze your codebase using AI")
-  .requiredOption("-q, --query <query>", "Question about your codebase")
+  .command("do")
+  .description("Do a task")
+  .requiredOption("-q, --query <query>", "Task to perform")
   .option("-p, --provider <provider>", "AI provider to use (openai)", "openai")
   .option("-d, --debug", "Enable debug mode", false)
   .action(async (options) => {

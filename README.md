@@ -42,8 +42,8 @@ The AI Agent is an AI-powered CLI tool that uses OpenAI's GPT models to assist w
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/grinsteindavid/ai-agent-code-analyzer.git
-   cd autonomous-code-analyzer
+   git clone https://github.com/grinsteindavid/collaborative-ai
+   cd collaborative-ai
    ```
 
 2. Install dependencies:
@@ -69,57 +69,57 @@ The AI Agent is an AI-powered CLI tool that uses OpenAI's GPT models to assist w
 
 6. Check the installation:
    ```bash
-   which code-analyzer
-   code-analyzer --version
+   which assistantQ
+   assistantQ --version
    ```
 
 ## Usage
 
 ```bash
 # Basic usage - ask for help with any task
-node src/index.js analyze -q "help me accomplish a task"
+node src/index.js do -q "help me accomplish a task"
 
 # Specify AI provider (default: openai)
-code-analyzer analyze --query "What files are in src folder?" --provider openai
+assistantQ do --query"What files are in src folder?" --provider openai
 
 # Use Google's Gemini model instead of OpenAI
-code-analyzer analyze --query "What files are in src folder?" --provider gemini
+assistantQ do --query"What files are in src folder?" --provider gemini
 
 # Execute system commands
-node src/index.js analyze --query "run ls -la and summarize the output"
+node src/index.js do --query"run ls -la and summarize the output"
 
 # Read file contents
-node src/index.js analyze --query "read this file package.json"
+node src/index.js do --query"read this file package.json"
 
 # Perform web searches and generate structured output
-code-analyzer analyze --query "do a web search for top 5 social medias and create a json with that info"
+assistantQ do --query"do a web search for top 5 social medias and create a json with that info"
 
 # Perform domain-specific web search
-node src/index.js analyze --query "search for nodejs best practices on github.com"
+node src/index.js do --query"search for nodejs best practices on github.com"
 
 # Find specific patterns in your code
-node src/index.js analyze --query "find all files that import axios"
+node src/index.js do --query"find all files that import axios"
 
 # Get insights about your codebase architecture
-code-analyzer analyze --query "explain the directory structure and key components"
+assistantQ do --query"explain the directory structure and key components"
 
 # Create documentation based on your code
-node src/index.js analyze --query "generate documentation for the tools directory"
+node src/index.js do --query"generate documentation for the tools directory"
 
 # Update an existing file with new content
-code-analyzer analyze --query "update package.json to add axios dependency"
+assistantQ do --query"update package.json to add axios dependency"
 
 # Extract content from a PDF file
-node src/index.js analyze --query "extract text from document.pdf"
+node src/index.js do --query"extract text from document.pdf"
 
 # Extract specific pages from a PDF file
-code-analyzer analyze --query "read pages 5-10 from my-documentation.pdf"
+assistantQ do --query"read pages 5-10 from my-documentation.pdf"
 
 # Search for specific content within a PDF file
-code-analyzer analyze --query "find mentions of 'API authentication' in documentation.pdf"
+assistantQ do --query"find mentions of 'API authentication' in documentation.pdf"
 
 # Summarize the content of a PDF file
-code-analyzer analyze --query "summarize the key points from research-paper.pdf"
+assistantQ do --query"summarize the key points from research-paper.pdf"
 ```
 
 ## Options
@@ -320,7 +320,7 @@ The AI Agent demonstrates an effective architecture for AI-powered CLI tools. By
 ## Example Output
 
 ```bash
-code-analyzer analyze --query "how many jpeg and pdf do i have in the old dir"
+assistantQ do --query"how many jpeg and pdf do i have in the old dir"
 ℹ️  Generating plan...
 ℹ️  I aim to determine the number of JPEG and PDF files in the "old" directory. First, I will explore the working directory to locate the "old" directory.
 
@@ -354,7 +354,7 @@ This approach effectively combined directory exploration and file discovery to m
 ---------------------------------------------
 
 ```bash
-analyze --query "explain codebase"
+assistantQ do --query"explain codebase"
 ℹ️  Generating plan...
 ℹ️  The goal is to explain the codebase by examining its structure and ideally understanding the main components and their functionalities. I will start by exploring the working directory to get an overview of the files and directories present. 
 
@@ -362,17 +362,17 @@ Let's proceed with that.
 
 ℹ️  I will list the files in the current directory using the 'list_directories' tool.
 
-ℹ️  I will examine the 'README.md' file in '/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer' to gain insights into the codebase and its main components using the 'read_file_content' tool.
+ℹ️  I will examine the 'README.md' file in '/Users/looper/workshop/ai-agent-terminal/autonomous-assistantQ' to gain insights into the codebase and its main components using the 'read_file_content' tool.
 
-ℹ️  I will explore the 'src' directory in '/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer' to gather more information about the codebase using the 'list_directories' tool.
+ℹ️  I will explore the 'src' directory in '/Users/looper/workshop/ai-agent-terminal/autonomous-assistantQ' to gather more information about the codebase using the 'list_directories' tool.
 
-ℹ️  I will check the 'providers' directory in '/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src' to further analyze the codebase structure using the 'list_directories' tool.
+ℹ️  I will check the 'providers' directory in '/Users/looper/workshop/ai-agent-terminal/collaborative-ai/src' to further analyze the codebase structure using the 'list_directories' tool.
 
-ℹ️  I will explore the 'openai' directory in '/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src/providers' to gather more information about the codebase using the 'list_directories' tool.
+ℹ️  I will explore the 'openai' directory in '/Users/looper/workshop/ai-agent-terminal/collaborative-ai/src/providers' to gather more information about the codebase using the 'list_directories' tool.
 
-ℹ️  I will check the 'tools' directory in '/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src' to gather more information about the codebase using the 'list_directories' tool.
+ℹ️  I will check the 'tools' directory in '/Users/looper/workshop/ai-agent-terminal/collaborative-ai/src' to gather more information about the codebase using the 'list_directories' tool.
 
-ℹ️  I will check the 'utils' directory in '/Users/looper/workshop/ai-agent-terminal/autonomous-code-analyzer/src' to gather more information about the codebase using the 'list_directories' tool.
+ℹ️  I will check the 'utils' directory in '/Users/looper/workshop/ai-agent-terminal/collaborative-ai/src' to gather more information about the codebase using the 'list_directories' tool.
 
 ℹ️  I have gathered the structure and key components of the codebase. I will now stop execution.
 

@@ -1,10 +1,10 @@
 {
-  "name": "autonomous-code-analyzer",
+  "name": "collaborative-ai",
   "version": "1.0.0",
-  "description": "AI-powered code analyzer using OpenAI GPT-4",
+  "description": "AI-powered terminal assistant using OpenAI GPT-4 or Gemini 2.0 Flash",
   "main": "src/index.js",
   "bin": {
-    "code-analyzer": "src/index.js"
+    "assistantQ": "src/index.js"
   },
   "scripts": {
     "start": "node src/index.js"
@@ -13,6 +13,8 @@
     "code-analysis",
     "openai",
     "gpt-4",
+    "gemini",
+    "agents",
     "ai",
     "code-search"
   ],
