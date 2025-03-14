@@ -103,32 +103,33 @@ program
           
           const result = await executeTool(functionCall.name, functionCall.arguments);
           addMessage('user', `${result}`);
-        } else {
-          // Ask the user if they want to continue or finish
-          const { action } = await inquirer.prompt([
+          continue;
+        }
+
+        // Ask the user if they want to continue or finish
+        const { action } = await inquirer.prompt([
+          {
+            type: 'list',
+            name: 'action',
+            message: 'The current goal looks finished. Would you like to add another task to the current conversation or get a summary?',
+            choices: ['Add task', 'Get summary', 'Finish'],
+          },
+        ]);
+        
+        if (action === 'Add task') {
+          // User wants to continue, ask for additional input
+          const { query } = await inquirer.prompt([
             {
-              type: 'list',
-              name: 'action',
-              message: 'The current goal looks finished. Would you like to add another task to the current conversation or get a summary?',
-              choices: ['Add task', 'Get summary', 'Finish'],
+              type: 'input',
+              name: 'query',
+              message: 'Please provide the new task:',
             },
           ]);
-          
-          if (action === 'Add task') {
-            // User wants to continue, ask for additional input
-            const { query } = await inquirer.prompt([
-              {
-                type: 'input',
-                name: 'query',
-                message: 'Please provide the new task:',
-              },
-            ]);
-            await generatePlan({ query, includePastConversation: true, selectedProvider });
-            functionCall = true;
-          } else if (action === 'Finish') {
-            // User wants to finish, break the loop
-            process.exit(0);
-          }
+          await generatePlan({ query, includePastConversation: true, selectedProvider });
+          functionCall = true;
+        } else if (action === 'Finish conversation') {
+          // User wants to finish, break the loop
+          process.exit(0);
         }
       } catch (error) {
         logger.error(`Retrying... ${error}`)
