@@ -1,4 +1,4 @@
-# Autonomous Code Analyzer: AI-Powered Codebase Intelligence
+# AI Agent: AI-Powered Terminal Assistant for Any Task
 
 ## Project Timeline
 
@@ -9,24 +9,27 @@
 
 ## Overview
 
-The Autonomous Code Analyzer is an AI-powered CLI tool that uses OpenAI's GPT models to analyze codebases, search for specific patterns, and perform operations on files. The system follows an agent-based architecture where the AI creates a plan, executes a series of tools according to that plan, and then summarizes the findings with detailed action summaries for each executed step.
+The AI Agent is an AI-powered CLI tool that uses OpenAI's GPT models to assist with any task you need to perform on your computer. While initially designed for code analysis, it now serves as a general-purpose terminal assistant that can analyze codebases, search for specific patterns, perform operations on files, extract content from PDFs, search the web, and more. The system follows an agent-based architecture where the AI creates a plan, executes a series of tools according to that plan, and then summarizes the findings with detailed action summaries for each executed step.
 
 ## Features
 
-- **Natural Language Understanding**: Ask questions about your codebase in plain English
+- **Natural Language Understanding**: Ask questions about anything on your computer in plain English
+- **Intelligent Task Assistance**: Get help with any task using your computer's resources
 - **Intelligent Codebase Analysis**: Get insights about your code structure, patterns, and organization
 - **Multiple AI Providers**: Choose between OpenAI and Google's Gemini models
   - OpenAI: Leveraging GPT-4o-mini for powerful code analysis capabilities
-  - Gemini: Using Google's Gemini 1.5 Flash for efficient function calling and analysis
+  - Gemini: Using Google's Gemini 2.0 Flash for efficient function calling and analysis
 - **Centralized System Prompts**: Consistent prompting architecture across AI providers
   - Modular system prompt design for better maintainability
   - Provider-agnostic implementations for easier extension
 - **Web Research Integration**: Search the web directly from your terminal with DuckDuckGo Lite
   - Customizable search parameters including number of results
   - Structured results with titles, URLs, and descriptions
-- **PDF Document Processing**: Extract and analyze text content from PDF files
+- **Comprehensive PDF Document Processing**: Extract and analyze text content from PDF files
   - Specify page ranges to extract content from specific pages
-  - Get metadata about PDFs including page count and information
+  - Get metadata about PDFs including page count and document information
+  - Search for specific content within PDF documents
+  - Extract and summarize key information from PDF files
 - **File Operations**: Find files, read content, and create new files - all through conversational commands
 - **Pattern Search**: Use grep-like functionality through simple queries
 - **Execution Planning**: Advanced AI planning capabilities to break down complex requests into manageable steps
@@ -73,8 +76,8 @@ The Autonomous Code Analyzer is an AI-powered CLI tool that uses OpenAI's GPT mo
 ## Usage
 
 ```bash
-# Basic usage - ask a question about your codebase
-node src/index.js analyze -q "explain codebase"
+# Basic usage - ask for help with any task
+node src/index.js analyze -q "help me accomplish a task"
 
 # Specify AI provider (default: openai)
 code-analyzer analyze --query "What files are in src folder?" --provider openai
@@ -111,6 +114,12 @@ node src/index.js analyze --query "extract text from document.pdf"
 
 # Extract specific pages from a PDF file
 code-analyzer analyze --query "read pages 5-10 from my-documentation.pdf"
+
+# Search for specific content within a PDF file
+code-analyzer analyze --query "find mentions of 'API authentication' in documentation.pdf"
+
+# Summarize the content of a PDF file
+code-analyzer analyze --query "summarize the key points from research-paper.pdf"
 ```
 
 ## Options
@@ -148,7 +157,7 @@ code-analyzer analyze --query "read pages 5-10 from my-documentation.pdf"
        - `getSummary`: Summarizes all findings after execution completes
 
    - **Gemini Provider**
-     - Handles communication with Google's Generative AI APIs using Gemini 1.5 Flash
+     - Handles communication with Google's Generative AI APIs using Gemini 2.0 Flash
      - Uses optimized schema handling for function calling
      - Implements the same four key functions with Gemini-specific optimizations
 
@@ -306,7 +315,7 @@ The show info tool (`show_info`) enhances the user experience:
 
 ## Conclusion
 
-The Autonomous Code Analyzer demonstrates an effective architecture for AI-powered CLI tools. By separating planning, execution, and summarization into distinct phases, it provides a structured approach to solving complex code analysis tasks. The use of tool abstractions allows for easy extension with new capabilities while maintaining a consistent interface for the AI to interact with.
+The AI Agent demonstrates an effective architecture for AI-powered CLI tools. By separating planning, execution, and summarization into distinct phases, it provides a structured approach to solving complex code analysis tasks. The use of tool abstractions allows for easy extension with new capabilities while maintaining a consistent interface for the AI to interact with.
 
 ## Example Output
 
@@ -367,13 +376,13 @@ Let's proceed with that.
 
 ℹ️  I have gathered the structure and key components of the codebase. I will now stop execution.
 
-✅ Analysis of the Autonomous Code Analyzer codebase has been completed. The directory structure and key components have been outlined.
+✅ Analysis of the AI Agent codebase has been completed. The directory structure and key components have been outlined.
 ℹ️  Generating summary... 
 
-ℹ️  ### Summary of Analysis on Autonomous Code Analyzer Codebase
+ℹ️  ### Summary of Analysis on AI Agent Codebase
 
 **Objective & Scope:**
-The goal was to understand the structure and key components of the Autonomous Code Analyzer, an AI-powered CLI tool designed to analyze codebases.
+The goal was to understand the structure and key components of the AI Agent, an AI-powered CLI tool designed to analyze codebases.
 
 **Key Findings / Insights:**
 - **Structure Overview:** The codebase primarily consists of several directories—`src`, `providers`, `tools`, and `utils`, with critical components for AI execution scattered throughout.
@@ -387,5 +396,5 @@ The goal was to understand the structure and key components of the Autonomous Co
 2. Delved into the `src` directory and its subdirectories: `providers`, `tools`, and `utils`, systematically reviewing their contents to understand functionality.
 
 **Conclusion & Recommendations:**
-The Autonomous Code Analyzer exemplifies a robust architecture for AI-enhanced code analysis. It is modular and extensible, making it suited for integration with additional tools or AI capabilities. Future efforts should focus on expanding functionality
+The AI Agent exemplifies a robust architecture for AI-enhanced code analysis. It is modular and extensible, making it suited for integration with additional tools or AI capabilities. Future efforts should focus on expanding functionality
 ```
