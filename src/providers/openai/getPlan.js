@@ -1,5 +1,5 @@
 const { OpenAI } = require("openai");
-const { setPlan, getMessages } = require("../../utils/context");
+const { setPlan, getMessages, addMessage } = require("../../utils/context");
 const { tools } = require("../../utils/tools");
 const logger = require("../../utils/logger");
 const os = require('os');
@@ -98,7 +98,7 @@ async function getPlan(options) {
     
     if (Boolean(messageContent)) {
         // Save the generated plan to context
-        setPlan(messageContent);
+        addMessage('user', messageContent);
       
         return messageContent
     } else {

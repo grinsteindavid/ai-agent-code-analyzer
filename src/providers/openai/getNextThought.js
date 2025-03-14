@@ -1,7 +1,7 @@
 const { OpenAI } = require("openai");
 const os = require('os');
 const { tools } = require("../../utils/tools");
-const { getMessages, getPlan } = require("../../utils/context");
+const { getMessages } = require("../../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -11,8 +11,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
  * @returns {Object} - Object containing the next thought from the AI
  */
 async function getNextThought() {
-  // Get the current plan from context
-  const plan = getPlan();
+
 
   const maxTokens = 200;
   
@@ -74,9 +73,9 @@ async function getNextThought() {
         - "I'll proceed by searching for specific keywords related to market trends in the text files, specifically "Market_Search_Results.txt", "Stock_Market_News_Summary.txt", and "US_Stock_Market_News.md". This is necessary to compile the relevant information for the summary report later. I'll use the "grep_search" tool for this purpose."
         - "I'll compile the matches found from the "Market_Search_Results.txt", "Stock_Market_News_Summary.txt", and "US_Stock_Market_News.md" files into a summary format. This step is crucial to create a report that encapsulates the relevant information gathered from the previous search. Once compiled, I'll use the "create_file" tool to save this summary report to a new text file."
         - "I'll now update the content of the newly created "Market_Trends_Summary_Report.txt" with the compiled matches regarding market trends to complete the summary report. This is the final step to ensure the report reflects the gathered information accurately. I'll use the "update_file" tool for this action."
-        ` },
-      { role: 'user', content: `Execution plan: ${plan}` },
-      ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
+        `
+      },
+      ...getMessages().map(msg => ({ role: msg.role, content: msg.content })),
     ],
   });
   
