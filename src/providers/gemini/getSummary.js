@@ -22,7 +22,7 @@ async function getSummary(options = {}) {
     
     // Create the model
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-flash-2.0o",
+      model: "gemini-flash-2.0",
       generationConfig: {
         temperature: 0.2,
         maxOutputTokens: parseInt(maxTokens),

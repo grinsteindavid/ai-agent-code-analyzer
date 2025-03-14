@@ -1,5 +1,5 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const { setPlan, getMessages, addMessage } = require("../../utils/context");
+const { getMessages, addMessage } = require("../../utils/context");
 const { tools } = require("../../utils/tools");
 const logger = require("../../utils/logger");
 const os = require('os');
