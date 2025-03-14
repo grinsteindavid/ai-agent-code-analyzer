@@ -1,5 +1,6 @@
 const { OpenAI } = require("openai");
-const { getMessages, addMessage, getPlan } = require("../../utils/context");
+const { getMessages, addMessage } = require("../../utils/context");
+const { getSummaryPrompt } = require("../system-prompts");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -17,42 +18,21 @@ async function getSummary(options = {}) {
   } = options;
 
   try {
-    // Get the plan from context
-    const plan = getPlan();
+
+    const chatHistory = getMessages().map(msg => ({ role: msg.role, content: msg.content }));
+    
+    // Get system prompt
+    const systemPrompt = getSummaryPrompt(maxTokens);
     
     // Create messages array for the API call
     const messages = [
       // System message with instructions
       { 
         role: 'system', 
-        content: `You are a helpful assistant.
-        
-        Key points to include:
-        - Objective & Scope.
-        - Key Findings / Insights.
-        - Steps Taken / Process Overview.
-        - Conclusion & Recommendations.
-        - Supporting Data / References (if needed).
-
-        IMPORTANT:
-        1. Review the conversation history and how it aligned with the original execution plan. 
-        2. EXPLAIN WHY each tool was used to accomplish the goal.
-        3. Provide metadata if needed.
-        4. Keep your summary professional.
-        5. If "show_info" tool was used then DO NOT SUMMARIZE THE SAME DATA, AVOID DUPLICATION.
-        6. Max ${parseInt(maxTokens)} tokens.
-        
-        YOU MUST EXPLICITLY INCLUDE FOLLOWING IN YOUR RESPONSE:
-        - THE TOOL NAME.
-        - ABSOLUTE PATHS FOR FILES AND FOLDERS.
-        - URLS.
-        - VARIABLES OR ARGUMENTS FROM USER QUERY.
-
-        `
+        content: systemPrompt
       },
-      { role: 'user', content: `Execution plan: ${plan}` },
       // Include conversation history
-      ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
+      ...chatHistory
     ];
     
     const response = await openai.chat.completions.create({

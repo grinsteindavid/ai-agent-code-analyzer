@@ -1,7 +1,6 @@
 const { OpenAI } = require("openai");
-const os = require('os');
-const { tools } = require("../../utils/tools");
 const { getMessages, addMessage} = require("../../utils/context");
+const { getFunctionCallPrompt } = require("../system-prompts");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -27,29 +26,8 @@ async function getFunctionCall(options) {
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
-      // System message with instructions
-      { role: 'system', content: `
-        You are a helpful assistant. \n
-        
-        ** Operating system info: ${process.platform} (${process.arch}) ${os.release()} ** 
-        ** Operating system user home directory (global configurations): ${os.userInfo().homedir} ** 
-        ** Operating system username: ${os.userInfo().username} ** 
-        ** Operating system shell: ${os.userInfo().shell} ** 
-        ** Node.js version: ${process.version} ** 
-        ** Current working directory: ${process.cwd()} ** 
-        
-        -----------------
-        You can ONLY use Available tools:
-        ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('** \n')}
-        -----------------
-  
-        IMPORTANT:
-        1. If "Next action" is equal to "@STOP EXECUTION@" or "@stop execution@" or say something about doing it then STOP and NEVER return a function call.
-        2. Return ONLY the function call with name and arguments, do not include any additional text.
-        3. Craft your arguments wisely based on the provided "Next action" AND ENTIRE CONVERSATION.
-        4. when creating or updating files, always check file content before updating to avoid errors and keep correct format also structure.
-       ` 
-      },
+      // Use system prompt
+      { role: 'system', content: getFunctionCallPrompt() },
       // Include conversation history
       ...getMessages().map(msg => ({ role: msg.role, content: msg.content })),
       { role: 'assistant', content: `Next action: ${nextThought}` },
