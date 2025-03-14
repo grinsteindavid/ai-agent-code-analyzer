@@ -112,7 +112,7 @@ program
             type: 'list',
             name: 'action',
             message: 'The current goal looks finished. Would you like to add another task to the current conversation or get a summary?',
-            choices: ['Add task', 'Get summary', 'Finish'],
+            choices: ['Add task', 'Get summary', 'Finish conversation'],
           },
         ]);
         
