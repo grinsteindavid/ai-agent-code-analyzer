@@ -9,7 +9,7 @@ const readFileSchema = {
     path: { type: "string", description: "Path of the file to read" },
     encoding: { type: "string", description: "Encoding type, default utf-8" },
   },
-  description: "Reads and returns the contents of a file at the specified path, respecting end of lines using fs.readFile.",
+  description: "Reads and returns the contents of a file at the specified path.",
 };
 
 // Function to read a file

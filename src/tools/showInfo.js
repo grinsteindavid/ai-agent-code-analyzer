@@ -22,7 +22,7 @@ const showInfoSchema = {
       description: 'The type of message affecting its color (info=blue, success=green, warning=yellow, error=red, debug=cyan)'
     }
   },
-  description: 'Used to display information.'
+  description: 'It displays information to the user by the AI agent.'
 };
 
 /**

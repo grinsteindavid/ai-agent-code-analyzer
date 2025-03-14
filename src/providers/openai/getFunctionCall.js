@@ -31,13 +31,17 @@ async function getFunctionCall(options) {
       { role: 'system', content: `
         You are a helpful assistant. \n
         
-        Operating system info: ${process.platform} (${process.arch}) ${os.release()}
-        Operating system user and home directory (global configurations): ${JSON.stringify(os.userInfo())}
-        Node.js version: ${process.version}
-        Current working directory: ${process.cwd()}
-  
+        ** Operating system info: ${process.platform} (${process.arch}) ${os.release()} ** 
+        ** Operating system user home directory (global configurations): ${os.userInfo().homedir} ** 
+        ** Operating system username: ${os.userInfo().username} ** 
+        ** Operating system shell: ${os.userInfo().shell} ** 
+        ** Node.js version: ${process.version} ** 
+        ** Current working directory: ${process.cwd()} ** 
+        
+        -----------------
         You can ONLY use Available tools:
-        ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('\n')}
+        ${Object.entries(tools).map(([name, {schema}]) => `** ${name}: ${schema.description}`).join('** \n')}
+        -----------------
   
         IMPORTANT:
         1. If "Next thought" is equal to "@STOP EXECUTION@" or "@stop execution@" or say something about doing it then STOP and NEVER return a function call

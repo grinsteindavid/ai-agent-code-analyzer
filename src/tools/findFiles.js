@@ -122,7 +122,6 @@ function findFiles(pattern, dirPath = ".", options = "", type = "") {
         } catch (err) {
           // Handle permission errors or other file system errors
           const errorMsg = `Could not access directory ${currentPath}: ${err.message}`;
-          logger.debug(errorMsg);
           errors.accessErrors.push(errorMsg);
           return; // Skip this directory and continue with others
         }

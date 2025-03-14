@@ -70,7 +70,7 @@ const grepSearchSchema = {
       description: "Maximum buffer size in bytes for reading files (default: 1048576 / 1mb).",
     }
   },
-  description: "(GREP) Search and find text patterns in files, filtering lines from input based on a specified pattern."
+  description: "Search and find text patterns in files, filtering lines by a specified pattern."
 };
 
 /**
@@ -98,6 +98,7 @@ function grepSearch(SearchDirectory, Query, Includes, MatchPerLine, CaseInsensit
       const results = [];
       let fileCount = 0;
       let searchComplete = false;
+      const errors = []; // Track directory access errors
       
       // Walk directory recursively and search files
       await walkDir(SearchDirectory);
@@ -110,6 +111,7 @@ function grepSearch(SearchDirectory, Query, Includes, MatchPerLine, CaseInsensit
           originalTotalMatches: results.length,
           wasLimitedByMaxResultsOption,
           searchCommand: `Native Node.js search in ${SearchDirectory} for "${Query}"`,
+          errors: errors.length > 0 ? errors : undefined // Include errors if any occurred
         }
       });
       
@@ -153,8 +155,10 @@ function grepSearch(SearchDirectory, Query, Includes, MatchPerLine, CaseInsensit
             }
           }
         } catch (err) {
-          // Skip inaccessible directories
-          console.error(`Error reading directory ${dirPath}: ${err.message}`);
+          // Skip inaccessible directories but track the error
+          const errorInfo = { path: dirPath, message: err.message };
+          errors.push(errorInfo);
+          logger.debug(`Error reading directory ${dirPath}: ${err.message}`);
         }
       }
       

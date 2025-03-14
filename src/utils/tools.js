@@ -119,18 +119,18 @@ const tools = {
     },
     requiresConfirmation: true
   },
-  ask_user: {
-    schema: askUserSchema,
-    execute: askUser,
-    format: (result) => {
-      if (result.status === 'error') {
-        logger.error(` ❌ Failed to get user input: ${result.error}`);
-        return result;
-      }
-      logger.debug(` ✅ Received user input`);
-      return result;
-    }
-  },
+  // ask_user: {
+  //   schema: askUserSchema,
+  //   execute: askUser,
+  //   format: (result) => {
+  //     if (result.status === 'error') {
+  //       logger.error(` ❌ Failed to get user input: ${result.error}`);
+  //       return result;
+  //     }
+  //     logger.debug(` ✅ Received user input`);
+  //     return result;
+  //   }
+  // },
 };
 
 /**
