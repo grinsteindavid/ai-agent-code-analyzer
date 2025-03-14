@@ -28,15 +28,9 @@ async function getNextThought() {
       parts: [{ text: msg.content }]
     }));
     
-    // Prepare the content for generation
-    const contents = [
-      ...chatHistory,
-      { role: 'user', parts: [{ text: "What is the next step I should take?" }] }
-    ];
-    
     // Generate content with the new API pattern
     const result = await model.generateContent({
-      contents,
+      contents: chatHistory,
       generationConfig: {
         temperature: 0.2,
         maxOutputTokens: maxTokens,

@@ -25,11 +25,46 @@ async function getFunctionCall(options) {
   
   try {
     // Convert OpenAI tool format to Gemini function format if needed
-    const geminiFunctions = functions.map(tool => ({
-      name: tool.function.name,
-      description: tool.function.description,
-      parameters: tool.function.parameters
-    }));
+    const geminiFunctions = functions.map(tool => {
+      // Create a deep copy of parameters and remove unsupported fields
+      const parameters = JSON.parse(JSON.stringify(tool.function.parameters));
+      
+      // Helper function to clean schema objects recursively
+      const cleanSchema = (schema) => {
+        if (!schema || typeof schema !== 'object') return;
+        
+        // Remove fields at current level
+        if (schema.additionalProperties !== undefined) delete schema.additionalProperties;
+        if (schema.default !== undefined) delete schema.default;
+        
+        // Process properties if they exist
+        if (schema.properties) {
+          Object.keys(schema.properties).forEach(propKey => {
+            // Remove fields from each property
+            const prop = schema.properties[propKey];
+            if (prop.additionalProperties !== undefined) delete prop.additionalProperties;
+            if (prop.default !== undefined) delete prop.default;
+            
+            // Recursively clean nested objects
+            cleanSchema(prop);
+          });
+        }
+        
+        // Handle items in arrays
+        if (schema.items) {
+          cleanSchema(schema.items);
+        }
+      };
+      
+      // Clean the entire schema
+      cleanSchema(parameters);
+
+      return {
+        name: tool.function.name,
+        description: tool.function.description,
+        parameters: parameters
+      };
+    });
 
     // Prepare system instruction
     const systemInstruction = getFunctionCallPrompt();
@@ -38,7 +73,7 @@ async function getFunctionCall(options) {
     const model = genAI.getGenerativeModel({ 
       model: "gemini-1.5-flash",
       systemInstruction: systemInstruction,
-      tools: geminiFunctions
+      tools: [{functionDeclarations: geminiFunctions}]
     });
 
     // Format conversation history for Gemini
@@ -62,40 +97,16 @@ async function getFunctionCall(options) {
       }
     });
     
-    // Get the full response text
-    const fullResponse = result.response.text();
-
-    // Try to parse the response as JSON with function call format
-    try {
-      // Try to parse the response as a function call in JSON format
-      const responseJson = JSON.parse(fullResponse);
-      
-      if (responseJson.name && responseJson.arguments) {
-        return {
-          name: responseJson.name,
-          arguments: typeof responseJson.arguments === 'string' 
-            ? JSON.parse(responseJson.arguments) 
-            : responseJson.arguments
-        };
-      }
-    } catch (parseError) {
-      // If the response isn't valid JSON, try to extract function call using regex
-      const functionMatch = fullResponse.match(/\{\s*"name"\s*:\s*"([^"]+)"\s*,\s*"arguments"\s*:\s*(\{[^}]+\})\s*\}/);
-      
-      if (functionMatch && functionMatch.length >= 3) {
-        const name = functionMatch[1];
-        const argsStr = functionMatch[2];
-        
-        try {
-          const args = JSON.parse(argsStr);
-          return {
-            name: name,
-            arguments: args
-          };
-        } catch (innerError) {
-          addMessage(`user`, `ERROR parsing function arguments: ${innerError.message}`);
-        }
-      }
+    // Get function calls directly from the response object
+    const functionCalls = result.response.functionCalls();
+    
+    // Check if we have function calls and return the first one
+    if (functionCalls && functionCalls.length > 0) {
+      const functionCall = functionCalls[0];
+      return {
+        name: functionCall.name,
+        arguments: functionCall.args
+      };
     }
     
     return null;
