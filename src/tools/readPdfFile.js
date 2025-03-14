@@ -7,7 +7,7 @@ const readPdfFileSchema = {
   required: ['path', 'options'],
   additionalProperties: false,
   properties: {
-    path: { type: 'string', description: 'Path of the PDF file to read' },
+    path: { type: 'string', description: 'Absolute path of the PDF file to read' },
     options: {
       type: 'object',
       description: 'Optional configuration for PDF parsing page range',

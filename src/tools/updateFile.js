@@ -10,7 +10,7 @@ const updateFileSchema = {
   properties: {
     filePath: {
       type: 'string',
-      description: 'Path of the file to update'
+      description: 'Absolute path of the file to update'
     },
     content: {
       type: 'string',

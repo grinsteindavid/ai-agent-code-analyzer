@@ -7,7 +7,7 @@ const createFileSchema = {
   required: ["filePath", "content", "encoding"],
   additionalProperties: false,
   properties: {
-    filePath: { type: "string", description: "Path where the file should be created, absolute paths only" },
+    filePath: { type: "string", description: "Absolute path where the file should be created" },
     content: { type: "string", description: "Content to write to the file, respecting end of lines, structure and format" },
     encoding: { type: "string", description: "Encoding type, default utf-8" },
   },

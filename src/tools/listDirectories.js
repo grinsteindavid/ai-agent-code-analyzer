@@ -5,7 +5,7 @@ const path = require('path');
 const listDirectoriesSchema = {
   type: "object",
   properties: {
-    path: { type: "string", description: "Directory path to list" },
+    path: { type: "string", description: "Absolute directory path to list" },
     options: {
       type: "string",
       enum: ["a", "l", "al"],

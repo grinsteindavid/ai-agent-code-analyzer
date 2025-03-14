@@ -43,7 +43,7 @@ const grepSearchSchema = {
   properties: {
     SearchDirectory: {
       type: "string",
-      description: "The root directory where the search will be performed."
+      description: "Absolute path of the root directory where the search will be performed."
     },
     Query: {
       type: "string",

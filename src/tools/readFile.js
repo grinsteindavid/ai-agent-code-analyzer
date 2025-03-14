@@ -6,7 +6,7 @@ const readFileSchema = {
   required: ["path", "encoding"],
   additionalProperties: false,
   properties: {
-    path: { type: "string", description: "Path of the file to read" },
+    path: { type: "string", description: "Absolute path of the file to read" },
     encoding: { type: "string", description: "Encoding type, default utf-8" },
   },
   description: "Reads and returns the contents of a file at the specified path.",
