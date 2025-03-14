@@ -14,29 +14,8 @@ async function getNextThought() {
   const maxTokens = 200;
   
   try {
-    // Create the model
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-flash-2.0",
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: maxTokens,
-      }
-    });
-
-    // Format conversation history for Gemini
-    const chatHistory = getMessages().map(msg => ({
-      role: msg.role === 'assistant' ? 'model' : msg.role,
-      parts: [{ text: msg.content }]
-    }));
-
-    // Start chat session
-    const chat = model.startChat({
-      history: chatHistory,
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: maxTokens,
-      },
-      systemInstruction: `
+    // Prepare system instruction
+    const systemInstruction = `
         You are a helpful assistant(AI AGENT) and a senior software engineer. You always try to be as technical as possible and concise. You are always efficient so the user does less work.\n
   
         ** Operating system info: ${process.platform} (${process.arch}) ${os.release()} ** 
@@ -90,11 +69,35 @@ async function getNextThought() {
         - "I'll proceed by searching for specific keywords related to market trends in the text files, specifically "Market_Search_Results.txt", "Stock_Market_News_Summary.txt", and "US_Stock_Market_News.md". This is necessary to compile the relevant information for the summary report later. I'll use the "grep_search" tool for this purpose."
         - "I'll compile the matches found from the "Market_Search_Results.txt", "Stock_Market_News_Summary.txt", and "US_Stock_Market_News.md" files into a summary format. This step is crucial to create a report that encapsulates the relevant information gathered from the previous search. Once compiled, I'll use the "create_file" tool to save this summary report to a new text file."
         - "I'll now update the content of the newly created "Market_Trends_Summary_Report.txt" with the compiled matches regarding market trends to complete the summary report. This is the final step to ensure the report reflects the gathered information accurately. I'll use the "update_file" tool for this action."
-      `
+      `;
+      
+    // Create the model with system instruction
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      systemInstruction: systemInstruction,
     });
 
-    // Send a simple message to get the next thought
-    const result = await chat.sendMessage("What is the next step I should take?");
+    // Format conversation history for Gemini
+    const chatHistory = getMessages().map(msg => ({
+      role: msg.role === 'assistant' ? 'model' : msg.role,
+      parts: [{ text: msg.content }]
+    }));
+    
+    // Prepare the content for generation
+    const contents = [
+      ...chatHistory,
+      { role: 'user', parts: [{ text: "What is the next step I should take?" }] }
+    ];
+    
+    // Generate content with the new API pattern
+    const result = await model.generateContent({
+      contents,
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: maxTokens,
+      }
+    });
+    
     return result.response.text();
   } catch (error) {
     console.error("Gemini Next Thought Error:", error);

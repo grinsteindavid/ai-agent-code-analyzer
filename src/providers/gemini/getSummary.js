@@ -19,15 +19,6 @@ async function getSummary(options = {}) {
   try {
     // Get the plan from context
     const plan = getPlan();
-    
-    // Create the model
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-flash-2.0",
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: parseInt(maxTokens),
-      }
-    });
 
     // Format conversation history for Gemini
     const chatHistory = getMessages().map(msg => ({
@@ -59,19 +50,28 @@ async function getSummary(options = {}) {
       - URLS.
       - VARIABLES OR ARGUMENTS FROM USER QUERY.
       `;
-
-    // Start chat session with system prompt
-    const chat = model.startChat({
-      history: chatHistory,
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: parseInt(maxTokens),
-      },
+    
+    // Create the model with system instruction
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
       systemInstruction: systemPrompt
     });
 
-    // Send the plan information as a message
-    const result = await chat.sendMessage(`Execution plan: ${plan}`);
+    // Prepare the content for generation
+    const contents = [
+      ...chatHistory,
+      { role: 'user', parts: [{ text: `Execution plan: ${plan}` }] }
+    ];
+    
+    // Generate content with the new API pattern
+    const result = await model.generateContent({
+      contents,
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: parseInt(maxTokens),
+      }
+    });
+    
     const summaryContent = result.response.text();
     
     if (summaryContent) {

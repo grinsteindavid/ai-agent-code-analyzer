@@ -24,14 +24,6 @@ async function getPlan(options) {
   const maxTokens = 200;
 
   try {
-    // Create the model
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-flash-2.0",
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: maxTokens,
-      }
-    });
 
     // Format conversation history for Gemini
     const chatHistory = includePastConversation ? 
@@ -88,18 +80,32 @@ async function getPlan(options) {
       - "I need to create a logger using chalk with similar logic to the existing showInfo functionality. I also need to update the files src/index.js and src/utils/tools.js to avoid DEBUG conditions and encapsulate logging functionality in the logger. First, I need to examine the current files to understand their structure and how showInfo is implemented."
       `;
 
-    // Start chat session with system prompt
-    const chat = model.startChat({
-      history: chatHistory,
+    // Create the model with system instruction
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      systemInstruction: systemPrompt
+    });
+    
+    // Prepare the content for the query
+    const contents = [
+      { role: 'user', parts: [{ text: `Create ${includePastConversation ? "a new" : "an"} execution plan for the following query: ${userInput}` }] }
+    ];
+    
+    // Add conversation history if needed
+    if (includePastConversation && chatHistory.length > 0) {
+      // Insert chat history before the current query
+      contents.unshift(...chatHistory);
+    }
+    
+    // Generate content with the new API pattern
+    const result = await model.generateContent({
+      contents,
       generationConfig: {
         temperature: 0.2,
         maxOutputTokens: maxTokens,
-      },
-      systemInstruction: systemPrompt
+      }
     });
-
-    // Send the user query as a message
-    const result = await chat.sendMessage(`Create ${includePastConversation ? "a new" : "an"} execution plan for the following query: ${userInput}`);
+    
     const messageContent = result.response.text();
 
     if (messageContent) {

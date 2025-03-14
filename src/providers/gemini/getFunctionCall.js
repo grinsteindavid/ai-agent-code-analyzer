@@ -32,29 +32,8 @@ async function getFunctionCall(options) {
       parameters: tool.function.parameters
     }));
 
-    // Create the model
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-flash-2.0",
-      generationConfig: {
-        temperature: 0.1,
-        maxOutputTokens: 1024,
-      }
-    });
-
-    // Format conversation history for Gemini
-    const chatHistory = getMessages().map(msg => ({
-      role: msg.role === 'assistant' ? 'model' : msg.role,
-      parts: [{ text: msg.content }]
-    }));
-
-    // Start chat session
-    const chat = model.startChat({
-      history: chatHistory,
-      generationConfig: {
-        temperature: 0.1,
-        maxOutputTokens: 1024,
-      },
-      systemInstruction: `
+    // Prepare system instruction
+    const systemInstruction = `
         You are a helpful assistant. \n
         
         ** Operating system info: ${process.platform} (${process.arch}) ${os.release()} ** 
@@ -74,18 +53,38 @@ async function getFunctionCall(options) {
         2. Return ONLY the function call with name and arguments, do not include any additional text.
         3. Craft your arguments wisely based on the provided "Next action" AND ENTIRE CONVERSATION.
         4. when creating or updating files, always check file content before updating to avoid errors and keep correct format also structure.
-      `
+      `;
+
+    // Create the model with system instruction
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      systemInstruction: systemInstruction,
+      tools: geminiFunctions
     });
 
-    // Send the next thought message to the model
-    const result = await chat.sendMessageStream(`Next action: ${nextThought}`);
-
-    // Collect the response text
-    let fullResponse = "";
-    for await (const chunk of result.stream) {
-      const chunkText = chunk.text();
-      fullResponse += chunkText;
-    }
+    // Format conversation history for Gemini
+    const chatHistory = getMessages().map(msg => ({
+      role: msg.role === 'assistant' ? 'model' : msg.role,
+      parts: [{ text: msg.content }]
+    }));
+    
+    // Prepare the content for generation
+    const contents = [
+      ...chatHistory,
+      { role: 'user', parts: [{ text: `Next action: ${nextThought}` }] }
+    ];
+    
+    // Generate content with the new API pattern
+    const result = await model.generateContent({
+      contents,
+      generationConfig: {
+        temperature: 0.1,
+        maxOutputTokens: 1024,
+      }
+    });
+    
+    // Get the full response text
+    const fullResponse = result.response.text();
 
     // Try to parse the response as JSON with function call format
     try {
