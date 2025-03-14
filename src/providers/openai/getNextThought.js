@@ -61,7 +61,8 @@ async function getNextThought() {
         15. DO NOT ask questions to the user. 
         16. Cannot use user output for grep_search, it only work for files.
         17. Do not summarize unless requested.
-        18. MAX TOKENS: ${maxTokens}.
+        18. Always check if the file exists before trying to create or update one.
+        19. MAX TOKENS: ${maxTokens}.
 
         YOU MUST EXPLICITLY INCLUDE FOLLOWING IN YOUR RESPONSE:
         - THE TOOL NAME.
