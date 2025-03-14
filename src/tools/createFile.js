@@ -25,6 +25,8 @@ function createFile(filePath, content, encoding = 'utf-8') {
   return new Promise((resolve, reject) => {
     // Ensure the directory exists
     const directory = path.dirname(filePath);
+
+    let parsedContent = content;
     
     // Check if file already exists
     if (fs.existsSync(filePath)) {
@@ -40,10 +42,20 @@ function createFile(filePath, content, encoding = 'utf-8') {
     if (!fs.existsSync(directory)) {
       fs.mkdirSync(directory, { recursive: true });
     }
+
+    try {
+      const fileExtension = path.extname(filePath);
+      if (fileExtension === ".json") {
+        // JSON files need to be properly parsed
+        const jsonData = JSON.parse(content);
+        parsedContent = JSON.stringify(jsonData, null, 4);
+      }
+    } catch (error) {
+      logger.debug(error.message)
+    }
     
-    // Write content to the file
-    fs.writeFileSync(filePath, content, encoding);
-    
+    fs.writeFileSync(filePath, parsedContent, encoding);
+
     resolve({
       status: 'success',
       path: filePath,

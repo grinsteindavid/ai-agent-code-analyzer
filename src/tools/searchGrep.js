@@ -5,6 +5,7 @@ const readdir = promisify(fs.readdir);
 const stat = promisify(fs.stat);
 const readFile = promisify(fs.readFile);
 const { StringDecoder } = require('string_decoder');
+const logger = require('../utils/logger');
 
 /**
  * Simple function to match a path against glob patterns

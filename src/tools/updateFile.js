@@ -1,4 +1,5 @@
 const fs = require('fs');
+const logger = require('../utils/logger');
 
 // JSON Schema Definition
 const updateFileSchema = {
@@ -34,6 +35,7 @@ const updateFileSchema = {
  */
 function updateFile(filePath, content, updateMode = 'overwrite') {
   return new Promise((resolve, reject) => {
+    let parsedContent = content;
     // Check if file exists
     if (!fs.existsSync(filePath)) {
       return reject({
@@ -44,7 +46,18 @@ function updateFile(filePath, content, updateMode = 'overwrite') {
     }
 
     try {
-      let newContent = content;
+      const fileExtension = path.extname(filePath);
+      if (fileExtension === ".json") {
+        // JSON files need to be properly parsed
+        const jsonData = JSON.parse(content);
+        parsedContent = JSON.stringify(jsonData, null, 4);
+      }
+    } catch (error) {
+      logger.debug(error.message)
+    }
+
+    try {
+      let newContent = parsedContent;
       
       // Handle different update modes
       if (updateMode === 'append' || updateMode === 'prepend') {
@@ -52,12 +65,12 @@ function updateFile(filePath, content, updateMode = 'overwrite') {
         const existingContent = fs.readFileSync(filePath, 'utf8');
         
         if (updateMode === 'append') {
-          newContent = existingContent + content;
+          newContent = existingContent + parsedContent;
         } else if (updateMode === 'prepend') {
-          newContent = content + existingContent;
+          newContent = parsedContent + existingContent;
         }
       }
-      
+
       // Write the new content to the file
       fs.writeFileSync(filePath, newContent, 'utf8');
       
