@@ -44,9 +44,10 @@ async function getFunctionCall(options) {
         -----------------
   
         IMPORTANT:
-        1. If "Next action" is equal to "@STOP EXECUTION@" or "@stop execution@" or say something about doing it then STOP and NEVER return a function call
-        2. Return ONLY the function call with name and arguments, do not include any additional text
-        3. Craft your arguments wisely based on the provided "Next action" AND ENTIRE CONVERSATION
+        1. If "Next action" is equal to "@STOP EXECUTION@" or "@stop execution@" or say something about doing it then STOP and NEVER return a function call.
+        2. Return ONLY the function call with name and arguments, do not include any additional text.
+        3. Craft your arguments wisely based on the provided "Next action" AND ENTIRE CONVERSATION.
+        4. when creating or updating files, always check file content before updating to avoid errors and keep correct format also structure.
        ` 
       },
       // Include conversation history
