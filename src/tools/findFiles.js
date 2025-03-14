@@ -95,13 +95,15 @@ function parseOptions(optionsStr) {
 /**
  * Recursively finds files or directories matching a specified pattern within a given path.
  * 
- * @param {string} pattern - The filename pattern to search for (e.g., "*.js", "data.*")
- * @param {string} dirPath - The base directory to start the search from (defaults to current directory)
- * @param {string} options - Additional options (e.g., "maxDepth=3")
- * @param {string} type - Filter by file type: 'f' for files, 'd' for directories, 'l' for symbolic links
+ * @param {Object} args - Arguments object
+ * @param {string} args.pattern - The filename pattern to search for (e.g., "*.js", "data.*")
+ * @param {string} args.dirPath - The base directory to start the search from (defaults to current directory)
+ * @param {string} args.options - Additional options (e.g., "maxDepth=3")
+ * @param {string} args.type - Filter by file type: 'f' for files, 'd' for directories, 'l' for symbolic links
  * @returns {Promise<Object>} A promise that resolves to an object with a files array containing matching paths
  */
-function findFiles(pattern, dirPath = ".", options = "", type = "") {
+function findFiles(args) {
+  const { pattern, dirPath = ".", options = "", type = "" } = args;
   return new Promise((resolve, reject) => {
     try {
       const parsedOptions = parseOptions(options);

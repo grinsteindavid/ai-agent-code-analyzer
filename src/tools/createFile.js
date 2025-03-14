@@ -16,12 +16,14 @@ const createFileSchema = {
 
 /**
  * Creates a file with the specified content
- * @param {string} filePath - Path where the file should be created
- * @param {string} content - Content to write to the file
- * @param {string} [encoding='utf-8'] - Encoding type, default utf-8
+ * @param {Object} args - Arguments object
+ * @param {string} args.filePath - Path where the file should be created
+ * @param {string} args.content - Content to write to the file
+ * @param {string} [args.encoding='utf-8'] - Encoding type, default utf-8
  * @returns {Promise<Object>} Result object with status and path
  */
-function createFile(filePath, content, encoding = 'utf-8') {
+function createFile(args) {
+  const { filePath, content, encoding = 'utf-8' } = args;
   return new Promise((resolve, reject) => {
     // Ensure the directory exists
     const directory = path.dirname(filePath);

@@ -33,12 +33,13 @@ const getPlanPrompt = (maxTokens) => `
         4. Remember to return one complete plan with all the necessary information and details.
         5. The execution plan MUST be organized in clearly defined and numbered steps.
         6. The execution plan should be concise and technical.
-        7. The execution plan MUST include for each step, the tools that will be used and with what arguments (placeholders).
+        7. The execution plan MUST include for each step, the tools that will be used.
         8. Each step should describe the goal to achieve and the reasoning behind it.
         9. Don't modify files speculatively; always ensure you have the information needed first.
         10. Always error-check your tools, including file existence before writes, proper format, etc.
         11. Always try to understand technical requirements and user needs before proposing final solutions.
-        12. MAX TOKENS: ${maxTokens}.
+        12. Avoid showing code snippets.
+        13. MAX TOKENS: ${maxTokens}.
 
         Examples of properly formatted execution plans:
         - "I need to determine what is causing the issue with the Node.js module 'axios' by examining the package.json file located at /path/to/project/package.json. First, I'll use the 'read_file' tool to inspect the package.json file and check for version compatibility issues."

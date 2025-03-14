@@ -50,18 +50,20 @@ function getSystemMetadata() {
 /**
  * Executes a system command based on the user's operating system.
  *
- * @param {string} command - The command to execute.
- * @param {Array<string>} [args=[]] - Arguments to pass to the command.
- * @param {number} [timeout=30000] - Timeout in milliseconds.
+ * @param {Object} args - Arguments object
+ * @param {string} args.command - The command to execute.
+ * @param {Array<string>} [args.args=[]] - Arguments to pass to the command.
+ * @param {number} [args.timeout=30000] - Timeout in milliseconds.
  * @returns {Promise<Object>} A promise that resolves to the result of the command execution.
  */
-async function executeCommand(command, args = [], timeout = 30000) {
+async function executeCommand(args) {
+  const { command, args: commandArgs = [], timeout = 30000 } = args;
   return new Promise((resolve, reject) => {
     const systemInfo = getSystemMetadata();
-    logger.debug(`Executing command on ${systemInfo.platform}: ${command} ${args.join(' ')}`);
+    logger.debug(`Executing command on ${systemInfo.platform}: ${command} ${commandArgs.join(' ')}`);
     
     // Prepare the full command
-    const fullCommand = [command, ...args].join(' ');
+    const fullCommand = [command, ...commandArgs].join(' ');
     
     // Set timeout for the command execution
     const timer = setTimeout(() => {

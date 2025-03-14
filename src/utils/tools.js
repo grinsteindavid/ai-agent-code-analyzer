@@ -185,7 +185,7 @@ async function executeTool(toolName, args) {
   }
 
   try {
-    const rawResult = await tool.execute(...Object.values(args));
+    const rawResult = await tool.execute(args);
     const result = tool.format(rawResult);
     return `${toolName} RESULT: ${JSON.stringify(result)}`;
   } catch (error) {

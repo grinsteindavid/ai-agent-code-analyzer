@@ -19,11 +19,13 @@ const listDirectoriesSchema = {
 
 /**
  * List directory contents using native Node.js fs module
- * @param {string} dirPath - Directory path to list
- * @param {string} options - Options string ('a' for all files, 'l' for detailed format)
+ * @param {Object} args - Arguments object
+ * @param {string} args.path - Directory path to list
+ * @param {string} args.options - Options string ('a' for all files, 'l' for detailed format)
  * @returns {Promise<Object>} - Resolved with an object containing directories array
  */
-function listDirectories(dirPath = ".", options = "") {
+function listDirectories(args) {
+  const { path: dirPath = ".", options = "" } = args;
   return new Promise((resolve, reject) => {
     try {
       // Read directory contents

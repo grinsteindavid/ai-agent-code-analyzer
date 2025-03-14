@@ -24,11 +24,13 @@ const webSearchSchema = {
 /**
  * Performs a web search using DuckDuckGo Lite and returns the search results.
  *
- * @param {string} query - The search query.
- * @param {number} [maxResults=10] - Maximum number of results to return.
+ * @param {Object} args - Arguments object
+ * @param {string} args.query - The search query.
+ * @param {number} [args.maxResults=10] - Maximum number of results to return.
  * @returns {Promise<Object>} A promise that resolves to an object with results array and metadata.
  */
-async function webSearch(query, maxResults = 10) {
+async function webSearch(args) {
+  const { query, maxResults = 10 } = args;
   return new Promise(async (resolve, reject) => {
     try {
       // Format query  

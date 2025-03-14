@@ -29,12 +29,14 @@ const updateFileSchema = {
 
 /**
  * Updates a file with various modes: overwrite entirely, append to the end, or prepend to the beginning
- * @param {string} filePath - Path of the file to update
- * @param {string} content - Content to write to the file
- * @param {string} [updateMode='overwrite'] - Mode of update: 'overwrite', 'append', or 'prepend'
+ * @param {Object} args - Arguments object
+ * @param {string} args.filePath - Path of the file to update
+ * @param {string} args.content - Content to write to the file
+ * @param {string} [args.updateMode='overwrite'] - Mode of update: 'overwrite', 'append', or 'prepend'
  * @returns {Promise<Object>} Result object with status and updated file information
  */
-function updateFile(filePath, content, updateMode = 'overwrite') {
+function updateFile(args) {
+  const { filePath, content, updateMode = 'overwrite' } = args;
   return new Promise((resolve, reject) => {
     let parsedContent = content;
     // Check if file exists

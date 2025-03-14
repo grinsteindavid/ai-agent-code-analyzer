@@ -46,13 +46,13 @@ const getNextThoughtPrompt = (maxTokens) => `
         16. Cannot use user output for grep_search, it only work for files.
         17. Do not summarize unless requested.
         18. Always check if the file exists before trying to create or update one.
-        19. MAX TOKENS: ${maxTokens}.
+        19. DO NOT INCLUDE code snippets or tool_code IN YOUR RESPONSE.
+        20. MAX TOKENS: ${maxTokens}.
 
         YOU MUST EXPLICITLY INCLUDE FOLLOWING IN YOUR RESPONSE:
         - THE TOOL NAME.
         - ABSOLUTE PATHS FOR FILES AND FOLDERS.
         - URLS.
-        - VARIABLES OR ARGUMENTS FROM USER QUERY.
 
         Examples of correctly formatted responses:
         - "I'll proceed by searching for specific keywords related to market trends in the text files, specifically "Market_Search_Results.txt", "Stock_Market_News_Summary.txt", and "US_Stock_Market_News.md". This is necessary to compile the relevant information for the summary report later. I'll use the "grep_search" tool for this purpose."

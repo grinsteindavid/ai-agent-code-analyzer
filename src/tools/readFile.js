@@ -13,7 +13,8 @@ const readFileSchema = {
 };
 
 // Function to read a file
-function readFile(path, encoding = "utf-8") {
+function readFile(args) {
+  const { path, encoding = "utf-8" } = args;
   return new Promise((resolve, reject) => {
     fs.readFile(path, encoding, (err, data) => {
       if (err) reject({ error: err.message });

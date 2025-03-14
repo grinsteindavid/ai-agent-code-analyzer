@@ -77,17 +77,19 @@ const grepSearchSchema = {
 /**
  * Performs a text search using Node.js native modules (cross-platform alternative to grep).
  *
- * @param {string} SearchDirectory - Directory where the search will be performed.
- * @param {string} Query - The string to search for.
- * @param {string[]} Includes - Array of file glob patterns to include.
- * @param {boolean} MatchPerLine - If true, returns only the matching portion of each line.
- * @param {boolean} CaseInsensitive - If true, the search is case insensitive.
- * @param {number} [maxResults=50] - Maximum number of results to return.
- * @param {number} [maxBufferSize=1024 * 1024 * 10] - Maximum buffer size in bytes (default 10MB).
+ * @param {Object} args - Arguments object
+ * @param {string} args.SearchDirectory - Directory where the search will be performed.
+ * @param {string} args.Query - The string to search for.
+ * @param {string[]} args.Includes - Array of file glob patterns to include.
+ * @param {boolean} args.MatchPerLine - If true, returns only the matching portion of each line.
+ * @param {boolean} args.CaseInsensitive - If true, the search is case insensitive.
+ * @param {number} [args.maxResults=50] - Maximum number of results to return.
+ * @param {number} [args.maxBufferSize=1048576] - Maximum buffer size in bytes (default 1MB).
  *
  * @returns {Promise<Object>} A promise that resolves to an object with matches array and metadata.
  */
-function grepSearch(SearchDirectory, Query, Includes, MatchPerLine, CaseInsensitive, maxResults = 50, maxBufferSize = 1048576) {
+function grepSearch(args) {
+  const { SearchDirectory, Query, Includes, MatchPerLine, CaseInsensitive, maxResults = 50, maxBufferSize = 1048576 } = args;
   return new Promise(async (resolve, reject) => {
     try {
       // Prepare search parameters
