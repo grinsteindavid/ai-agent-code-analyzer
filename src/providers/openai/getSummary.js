@@ -1,5 +1,5 @@
 const { OpenAI } = require("openai");
-const { getMessages, addMessage, getPlan } = require("../../utils/context");
+const { getMessages, addMessage } = require("../../utils/context");
 
 // Initialize OpenAI
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -17,8 +17,8 @@ async function getSummary(options = {}) {
   } = options;
 
   try {
-    // Get the plan from context
-    const plan = getPlan();
+
+    const chatHistory = getMessages().map(msg => ({ role: msg.role, content: msg.content }));
     
     // Create messages array for the API call
     const messages = [
@@ -50,9 +50,8 @@ async function getSummary(options = {}) {
 
         `
       },
-      { role: 'user', content: `Execution plan: ${plan}` },
       // Include conversation history
-      ...getMessages().map(msg => ({ role: msg.role, content: msg.content }))
+      ...chatHistory
     ];
     
     const response = await openai.chat.completions.create({
