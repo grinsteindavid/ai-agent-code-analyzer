@@ -4,6 +4,7 @@
 
 - Started: March 2, 2025
 - Status: Ongoing
+- Last Updated: March 14, 2025
 
 
 ## Overview
@@ -14,6 +15,12 @@ The Autonomous Code Analyzer is an AI-powered CLI tool that uses OpenAI's GPT mo
 
 - **Natural Language Understanding**: Ask questions about your codebase in plain English
 - **Intelligent Codebase Analysis**: Get insights about your code structure, patterns, and organization
+- **Multiple AI Providers**: Choose between OpenAI and Google's Gemini models
+  - OpenAI: Leveraging GPT-4o-mini for powerful code analysis capabilities
+  - Gemini: Using Google's Gemini 1.5 Flash for efficient function calling and analysis
+- **Centralized System Prompts**: Consistent prompting architecture across AI providers
+  - Modular system prompt design for better maintainability
+  - Provider-agnostic implementations for easier extension
 - **Web Research Integration**: Search the web directly from your terminal with DuckDuckGo Lite
   - Customizable search parameters including number of results
   - Structured results with titles, URLs, and descriptions
@@ -41,9 +48,10 @@ The Autonomous Code Analyzer is an AI-powered CLI tool that uses OpenAI's GPT mo
    npm install
    ```
 
-3. Create a `.env` file in the project root and add your OpenAI API key:
+3. Create a `.env` file in the project root and add your AI provider API keys:
    ```
    OPENAI_API_KEY=your_openai_api_key_here
+   GEMINI_API_KEY=your_gemini_api_key_here
    ```
 
 4. Make the script executable:
@@ -70,6 +78,9 @@ node src/index.js analyze -q "explain codebase"
 
 # Specify AI provider (default: openai)
 code-analyzer analyze --query "What files are in src folder?" --provider openai
+
+# Use Google's Gemini model instead of OpenAI
+code-analyzer analyze --query "What files are in src folder?" --provider gemini
 
 # Execute system commands
 node src/index.js analyze --query "run ls -la and summarize the output"
@@ -118,13 +129,28 @@ code-analyzer analyze --query "read pages 5-10 from my-documentation.pdf"
    - Orchestrates the overall execution flow
    - Manages the loop of function calls until completion
 
-2. **AI Provider (OpenAI)**
-   - Handles communication with OpenAI APIs
-   - Implements four key functions:
-     - `getPlan`: Generates an execution plan
-     - `getNextThought`: Determines the next step based on the plan
-     - `getFunctionCall`: Selects the appropriate tool to execute
-     - `getSummary`: Summarizes all findings after execution completes
+2. **System Prompts**
+   - Centralized directory of provider-agnostic prompts
+   - Modular design for better maintainability and consistency
+   - Implements four key prompt types:
+     - `plan.js`: Execution planning instructions
+     - `next-thought.js`: Next step determination guidelines
+     - `function-call.js`: Tool selection instructions
+     - `summary.js`: Results summarization parameters
+
+3. **AI Providers**
+   - **OpenAI Provider**
+     - Handles communication with OpenAI APIs using GPT-4o-mini
+     - Implements four key functions that use the centralized system prompts:
+       - `getPlan`: Generates an execution plan
+       - `getNextThought`: Determines the next step based on the plan
+       - `getFunctionCall`: Selects the appropriate tool to execute
+       - `getSummary`: Summarizes all findings after execution completes
+
+   - **Gemini Provider**
+     - Handles communication with Google's Generative AI APIs using Gemini 1.5 Flash
+     - Uses optimized schema handling for function calling
+     - Implements the same four key functions with Gemini-specific optimizations
 
 3. **Context Management (context.js)**
    - Maintains state throughout execution
@@ -275,6 +301,8 @@ The show info tool (`show_info`) enhances the user experience:
 3. **Tool Abstraction**: Tools are registered with a common interface
 4. **Validation**: Arguments are validated against schemas
 5. **Conversation Management**: All interactions are tracked as a conversation
+6. **Provider Agnosticism**: Core system prompts are separate from provider implementations
+7. **DRY Principle**: Centralized system prompts eliminate duplication across providers
 
 ## Conclusion
 
