@@ -110,7 +110,7 @@ program
               type: 'list',
               name: 'action',
               message: 'The current goal looks finished. Would you like to add another task to the current conversation or get a summary?',
-              choices: ['Add task', 'Get summary'],
+              choices: ['Add task', 'Get summary', 'Finish'],
             },
           ]);
           
@@ -125,9 +125,9 @@ program
             ]);
             await generatePlan({ query, includePastConversation: true, selectedProvider });
             functionCall = true;
-          } else {
+          } else if (action === 'Finish') {
             // User wants to finish, break the loop
-            break;
+            process.exit(0);
           }
         }
       } catch (error) {
