@@ -23,7 +23,6 @@ const getSummaryPrompt = (maxTokens) => `You are a helpful assistant.
       - THE TOOL NAME.
       - ABSOLUTE PATHS FOR FILES AND FOLDERS.
       - URLS.
-      - VARIABLES OR ARGUMENTS FROM USER QUERY.
       `;
 
 module.exports = getSummaryPrompt;
