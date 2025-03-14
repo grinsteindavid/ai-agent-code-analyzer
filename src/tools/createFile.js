@@ -32,7 +32,7 @@ function createFile(filePath, content, encoding = 'utf-8') {
     if (fs.existsSync(filePath)) {
       reject({
         status: 'warning',
-        path: filePath,
+        filePath,
         message: `File already exists at ${filePath}. Skipping creation.`
       });
       return;
@@ -58,7 +58,7 @@ function createFile(filePath, content, encoding = 'utf-8') {
 
     resolve({
       status: 'success',
-      path: filePath,
+      filePath,
       message: `File created successfully at ${filePath}`
     });
   });

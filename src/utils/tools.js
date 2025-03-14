@@ -9,7 +9,7 @@ const { showInfo, showInfoSchema } = require('../tools/showInfo');
 const { readPdfFile, readPdfFileSchema } = require('../tools/readPdfFile');
 const { getWebsiteContent, getWebsiteContentSchema } = require('../tools/getWebsiteContent');
 const { executeCommand, executeCommandSchema } = require('../tools/executeCommand');
-const { askUser, askUserSchema } = require('../tools/askUser');
+// const { askUser, askUserSchema } = require('../tools/askUser');
 const { validateSchema } = require('./validation');
 const logger = require('./logger');
 const inquirer = require('inquirer');
@@ -53,7 +53,7 @@ const tools = {
     execute: createFile,
     requiresConfirmation: true,
     format: (result) => {
-      logger.debug(` ✅ ${result.message}`);
+      logger.debug(` ✅ ${result.filePath} created successfully`);
       return result;
     }
   },
