@@ -13,6 +13,7 @@ const { executeCommand, executeCommandSchema } = require('../tools/executeComman
 const { validateSchema } = require('./validation');
 const logger = require('./logger');
 const inquirer = require('inquirer');
+const { createPdfSchema, createPdf } = require('../tools/createPdf');
 
 
 // Define available tools and their schemas
@@ -21,7 +22,11 @@ const tools = {
     schema: listDirectoriesSchema,
     execute: listDirectories,
     format: (result) => {
-      logger.debug(`-- Matches: ${result.directories.length}`);
+      if (result.directories.length > 0) {
+        logger.success(`Matches: ${result.directories.length}`);
+      } else {
+        logger.debug(`-- No directories found`);
+      }
       return result;
     }
   },
@@ -29,6 +34,7 @@ const tools = {
     schema: readFileSchema,
     execute: readFile,
     format: (result) => {
+      logger.success(` Read file content`);
       return result.content;
     }
   },
@@ -36,7 +42,11 @@ const tools = {
     schema: grepSearchSchema,
     execute: grepSearch,
     format: (result) => {
-      logger.debug(`-- Matches: ${result.matches.length}`);
+      if (result.matches.length > 0) {
+        logger.success(` Matches: ${result.matches.length}`);
+      } else {
+        logger.debug(`-- No matches found`);
+      }
       return result;
     }
   },
@@ -44,7 +54,11 @@ const tools = {
     schema: findFilesSchema,
     execute: findFiles,
     format: (result) => {
-      logger.debug(`-- Matches: ${result.files.length}`);
+      if (result.files.length > 0) {
+        logger.success(` Matches: ${result.files.length}`);
+      } else {
+        logger.debug(`-- No files found`);
+      }
       return result;
     }
   },
@@ -53,7 +67,7 @@ const tools = {
     execute: createFile,
     requiresConfirmation: true,
     format: (result) => {
-      logger.debug(` ✅ ${result.filePath} created successfully`);
+      logger.success(` ${result.filePath} created successfully`);
       return result;
     }
   },
@@ -61,7 +75,11 @@ const tools = {
     schema: webSearchSchema,
     execute: webSearch,
     format: (result) => {
-      logger.debug(`-- Results: ${result.results.length}`);
+      if (result.results.length > 0) {
+        logger.success(` Results: ${result.results.length}`);
+      } else {
+        logger.debug(`-- No results found`);
+      }
       return result;
     }
   },
@@ -71,9 +89,9 @@ const tools = {
     requiresConfirmation: true,
     format: (result) => {
       if (result.status === 'error') {
-        logger.debug(` ❌ Error updating ${result.path}`);
+        logger.error(` ❌ Error updating ${result.path}`);
       } else {
-        logger.debug(` ✅ ${result.path} updated successfully`);
+        logger.success(` ${result.path} updated successfully`);
       }
       return result;
     }
@@ -91,9 +109,22 @@ const tools = {
     execute: readPdfFile,
     format: (result) => {
       if (result.status === 'error') {
-        logger.debug(` ❌ Error reading PDF ${result.path}`);
+        logger.error(` ❌ Error reading PDF ${result.path}`);
       } else {
-        logger.debug(` ✅ Read PDF: ${result.path} (${result.pages} pages, ${result.size} bytes)`);
+        logger.success(` Read PDF: ${result.path} (${result.pages} pages, ${result.size} bytes)`);
+      }
+      return result;
+    }
+  },
+  create_pdf: {
+    schema: createPdfSchema,
+    execute: createPdf,
+    requiresConfirmation: true,
+    format: (result) => {
+      if (result.status === 'error') {
+        logger.error(` ❌ Error creating PDF ${result.outputPath}`);
+      } else {
+        logger.success(` Created PDF: ${result.outputPath} (${result.pages} pages, ${result.size} bytes)`);
       }
       return result;
     }
@@ -102,7 +133,7 @@ const tools = {
     schema: getWebsiteContentSchema,
     execute: getWebsiteContent,
     format: (result) => {
-      logger.debug(` ✅ Got content from ${result.url} (${result.chunks.length}/${result.totalChunks} chunks)`);
+      logger.success(` Got content from ${result.url} (${result.chunks.length}/${result.totalChunks} chunks)`);
       return result;
     }
   },
@@ -113,7 +144,7 @@ const tools = {
       if (result.status === 'error') {
         logger.error(` ❌ Command execution failed: ${result.error}`);
       } else {
-        logger.info(` ✅ Command executed successfully: \n ${result.stdout}`);
+        logger.success(` Command executed successfully: \n ${result.stdout}`);
       }
       return result;
     },
@@ -145,7 +176,7 @@ async function confirmToolExecution(toolName, args) {
       {
         type: 'confirm',
         name: 'confirm',
-        message: `Do you want to execute ${toolName}${['create_file', 'update_file'].includes(toolName) ? '' : ` with arguments: ${JSON.stringify(args)}`}?`,
+        message: `Do you want to execute ${toolName}${['create_file', 'update_file', 'create_pdf'].includes(toolName) ? '' : ` with arguments: ${JSON.stringify(args)}`}?`,
         default: false
       }
     ]);
