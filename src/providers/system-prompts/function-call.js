@@ -24,6 +24,6 @@ const getFunctionCallPrompt = () => `
         2. Return ONLY the function call with name and arguments, do not include any additional text.
         3. Craft your arguments wisely based on the provided "Next action" AND ENTIRE CONVERSATION.
         4. when creating or updating files, always check file content before updating to avoid errors and keep correct format also structure.
-      `;
+       `;
 
 module.exports = getFunctionCallPrompt;

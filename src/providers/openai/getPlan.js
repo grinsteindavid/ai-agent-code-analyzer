@@ -32,7 +32,7 @@ async function getPlan(options) {
       // System message with planning instructions
       {
         role: "system",
-        content: getPlanPrompt(maxTokens)
+        content: getPlanPrompt(maxTokens, includePastConversation)
       },
       ...(includePastConversation ? chatHistory : []),
       {

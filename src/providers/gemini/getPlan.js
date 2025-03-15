@@ -32,7 +32,7 @@ async function getPlan(options) {
       })) : [];
 
     // Create system prompt with extra context about past conversation if needed
-    const systemPrompt = getPlanPrompt(maxTokens);
+    const systemPrompt = getPlanPrompt(maxTokens, includePastConversation);
 
     // Create the model with system instruction
     const model = genAI.getGenerativeModel({ 
