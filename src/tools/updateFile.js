@@ -19,7 +19,6 @@ const updateFileSchema = {
     updateMode: {
       type: 'string',
       enum: ['overwrite', 'append', 'prepend'],
-      default: 'overwrite',
       description: 'Mode of update: overwrite (default), append to end, or prepend to beginning'
     }
   },

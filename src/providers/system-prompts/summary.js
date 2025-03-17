@@ -17,7 +17,8 @@ const getSummaryPrompt = (maxTokens) => `You are a helpful assistant.
       3. Provide metadata if needed.
       4. Keep your summary professional.
       5. If "show_info" tool was used then DO NOT SUMMARIZE THE SAME DATA, AVOID DUPLICATION.
-      6. Max ${parseInt(maxTokens)} tokens.
+      6. Do not return code snippets or tool_code snippets.
+      7. Max ${parseInt(maxTokens)} tokens.
       
       YOU MUST EXPLICITLY INCLUDE FOLLOWING IN YOUR RESPONSE:
       - THE TOOL NAME.

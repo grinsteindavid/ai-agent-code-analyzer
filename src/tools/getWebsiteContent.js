@@ -37,14 +37,23 @@ const getWebsiteContentSchema = {
 /**
  * Fetches website content, chunks it, and returns specified chunks
  *
- * @param {string} url - The URL to fetch content from
- * @param {number} [chunkSize=100] - Size of each content chunk in number of lines
- * @param {number} [maxChunks=1] - Maximum number of chunks to return
- * @param {number} [chunkIndex] - Index of specific chunk to retrieve
- * @param {boolean} [forceRefresh=false] - Force refresh content even if cached
+ * @param {Object} args - The arguments object
+ * @param {string} args.url - The URL to fetch content from
+ * @param {number} [args.chunkSize=100] - Size of each content chunk in number of lines
+ * @param {number} [args.maxChunks=1] - Maximum number of chunks to return
+ * @param {number} [args.chunkIndex] - Index of specific chunk to retrieve
+ * @param {boolean} [args.forceRefresh=false] - Force refresh content even if cached
  * @returns {Promise<Object>} A promise that resolves to an object with chunks and metadata
  */
-async function getWebsiteContentTool(url, chunkSize = 100, maxChunks = 1, chunkIndex = undefined, forceRefresh = false) {
+async function getWebsiteContentTool(args) {
+  const {
+    url,
+    chunkSize = 100,
+    maxChunks = 1,
+    chunkIndex,
+    forceRefresh = false
+  } = args;
+
   return new Promise(async (resolve, reject) => {
     try {
       // Validate URL

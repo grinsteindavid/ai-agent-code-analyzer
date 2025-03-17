@@ -85,14 +85,15 @@ async function getFunctionCall(options) {
     // Prepare the content for generation
     const contents = [
       ...chatHistory,
-      { role: 'model', parts: [{ text: `Next action: ${nextThought}` }] }
+      { role: 'model', parts: [{ text: `${nextThought}` }] }
     ];
     
     // Generate content with the new API pattern
     const result = await model.generateContent({
       contents,
       generationConfig: {
-        temperature: 0.1
+        temperature: 0.2,
+        candidateCount: 1,
       }
     });
     

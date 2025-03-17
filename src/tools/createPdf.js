@@ -5,44 +5,36 @@ const markdownpdf = require('markdown-pdf');
 // JSON Schema Definition
 const createPdfSchema = {
   type: 'object',
-  required: ['outputPath', 'markdownContent', 'options'],
+  required: ['outputPath', 'content', 'format', 'margin', 'printBackground'],
   additionalProperties: false,
   properties: {
-    outputPath: { type: 'string', description: 'Absolute path where the PDF file should be saved' },
-    markdownContent: { type: 'string', description: 'Markdown content to convert to PDF' },
-    options: {
-      type: 'object',
-      description: 'Optional configuration for PDF generation',
-      required: ['pdf_options'],
-      additionalProperties: false,
-      properties: {
-        pdf_options: {
-          type: 'object',
-          description: 'PDF output options',
-          additionalProperties: false,
-          required: ['format', 'margin', 'printBackground'],
-          properties: {
-            format: { type: 'string', description: 'Page format (e.g., "A4", "Letter")' },
-            margin: { type: 'string', description: 'Page margins (e.g., "20mm")' },
-            printBackground: { type: 'boolean', description: 'Print background graphics' }
-          }
-        }
-      }
-    }
+    outputPath: { type: 'string', description: 'Absolute path where the PDF file should be saved.' },
+    content: { type: 'string', description: 'PDF Content.' },
+    format: { type: 'string', enum: ['A4', 'Letter', 'Legal', 'Tabloid'], description: 'Page format.' },
+    margin: { type: 'string', description: 'Page margins (e.g., "20mm")' },
+    printBackground: { type: 'boolean', description: 'Print background graphics.'}
   },
-  description: 'Create a PDF file using markdown content in the specify path, if file already exists then it will skip it.'
+  description: 'Creates a PDF file.'
 };
 
 /**
  * Converts Markdown content to PDF and saves it to a file
  * @param {Object} args - Arguments object
  * @param {string} args.outputPath - Path where the PDF file should be saved
- * @param {string} args.markdownContent - Markdown content to convert to PDF
- * @param {Object} [args.options] - Optional configuration for PDF generation
+ * @param {string} args.content - Markdown content to convert to PDF
+ * @param {string} [args.format] - Page format (e.g., "A4", "Letter")
+ * @param {string} [args.margin] - Page margins (e.g., "20mm")
+ * @param {boolean} [args.printBackground] - Print background graphics
  * @returns {Promise<Object>} Result object with status and path
  */
 function createPdf(args) {
-  const { outputPath, markdownContent, options = {} } = args;
+  const { 
+    outputPath, 
+    content, 
+    format = 'A4', 
+    margin = '20mm', 
+    printBackground = false 
+  } = args;
   
   return new Promise((resolve, reject) => {
     try {
@@ -69,14 +61,14 @@ function createPdf(args) {
       
       // Configure PDF generation options
       const pdfOptions = {
-        paperFormat: options?.pdf_options?.format || 'A4',
-        paperBorder: options?.pdf_options?.margin || '20mm',
-        printBackground: options?.pdf_options?.printBackground || false
+        paperFormat: format,
+        paperBorder: margin,
+        printBackground: printBackground
       };
       
       // Convert Markdown to PDF
       markdownpdf(pdfOptions)
-        .from.string(markdownContent)
+        .from.string(content)
         .to(outputPath, (err) => {
           if (err) {
             reject({

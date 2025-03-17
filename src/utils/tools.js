@@ -218,10 +218,10 @@ async function executeTool(toolName, args) {
   try {
     const rawResult = await tool.execute(args);
     const result = tool.format(rawResult);
-    return `** ${toolName} OUTPUT: ${JSON.stringify(result)} **`;
+    return `** ${toolName} USER OUTPUT: ${JSON.stringify(result)} **`;
   } catch (error) {
     logger.error(`Tool error: ${JSON.stringify(error)}`);
-    return `** ${toolName} ERROR: ${JSON.stringify(error ||error.error || error.message)} **`;
+    return `** ${toolName} USER ERROR: ${JSON.stringify(error ||error.error || error.message)} **`;
   }
 }
 
