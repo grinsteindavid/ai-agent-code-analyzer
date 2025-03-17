@@ -25,13 +25,16 @@ const readPdfFileSchema = {
 
 /**
  * Reads and extracts text content from a PDF file
- * @param {string} path - Path of the PDF file to read
- * @param {Object} options - Optional configuration for PDF parsing
- * @param {number} [options.pageFrom] - First page to extract (1-based indexing)
- * @param {number} [options.pageTo] - Last page to extract (1-based indexing)
+ * @param {Object} args - Arguments object
+ * @param {string} args.path - Path of the PDF file to read
+ * @param {Object} args.options - Optional configuration for PDF parsing
+ * @param {boolean} [args.options.all=true] - Extract all pages
+ * @param {number} [args.options.pageFrom] - First page to extract (1-based indexing)
+ * @param {number} [args.options.pageTo] - Last page to extract (1-based indexing)
  * @returns {Promise<Object>} Result object with status and PDF content information
  */
-function readPdfFile(path, options = {}) {
+function readPdfFile(args) {
+  const { path, options = {} } = args;
   return new Promise((resolve, reject) => {
     if (!fs.existsSync(path)) {
       return reject({

@@ -27,18 +27,17 @@ const showInfoSchema = {
 
 /**
  * Show information with colored output in the console
- * @param {string} message - The message to display (should be a summary or portion of content for large data)
- * @param {string} type - The type of message (info, success, warning, error, debug)
+ * @param {Object} params - The parameters for the function
+ * @param {string} params.message - The message to display (should be a summary or portion of content for large data)
+ * @param {string} [params.type='info'] - The type of message (info, success, warning, error, debug)
  * @returns {Object} Result object containing the message and type
  */
-async function showInfo(message, type = 'info') {
+async function showInfo({ message, type = 'info' }) {
   // Use the logger to display the message and get the result
   const result = logger.log(message, type);
   
   return result;
 }
-
-
 
 module.exports = {
   showInfo,

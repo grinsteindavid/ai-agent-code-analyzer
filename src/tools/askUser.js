@@ -55,14 +55,16 @@ const askUserSchema = {
 
 /**
  * Prompt the user for information
- * @param {string} question - The question or prompt to display
- * @param {string} inputType - Type of input (input, password, confirm, list, checkbox)
- * @param {Object|null} defaultValue - Optional default value object with type and value properties
- * @param {Array<string>} choices - Optional array of choices for list/checkbox types
- * @param {string} validateRegex - Optional regex pattern to validate user input
+ * @param {Object} args - Arguments object
+ * @param {string} args.question - The question or prompt to display
+ * @param {string} args.inputType - Type of input (input, password, confirm, list, checkbox)
+ * @param {Object|null} [args.defaultValue=null] - Optional default value object with type and value properties
+ * @param {Array<string>} [args.choices=[]] - Optional array of choices for list/checkbox types
+ * @param {string} [args.validateRegex=null] - Optional regex pattern to validate user input
  * @returns {Object} Result object containing the user's response with status and input properties
  */
-async function askUser(question, inputType, defaultValue = null, choices = [], validateRegex = null) {
+async function askUser(args) {
+  const { question, inputType, defaultValue = null, choices = [], validateRegex = null } = args;
   try {
     // Configure the question based on input type
     const promptConfig = {
