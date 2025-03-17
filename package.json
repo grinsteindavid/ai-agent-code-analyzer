@@ -21,7 +21,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@google/generative-ai": "^0.24.0",
+    "@google/generative-ai": "0.24.0",
     "ajv": "8.11.2",
     "axios": "1.8.1",
     "chalk": "4.1.2",
@@ -29,8 +29,8 @@
     "commander": "9.4.0",
     "dotenv": "16.0.3",
     "glob": "8.0.3",
-    "inquirer": "^8.2.5",
-    "md-to-pdf": "^5.2.4",
+    "inquirer": "8.2.5",
+    "markdown-pdf": "11.0.0",
     "openai": "4.86.1",
     "pdf-parse": "1.1.1"
   },

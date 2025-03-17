@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { mdToPdf } = require('md-to-pdf');
+const markdownpdf = require('markdown-pdf');
 
 // JSON Schema Definition
 const createPdfSchema = {
@@ -45,7 +45,7 @@ const createPdfSchema = {
 function createPdf(args) {
   const { outputPath, markdownContent, options = {} } = args;
   
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     try {
       // Ensure the directory exists
       const directory = path.dirname(outputPath);
@@ -70,27 +70,34 @@ function createPdf(args) {
       
       // Configure PDF generation options
       const pdfOptions = {
-        dest: outputPath,
-        ...options
+        paperFormat: options?.pdf_options?.format || 'A4',
+        paperBorder: options?.pdf_options?.margin || '20mm',
+        cssPath: options?.stylesheet || null
       };
       
       // Convert Markdown to PDF
-      const pdf = await mdToPdf({ content: markdownContent }, pdfOptions);
-      
-      if (pdf) {
-        resolve({
-          status: 'success',
-          outputPath,
-          message: `PDF created successfully at ${outputPath}`,
-          size: pdf.content.length
+      markdownpdf(pdfOptions)
+        .from.string(markdownContent)
+        .to(outputPath, (err) => {
+          if (err) {
+            reject({
+              status: 'error',
+              outputPath,
+              message: err.message || 'Failed to generate PDF'
+            });
+            return;
+          }
+          
+          // Get file size for reporting
+          const stats = fs.statSync(outputPath);
+          
+          resolve({
+            status: 'success',
+            outputPath,
+            message: `PDF created successfully at ${outputPath}`,
+            size: stats.size
+          });
         });
-      } else {
-        reject({
-          status: 'error',
-          outputPath,
-          message: 'Failed to generate PDF'
-        });
-      }
     } catch (error) {
       reject({
         status: 'error',
