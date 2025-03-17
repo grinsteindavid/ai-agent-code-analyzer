@@ -31,7 +31,7 @@ const getWebsiteContentSchema = {
   },
   required: ["url", "chunkSize", "maxChunks", "chunkIndex", "forceRefresh"],
   additionalProperties: false,
-  description: "Gets the entire content from a website URL and retrives only a partial chunk of it."
+  description: "Reads website content from a URL and returns only a partial chunk of it. Can be used to retrieve specific sections of a website's content."
 };
 
 /**

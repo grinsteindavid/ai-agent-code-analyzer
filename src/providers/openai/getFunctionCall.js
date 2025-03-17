@@ -19,7 +19,7 @@ async function getFunctionCall(options) {
     nextThought = "",
   } = options;
 
-  if(nextThought.toLowerCase().includes("@stop execution@")) {
+  if(nextThought.toUpperCase().includes("@CURRENT PLAN FINISHED@")) {
     return null;
   }
   

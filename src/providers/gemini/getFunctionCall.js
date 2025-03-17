@@ -19,7 +19,7 @@ async function getFunctionCall(options) {
     nextThought = "",
   } = options;
 
-  if(nextThought.toLowerCase().includes("@stop execution@")) {
+  if(nextThought.toUpperCase().includes("@CURRENT PLAN FINISHED@")) {
     return null;
   }
   
@@ -85,15 +85,14 @@ async function getFunctionCall(options) {
     // Prepare the content for generation
     const contents = [
       ...chatHistory,
-      { role: 'user', parts: [{ text: `Next action: ${nextThought}` }] }
+      { role: 'model', parts: [{ text: `Next action: ${nextThought}` }] }
     ];
     
     // Generate content with the new API pattern
     const result = await model.generateContent({
       contents,
       generationConfig: {
-        temperature: 0.1,
-        maxOutputTokens: 1024,
+        temperature: 0.1
       }
     });
     

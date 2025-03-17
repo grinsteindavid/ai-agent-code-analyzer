@@ -20,10 +20,14 @@ const getFunctionCallPrompt = () => `
         -----------------
   
         IMPORTANT:
-        1. If "Next action" is equal to "@STOP EXECUTION@" or "@stop execution@" or say something about doing it then STOP and NEVER return a function call.
-        2. Return ONLY the function call with name and arguments, do not include any additional text.
-        3. Craft your arguments wisely based on the provided "Next action" AND ENTIRE CONVERSATION.
-        4. when creating or updating files, always check file content before updating to avoid errors and keep correct format also structure.
+        1. If "Next action" is equal to "@CURRENT PLAN FINISHED@" then DO NOT return a function call.
+        2. ONLY THE NEXT ACTION CAN DECIDE WHEN TO CALL A FUNCTION.
+        3. Return ONLY the function call with name and arguments, do not include any additional text.
+        4. Craft your arguments wisely based on the provided "Next action" AND ENTIRE CONVERSATION.
+        5. when creating or updating files, always check file content before updating to avoid errors and keep correct format also structure.
+        6. If a tool uses arguments to iterate over chunks of content then iterate over it as needed to accomplish the execution plan goal.
+        7. Keep user operating system in mind for directories, paths, commands, configurations etc.
+        8. Cannot use user output for grep_search, it only work for files.
        `;
 
 module.exports = getFunctionCallPrompt;

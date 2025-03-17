@@ -112,11 +112,11 @@ program
             type: 'list',
             name: 'action',
             message: 'The current goal looks finished. Would you like to add another task to the current conversation or get a summary?',
-            choices: ['Add task', 'Get summary', 'Finish conversation'],
+            choices: ['Add task to current conversation', 'Get summary of actions', 'Finish conversation'],
           },
         ]);
         
-        if (action === 'Add task') {
+        if (action === 'Add task to current conversation') {
           // User wants to continue, ask for additional input
           const { query } = await inquirer.prompt([
             {

@@ -71,7 +71,7 @@ const grepSearchSchema = {
       description: "Maximum buffer size in bytes for reading files (default: 1048576 / 1mb).",
     }
   },
-  description: "Search and find text patterns in files, filtering lines by a specified pattern."
+  description: "Search and find text patterns only in files located in the user specified directory, filtering lines by a specified pattern."
 };
 
 /**

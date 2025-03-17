@@ -23,7 +23,7 @@ const updateFileSchema = {
       description: 'Mode of update: overwrite (default), append to end, or prepend to beginning'
     }
   },
-  description: 'Updates the content of an existing file. Can overwrite entirely or append/prepend content. Always check file content before updating to avoid errors.',
+  description: 'Updates the content of an existing file. Can overwrite entirely or append/prepend content. Always check file content before updating to avoid errors. Always keep identation, spacing, and formatting consistent based on the file type.',
  
 };
 
