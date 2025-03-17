@@ -4,7 +4,7 @@
 
 - Started: March 2, 2025
 - Status: Ongoing
-- Last Updated: March 14, 2025
+- Last Updated: March 17, 2025
 
 
 ## Overview
@@ -148,6 +148,11 @@ assistantQ task --query "summarize the key points from research-paper.pdf"
      - `summary.js`: Results summarization parameters
 
 3. **AI Providers**
+   - **Provider Framework**
+     - Provider-agnostic implementation through shared interface
+     - Each provider must implement four key functions with identical signatures
+     - Uses centralized system prompts for consistent behavior
+
    - **OpenAI Provider**
      - Handles communication with OpenAI APIs using GPT-4o-mini
      - Implements four key functions that use the centralized system prompts:
@@ -161,29 +166,39 @@ assistantQ task --query "summarize the key points from research-paper.pdf"
      - Uses optimized schema handling for function calling
      - Implements the same four key functions with Gemini-specific optimizations
 
-3. **Context Management (context.js)**
+4. **Context Management (context.js)**
    - Maintains state throughout execution
    - Stores conversation history, current directory, and plan
    - Provides utility functions for state management
 
-4. **Tools Management (tools.js)**
+5. **Tools Management (tools.js)**
    - Registers available tools with their schemas and execution functions
    - Validates tool arguments against schemas
    - Handles tool execution and formatting of results
+   - Manages user confirmation for potentially destructive operations
+   - Groups tools by functionality (file system, web, PDF, system)
 
 ### Available Tools
 
+#### File System Operations
 1. **list_directories**: Lists files and directories in a specified path
 2. **read_file_content**: Reads the content of a file
 3. **grep_search**: Searches for patterns in files
 4. **find_files**: Finds files matching specific patterns
 5. **create_file**: Creates a new file with specified content
 6. **update_file**: Updates the content of an existing file
-7. **web_search**: Performs web searches using DuckDuckGo Lite with customizable max result count
-8. **show_info**: Displays color-coded information messages with appropriate icons
+
+#### Web Interaction
+7. **web_search**: Performs web searches using DuckDuckGo Lite with customizable max result count and domain filtering
+8. **get_website_content**: Fetches and processes content from specified websites
+
+#### PDF Operations
 9. **read_pdf_file**: Extracts text content from PDF files with options for page selection
-10. **get_website_content**: Fetches and processes content from specified websites
+10. **create_pdf**: Creates PDF files from various input formats
+
+#### System Interaction
 11. **execute_command**: Executes system commands with user confirmation for safety
+12. **show_info**: Displays color-coded information messages with appropriate icons
 
 ## Execution Flow Sequence
 
@@ -191,96 +206,146 @@ assistantQ task --query "summarize the key points from research-paper.pdf"
 sequenceDiagram
     participant User
     participant CLI as CLI Interface
-    participant OpenAI as OpenAI Provider
+    participant Provider as AI Provider (OpenAI/Gemini)
     participant Context as Context Manager
     participant Tools as Tools Manager
     participant FileSystem as File System
     participant WebAPI as Web APIs
+    participant PDFService as PDF Service
 
-    User->>CLI: Initiates query with 'analyze' command
-    CLI->>OpenAI: Calls getPlan with user query
-    OpenAI->>Tools: Retrieves current directory info
-    Tools->>FileSystem: Lists directory contents
-    FileSystem-->>Tools: Returns directory contents
-    Tools-->>OpenAI: Returns directory structure
-    OpenAI-->>CLI: Returns execution plan
-    CLI->>Context: Stores plan
+    User->>CLI: Initiates query with 'task' command
+    CLI->>CLI: Selects AI provider based on user preference
+    CLI->>Provider: Calls getPlan with user query
+    Provider-->>CLI: Returns execution plan
+    CLI->>Context: Stores plan in context
     
     loop Until completion
-        CLI->>OpenAI: Calls getNextThought
-        OpenAI->>Context: Retrieves plan and history
-        Context-->>OpenAI: Returns plan and history
-        OpenAI->>OpenAI: Generates next thought
-        OpenAI-->>CLI: Returns next thought
+        CLI->>Provider: Calls getNextThought based on plan and history
+        Provider->>Context: Retrieves plan and conversation history
+        Context-->>Provider: Returns plan and history
+        Provider-->>CLI: Returns next thought for execution
         
-        CLI->>OpenAI: Calls getFunctionCall with next thought
-        OpenAI->>OpenAI: Determines appropriate function call
-        OpenAI-->>CLI: Returns function call details
-        CLI->>Tools: Executes specified tool
-        alt File System Operation
-            Tools->>FileSystem: Performs file operation
-            FileSystem-->>Tools: Returns result
-        else Web Search
-            Tools->>WebAPI: Performs web search
-            WebAPI-->>Tools: Returns search results
+        CLI->>Provider: Calls getFunctionCall with next thought
+        Provider-->>CLI: Returns selected function call with arguments
+        
+        alt User Confirmation Required
+            CLI->>User: Requests permission for potentially destructive operations
+            User-->>CLI: Provides confirmation
         end
+        
+        CLI->>Tools: Executes specified tool
+        
+        alt File System Operation
+            Tools->>FileSystem: Performs file operation (read/write/search)
+            FileSystem-->>Tools: Returns operation result
+        else Web Search
+            Tools->>WebAPI: Performs web search with DuckDuckGo Lite
+            WebAPI-->>Tools: Returns structured search results
+        else PDF Operation
+            Tools->>PDFService: Extracts text or creates PDF
+            PDFService-->>Tools: Returns PDF content or creation status
+        else Website Content
+            Tools->>WebAPI: Fetches website content
+            WebAPI-->>Tools: Returns parsed website content
+        else Command Execution
+            Tools->>FileSystem: Executes system command
+            FileSystem-->>Tools: Returns command output
+        end
+        
         Tools-->>CLI: Returns formatted result
-        CLI->>Context: Stores result in conversation
+        CLI->>Context: Stores result in conversation history
+        
+        alt Task Completed
+            CLI->>User: Asks if user wants to continue, add new task, or finish
+            User-->>CLI: Provides choice (continue/summary/finish)
+        end
     end
     
-    CLI->>OpenAI: Calls getSummary
-    OpenAI->>Context: Retrieves complete history
-    Context-->>OpenAI: Returns history
-    OpenAI-->>CLI: Returns final summary
-    CLI-->>User: Displays summary
+    CLI->>Provider: Calls getSummary for completed tasks
+    Provider->>Context: Retrieves complete conversation history
+    Context-->>Provider: Returns full history
+    Provider-->>CLI: Returns comprehensive action summary
+    CLI-->>User: Displays final summary with color-coded results
 ```
 
 ## Prompt Structure and Tool Sequence
 
-### 1. Plan Generation
+### 1. Provider Selection and Plan Generation
 
-The system starts with the `getPlan` function, which uses the following prompt structure:
+The system starts with provider selection and plan generation:
 
-- **System Prompt**: Instructs the AI to create an execution plan based on:
-  - Operating system info
-  - Node.js version
-  - Current working directory and its contents
-  - Available tools and their descriptions
-- **User Message**: Contains the user's query
+1. **Provider Selection**:
+   - Based on user-specified provider (default: OpenAI)
+   - Supports both OpenAI (GPT-4o-mini) and Gemini (Gemini 2.0 Flash) models
+   - Each provider implements the same core functions but with optimized implementations
 
-The response is a structured plan with a goal statement and numbered steps.
+2. **Plan Generation**:
+   - The `getPlan` function uses a centralized prompt structure from `system-prompts/plan.js`
+   - The prompt includes:
+     - Operating system information
+     - Node.js version
+     - Current working directory
+     - Available tools and their capabilities
+   - User's query is included as the user message
+   - Returns a structured plan with goal statement and numbered steps
 
-### 2. Function Call Generation
+### 2. Execution Loop
 
-The system now uses a more structured three-stage process:
+The system uses a three-stage process within an execution loop:
 
-1. **First Stage (Next Thought Generation)**:
-   - The `getNextThought` function generates the next step based on the plan
-   - System prompt contains context about directory, available tools, and instructions to follow the plan
-   - Previous messages are included for context
-   - Generates a "next thought" explaining what action will be taken
+1. **Next Thought Generation**:
+   - The `getNextThought` function generates the next action based on the plan
+   - Uses centralized prompts from `system-prompts/next-thought.js`
+   - Includes previous conversation history for context
+   - Generates a detailed explanation of the next step to take
 
-2. **Second Stage (Tool Selection)**:
-   - The `getFunctionCall` function uses the next thought as guidance
-   - Selects the appropriate tool and arguments
-   - Returns a structured function call object
+2. **Function Call Selection**:
+   - The `getFunctionCall` function uses the next thought to select a tool
+   - Uses centralized prompts from `system-prompts/function-call.js`
+   - Selects appropriate tool and arguments based on the task
+   - Returns a structured function call object with name and arguments
 
-### 3. Tool Execution
+3. **Tool Execution and User Interaction**:
+   - Tools requiring confirmation prompt the user before execution
+   - Tool execution is managed through the `executeTool` function
+   - Each tool has:
+     - A JSON schema for argument validation
+     - An execution function for the actual operation
+     - A format function for result presentation
+   - Results are color-coded using the logger utility
+   - All results are stored in the conversation history
+   - When tasks appear complete, user is asked whether to continue, add a new task, or finish
 
-Tools are executed based on their registered functions in the tools.js file:
+### 3. Available Tools
 
-1. Each tool has a schema for argument validation
-2. The execution function is called with the provided arguments
-3. Results are formatted according to each tool's formatting function
-4. Results are added to the conversation history
+The system provides a rich set of tools for various operations:
+
+1. **File System Tools**:
+   - Directory listing, file reading/creation/updating
+   - Pattern-based file searching
+   - Grep-like content searching
+
+2. **Web Interaction Tools**:
+   - Web search using DuckDuckGo Lite with customizable result count
+   - Website content extraction and processing
+
+3. **PDF Processing Tools**:
+   - PDF content extraction with page selection
+   - PDF creation from various input formats
+
+4. **System Interaction**:
+   - Command execution with safety confirmations
+   - Information display with color-coding
 
 ### 4. Summary Generation
 
-After all steps are completed, the `getSummary` function:
+After completing the execution loop, the system generates a comprehensive summary:
 
-- Reviews the entire conversation history
+- The `getSummary` function uses centralized prompts from `system-prompts/summary.js`
+- Reviews the complete conversation history
 - Compares actual execution against the original plan
-- Generates a concise summary of findings
+- Generates a detailed summary of all actions and findings
+- Results are presented with color-coding for better readability
 - Adds the summary to the conversation history
 
 ## Special Focus: Key Features
