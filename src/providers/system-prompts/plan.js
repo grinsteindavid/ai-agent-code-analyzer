@@ -44,7 +44,7 @@ const getPlanPrompt = (maxTokens, includePastConversation) => `You are a helpful
         7. Do not include steps that cannot be made with available tools.
         8. Be as technical as possible.
         9. Do not create files for summaries unless specify by the user.
-        10. Do not return code snippets. 
+        10. Do not return code snippets or tool_code snippets. 
         11. MAX TOKENS: ${maxTokens}.
 
         YOU MUST EXPLICITLY INCLUDE FOLLOWING IN YOUR RESPONSE:

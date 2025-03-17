@@ -13,10 +13,9 @@ const createPdfSchema = {
     options: {
       type: 'object',
       description: 'Optional configuration for PDF generation',
-      required: ['stylesheet', 'pdf_options'],
+      required: ['pdf_options'],
       additionalProperties: false,
       properties: {
-        stylesheet: { type: 'string', description: 'Custom CSS stylesheet URL or path' },
         pdf_options: {
           type: 'object',
           description: 'PDF output options',
@@ -31,7 +30,7 @@ const createPdfSchema = {
       }
     }
   },
-  description: 'Converts Markdown content to PDF and saves it to the specified path, .'
+  description: 'Create a PDF file using markdown content in the specify path, if file already exists then it will skip it.'
 };
 
 /**
@@ -72,7 +71,7 @@ function createPdf(args) {
       const pdfOptions = {
         paperFormat: options?.pdf_options?.format || 'A4',
         paperBorder: options?.pdf_options?.margin || '20mm',
-        cssPath: options?.stylesheet || null
+        printBackground: options?.pdf_options?.printBackground || false
       };
       
       // Convert Markdown to PDF
