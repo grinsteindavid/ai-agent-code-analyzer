@@ -124,7 +124,7 @@ const tools = {
       if (result.status === 'error') {
         logger.error(` ❌ Error creating PDF ${result.outputPath}`);
       } else {
-        logger.success(` Created PDF: ${result.outputPath} (${result.pages} pages, ${result.size} bytes)`);
+        logger.success(` Created PDF: ${result.outputPath} (${result.size} bytes)`);
       }
       return result;
     }
