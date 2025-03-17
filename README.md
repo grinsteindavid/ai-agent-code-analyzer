@@ -77,49 +77,49 @@ The AI Agent is an AI-powered CLI tool that uses OpenAI's GPT or Gemini models t
 
 ```bash
 # Basic usage - ask for help with any task
-node src/index.js do -q "help me accomplish a task"
+node src/index.js task -q "help me accomplish a task"
 
 # Specify AI provider (default: openai)
-assistantQ do --query"What files are in src folder?" --provider openai
+assistantQ task --query "What files are in src folder?" --provider openai
 
 # Use Google's Gemini model instead of OpenAI
-assistantQ do --query"What files are in src folder?" --provider gemini
+assistantQ task --query "What files are in src folder?" --provider gemini
 
 # Execute system commands
-node src/index.js do --query"run ls -la and summarize the output"
+node src/index.js task --query "run ls -la and summarize the output"
 
 # Read file contents
-node src/index.js do --query"read this file package.json"
+node src/index.js task --query "read this file package.json"
 
 # Perform web searches and generate structured output
-assistantQ do --query"do a web search for top 5 social medias and create a json with that info"
+assistantQ task --query "do a web search for top 5 social medias and create a json with that info"
 
 # Perform domain-specific web search
-node src/index.js do --query"search for nodejs best practices on github.com"
+node src/index.js task --query "search for nodejs best practices on github.com"
 
 # Find specific patterns in your code
-node src/index.js do --query"find all files that import axios"
+node src/index.js task --query "find all files that import axios"
 
 # Get insights about your codebase architecture
-assistantQ do --query"explain the directory structure and key components"
+assistantQ task --query "explain the directory structure and key components"
 
 # Create documentation based on your code
-node src/index.js do --query"generate documentation for the tools directory"
+node src/index.js task --query "generate documentation for the tools directory"
 
 # Update an existing file with new content
-assistantQ do --query"update package.json to add axios dependency"
+assistantQ task --query "update package.json to add axios dependency"
 
 # Extract content from a PDF file
-node src/index.js do --query"extract text from document.pdf"
+node src/index.js task --query "extract text from document.pdf"
 
 # Extract specific pages from a PDF file
-assistantQ do --query"read pages 5-10 from my-documentation.pdf"
+assistantQ task --query "read pages 5-10 from my-documentation.pdf"
 
 # Search for specific content within a PDF file
-assistantQ do --query"find mentions of 'API authentication' in documentation.pdf"
+assistantQ task --query "find mentions of 'API authentication' in documentation.pdf"
 
 # Summarize the content of a PDF file
-assistantQ do --query"summarize the key points from research-paper.pdf"
+assistantQ task --query "summarize the key points from research-paper.pdf"
 ```
 
 ## Options
@@ -320,7 +320,7 @@ The AI Agent demonstrates an effective architecture for AI-powered CLI tools. By
 ## Example Output
 
 ```bash
-assistantQ do --query"how many jpeg and pdf do i have in the old dir"
+assistantQ task --query "how many jpeg and pdf do i have in the old dir"
 ℹ️  Generating plan...
 ℹ️  I aim to determine the number of JPEG and PDF files in the "old" directory. First, I will explore the working directory to locate the "old" directory.
 
@@ -354,7 +354,7 @@ This approach effectively combined directory exploration and file discovery to m
 ---------------------------------------------
 
 ```bash
-assistantQ do --query"explain codebase"
+assistantQ task --query "explain codebase"
 ℹ️  Generating plan...
 ℹ️  The goal is to explain the codebase by examining its structure and ideally understanding the main components and their functionalities. I will start by exploring the working directory to get an overview of the files and directories present. 
 
