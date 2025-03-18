@@ -203,7 +203,7 @@ async function executeTool(toolName, args) {
 
   if (!validateSchema(args, tool.schema)) {
     console.error(`Invalid arguments for '${toolName}'`);
-    return `Invalid arguments for '${toolName}'`;
+    return `Invalid arguments for '${toolName}', try again and check arguments.`;
   }
   
   // Check if the tool requires confirmation
