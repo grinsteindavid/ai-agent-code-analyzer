@@ -20,7 +20,7 @@ const getFunctionCallPrompt = () => `
         -----------------
   
         IMPORTANT:
-        1. You can ONLY use Available tools.
+        1. Be mindful of the user max resources, therefore do not try to use tools that exceed the user max resources limit for example searching too many files.
         2. You can ONLY use tools that are explicitly provided.
         3. YOU CAN ONLY USE ONE TOOL.
         4. Learn from past errors.
