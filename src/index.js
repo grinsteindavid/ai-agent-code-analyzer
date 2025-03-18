@@ -74,7 +74,7 @@ program
     await generatePlan({ query, selectedProvider });
     
     // Then proceed with function calls in a loop until completion
-    let functionCalls = [];
+    let continueExecution = true;
     
     do {
       
@@ -128,14 +128,17 @@ program
             },
           ]);
           await generatePlan({ query, includePastConversation: true, selectedProvider });
+          continue;
         } else if (action === 'Finish conversation') {
           // User wants to finish, break the loop
           process.exit(0);
         }
+
+        continueExecution = false
       } catch (error) {
         logger.error(`Retrying... ${error}`);
       }
-    } while (functionCalls && functionCalls.length > 0); // Continue until execution is complete
+    } while (continueExecution); // Continue until execution is complete
 
     logger.info(" Generating summary... \n");
     const summary = await selectedProvider.getSummary();
