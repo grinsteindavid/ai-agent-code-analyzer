@@ -4,12 +4,14 @@
 
 - Started: March 2, 2025
 - Status: Ongoing
-- Last Updated: March 17, 2025
+- Last Updated: March 18, 2025
 
 
 ## Overview
 
-The AI Agent is an AI-powered CLI tool that uses OpenAI's GPT or Gemini models to assist with any task you need to perform on your computer. While initially designed for code analysis, it now serves as a general-purpose terminal assistant that can analyze codebases, search for specific patterns, perform operations on files, extract content from PDFs, search the web, and more. The system follows an agent-based architecture where the AI creates a plan, executes a series of tools according to that plan, and then summarizes the findings with detailed action summaries for each executed step.
+The AI Agent is an AI-powered CLI tool that uses OpenAI's GPT or Gemini models to assist with any task you need to perform on your computer. While initially designed for code analysis, it now serves as a general-purpose terminal assistant that can analyze codebases, search for specific patterns, perform operations on files, extract content from PDFs, search the web, and more. 
+
+The system follows an agent-based architecture where the AI creates a plan, executes a series of tools according to that plan, and then summarizes the findings with detailed action summaries for each executed step. The updated architecture now supports parallel function calls, allowing the AI to request multiple tools to be executed simultaneously through an array-based function call implementation. This enhancement improves efficiency by enabling the execution of related operations in a single interaction rather than requiring multiple sequential calls.
 
 ## Features
 
@@ -22,6 +24,9 @@ The AI Agent is an AI-powered CLI tool that uses OpenAI's GPT or Gemini models t
 - **Centralized System Prompts**: Consistent prompting architecture across AI providers
   - Modular system prompt design for better maintainability
   - Provider-agnostic implementations for easier extension
+- **Parallel Function Calls**: Support for executing multiple tools simultaneously
+  - Array-based function call architecture for both OpenAI and Gemini providers
+  - Improved efficiency through parallel tool execution
 - **Web Research Integration**: Search the web directly from your terminal with DuckDuckGo Lite
   - Customizable search parameters including number of results
   - Structured results with titles, URLs, and descriptions
@@ -226,14 +231,14 @@ sequenceDiagram
         Provider-->>CLI: Returns next thought for execution
         
         CLI->>Provider: Calls getFunctionCall with next thought
-        Provider-->>CLI: Returns selected function call with arguments
+        Provider-->>CLI: Returns array of function calls with arguments
         
         alt User Confirmation Required
             CLI->>User: Requests permission for potentially destructive operations
             User-->>CLI: Provides confirmation
         end
         
-        CLI->>Tools: Executes specified tool
+        CLI->>Tools: Executes each function call in the array
         
         alt File System Operation
             Tools->>FileSystem: Performs file operation (read/write/search)
@@ -300,14 +305,16 @@ The system uses a three-stage process within an execution loop:
    - Generates a detailed explanation of the next step to take
 
 2. **Function Call Selection**:
-   - The `getFunctionCall` function uses the next thought to select a tool
+   - The `getFunctionCall` function uses the next thought to select tools to execute
    - Uses centralized prompts from `system-prompts/function-call.js`
-   - Selects appropriate tool and arguments based on the task
-   - Returns a structured function call object with name and arguments
+   - Selects appropriate tools and arguments based on the task
+   - Returns an array of function call objects, each with name and arguments
+   - Supports parallel tool calls for improved efficiency
 
 3. **Tool Execution and User Interaction**:
    - Tools requiring confirmation prompt the user before execution
    - Tool execution is managed through the `executeTool` function
+   - Function calls are processed sequentially from the array
    - Each tool has:
      - A JSON schema for argument validation
      - An execution function for the actual operation
@@ -316,7 +323,36 @@ The system uses a three-stage process within an execution loop:
    - All results are stored in the conversation history
    - When tasks appear complete, user is asked whether to continue, add a new task, or finish
 
-### 3. Available Tools
+### 3. Array-Based Function Calls
+
+The system has been enhanced with an array-based function call architecture that allows for parallel tool execution:
+
+1. **Unified Return Format**:
+   - Both OpenAI and Gemini providers now return function calls as arrays
+   - Each array element is a structured object with `name` and `arguments` properties
+   - Empty arrays indicate task completion or no tool selection
+
+2. **Provider-Specific Implementations**:
+   - **OpenAI Provider**:
+     - Uses OpenAI's native `parallel_tool_calls` capability
+     - Processes both modern tool calls format and legacy function call formats
+     - Handles multiple function calls simultaneously when appropriate
+   - **Gemini Provider**:
+     - Converts Gemini's function call format to the standardized array format
+     - Processes multiple function calls using dedicated array handling
+
+3. **Sequential Execution Flow**:
+   - While function calls are returned as an array, they are executed sequentially
+   - The system iterates through the array of function calls and executes each one
+   - Results from each execution are added to the conversation history
+
+4. **Benefits**:
+   - Improved efficiency by reducing round-trips between the system and AI providers
+   - Enhanced contextual understanding by grouping related operations
+   - More flexible agent behavior allowing for multi-step actions in a single response
+   - Future-proof architecture supporting more advanced parallel execution patterns
+
+### 4. Available Tools
 
 The system provides a rich set of tools for various operations:
 
