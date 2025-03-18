@@ -128,7 +128,6 @@ program
             },
           ]);
           await generatePlan({ query, includePastConversation: true, selectedProvider });
-          functionCalls = [];
         } else if (action === 'Finish conversation') {
           // User wants to finish, break the loop
           process.exit(0);
