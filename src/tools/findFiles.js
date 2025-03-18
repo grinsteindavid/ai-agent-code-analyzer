@@ -8,7 +8,7 @@ const logger = require('../utils/logger');
  */
 const findFilesSchema = {
   type: "object",
-  required: ["pattern", "dirPath", "type", "options"],
+  required: ["pattern", "dirPath", "type", "options", "limit"],
   additionalProperties: false,
   properties: {
     pattern: { 
@@ -20,16 +20,28 @@ const findFilesSchema = {
       description: "Directory path to search within (absolute or relative to current directory)"
     },
     options: { 
-      type: "string", 
-      description: "Additional options like maxDepth (e.g., 'maxDepth=2' to limit search depth)"
+      type: "object",
+      properties: {
+        maxDepth: {
+          type: "number",
+          description: "Maximum depth to search (default: 2 to limit search depth)"
+        }
+      },
+      required: ["maxDepth"],
+      additionalProperties: false,
+      description: "Additional options for file search"
     },
     type: { 
       type: "string", 
       enum: ["f", "d", "l"],
       description: "Type of items to find: 'f' for regular files, 'd' for directories, 'l' for symbolic links"
     },
+    limit: {
+      type: "number",
+      description: "Maximum number of results to return (default: 50)"
+    },
   },
-  description: "It returns a list of files and directories matching a pattern in the specified directory path.",
+  description: "It returns a list of files and directories matching a pattern in the specified directory path. It also returns metadata about the search process, including the total number of matches and any errors that occurred.",
  
 };
 
@@ -86,6 +98,7 @@ function parseOptions(optionsStr) {
       if (key === 'maxDepth' && !isNaN(value)) {
         options.maxDepth = parseInt(value, 10);
       }
+      // Add other option parsing here if needed in the future
     });
   }
   
@@ -100,19 +113,23 @@ function parseOptions(optionsStr) {
  * @param {string} args.dirPath - The base directory to start the search from (defaults to current directory)
  * @param {string} args.options - Additional options (e.g., "maxDepth=3")
  * @param {string} args.type - Filter by file type: 'f' for files, 'd' for directories, 'l' for symbolic links
+ * @param {number} args.limit - Maximum number of results to return (default: 50)
  * @returns {Promise<Object>} A promise that resolves to an object with a files array containing matching paths
  */
 function findFiles(args) {
-  const { pattern, dirPath = ".", options = "", type = "" } = args;
+  const { pattern, dirPath = ".", options = { maxDepth: 2 }, type = "", limit = 50 } = args;
   return new Promise((resolve, reject) => {
     try {
       const parsedOptions = parseOptions(options);
       const patternRegex = globToRegExp(pattern);
       const results = [];
+      let totalMatches = 0; // Counter for all matching files
       const errors = {
         accessErrors: [],
         traverseErrors: []
       };
+      // Convert limit to number and ensure it's a positive value
+      const resultLimit = Math.max(1, parseInt(limit, 10) || 50);
       
       // Define the recursive function to traverse directories
       function traverseDirectory(currentPath, depth = 0) {
@@ -135,7 +152,11 @@ function findFiles(args) {
           if (patternRegex.test(entry.name)) {
             // Check if the entry matches the specified type
             if (!type || matchesType(entryPath, type)) {
-              results.push(entryPath);
+              totalMatches++; // Increment total matches counter
+              // Only add to results array if we haven't reached the limit
+              if (results.length < resultLimit) {
+                results.push(entryPath);
+              }
             }
           }
           
@@ -158,7 +179,9 @@ function findFiles(args) {
       resolve({ 
         files: results, 
         metadata: { 
-          total: results.length,
+          message: `Found ${totalMatches} files matching pattern "${pattern}" in directory "${dirPath}. ${results.length} files returned.`,
+          total: totalMatches,
+          returned: results.length,
           errors: errors.accessErrors.length > 0 || errors.traverseErrors.length > 0 ? errors : undefined
         } 
       });

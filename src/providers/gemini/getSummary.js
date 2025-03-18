@@ -25,7 +25,7 @@ async function getSummary(options = {}) {
     const chatHistory = getMessages().map(msg => ({
       role: msg.role === 'assistant' ? 'model' : msg.role,
       parts: [{ text: msg.content }]
-    }));
+    })).filter(msg => msg.role === 'model');
 
     // Create system prompt
     const systemPrompt = getSummaryPrompt(maxTokens);

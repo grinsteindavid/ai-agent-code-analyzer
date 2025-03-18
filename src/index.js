@@ -74,7 +74,7 @@ program
     await generatePlan({ query, selectedProvider });
     
     // Then proceed with function calls in a loop until completion
-    let functionCall;
+    let functionCalls = [];
     
     do {
       
@@ -87,22 +87,24 @@ program
           return;
         }
         
-        // Get the next function call using the nextThought
-        functionCall = await selectedProvider.getFunctionCall({
+        // Get the next function calls using the nextThought
+        functionCalls = await selectedProvider.getFunctionCall({
           functions: functionSchemas,
           nextThought: nextThought,
         });
         
         // Execute the function if we have one
-        if (functionCall) {
+        if (functionCalls && functionCalls.length > 0) {
           addMessage('assistant', `${nextThought}`);
           logger.info(` ${nextThought}\n`);
           
-          logger.debug(` Tool: ${functionCall.name}`);
-          logger.debug(` Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
-          
-          const result = await executeTool(functionCall.name, functionCall.arguments);
-          addMessage('user', `${result}`);
+          for (const functionCall of functionCalls) {
+            logger.debug(` Tool: ${functionCall.name}`);
+            logger.debug(` Arguments: ${JSON.stringify(functionCall.arguments)}\n`);
+            
+            const result = await executeTool(functionCall.name, functionCall.arguments);
+            addMessage('user', `${result}`);
+          }
           continue;
         }
 
@@ -126,15 +128,15 @@ program
             },
           ]);
           await generatePlan({ query, includePastConversation: true, selectedProvider });
-          functionCall = true;
+          functionCalls = [];
         } else if (action === 'Finish conversation') {
           // User wants to finish, break the loop
           process.exit(0);
         }
       } catch (error) {
-        logger.error(`Retrying... ${error}`)
+        logger.error(`Retrying... ${error}`);
       }
-    } while (functionCall); // Continue until no more function calls
+    } while (functionCalls && functionCalls.length > 0); // Continue until execution is complete
 
     logger.info(" Generating summary... \n");
     const summary = await selectedProvider.getSummary();

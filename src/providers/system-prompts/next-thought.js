@@ -42,7 +42,7 @@ const getNextThoughtPrompt = (maxTokens) =>`
         7. Do not create files for summaries unless specify by the user, instead use show_info tool with short summaries.
         8. It is important to include relevant information from user findings and outputs using show_info tool.
         9. Learn from your errors and TRY DIFFERENT APPROACHES AS MANY TIMES AS NEEDED for every step.
-        10. Return ONLY the next thought of how are you going to proceed to achieve the execution plan goal and steps based on previous actions AND WHY you are going to take this action.
+        10. Return ONLY the next action of how are you going to achieve the execution plan goal and steps based on previous actions.
         11. If you have already achieved the entire execution plan goal and steps thoroughly, return "@CURRENT PLAN FINISHED@".
         12. DO NOT USE a list just a short description of how you are going to take action.
         13. If a tool uses arguments to iterate over chunks of content then iterate over it as needed to accomplish the execution plan goal.

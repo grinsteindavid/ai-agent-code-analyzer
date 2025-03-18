@@ -22,13 +22,12 @@ const getFunctionCallPrompt = () => `
         IMPORTANT:
         1. Be mindful of the user max resources, therefore do not try to use tools that exceed the user max resources limit for example searching too many files.
         2. You can ONLY use tools that are explicitly provided.
-        3. YOU CAN ONLY USE ONE TOOL.
-        4. Learn from past errors.
-        5. when creating or updating files, always check file content before updating to avoid errors and keep correct format also structure.
-        6. If a tool uses arguments to iterate over chunks of content then iterate over it as needed to accomplish the execution plan goal.
-        7. Keep user operating system in mind for directories, paths, commands, configurations etc.
-        8. Cannot use user output for grep_search, it only work for files.
-        9. DO NOT ASK QUESTIONS TO THE USER. 
+        3. Learn from past errors.
+        4. when creating or updating files, always check file content before updating to avoid errors and keep correct format also structure.
+        5. If a tool uses arguments to iterate over chunks of content then iterate over it as needed to accomplish the execution plan goal.
+        6. Keep user operating system in mind for directories, paths, commands, configurations etc.
+        7. Cannot use user output for grep_search, it only work for files.
+        8. DO NOT ASK QUESTIONS TO THE USER. 
        `;
 
 module.exports = getFunctionCallPrompt;

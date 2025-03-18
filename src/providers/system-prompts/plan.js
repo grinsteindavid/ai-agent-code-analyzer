@@ -28,7 +28,7 @@ const getPlanPrompt = (maxTokens, includePastConversation) => `You are a helpful
         
         IMPORTANT:
         1. Always include a goal at the beginning.
-        2. Include a list of steps if needed ONLY ONCE to archive the goal if complexity is high.
+        2. ONLY INCLUDE ONE list of steps if needed, ONLY ONCE, to archive the goal if complexity is high.
         3. Be as short as possible.
         4. Your actions can only be completed using the available tools.
         5. Any math/arithmetical operations cannot be performed by Available tools ONLY by you.
