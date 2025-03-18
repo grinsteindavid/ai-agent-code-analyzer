@@ -201,7 +201,7 @@ async function getWebsiteContentTool(args) {
         contentType: contentData.contentType,
         statusCode: contentData.statusCode,
         byteSize: contentData.byteSize,
-        message: `Retrieved ${chunksToReturn.length} of ${contentData.totalChunks} chunks (lines of text)`
+        message: `Retrieved ${chunksToReturn.length} of ${contentData.totalChunks} chunks (lines of text) in memory.`
       });
     } catch (error) {
       // Provide more descriptive error messages based on the error type
