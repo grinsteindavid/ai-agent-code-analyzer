@@ -1,5 +1,5 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const { getMessages, addMessage, getPlan } = require("../../utils/context");
+const { getMessages, addMessage } = require("../../utils/context");
 const { getSummaryPrompt } = require("../system-prompts");
 
 // Initialize Gemini API
@@ -14,12 +14,10 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 async function getSummary(options = {}) {
   // Default options
   const {
-    maxTokens = 400,
+    maxTokens = 600,
   } = options;
 
   try {
-    // Get the plan from context
-    const plan = getPlan();
 
     // Format conversation history for Gemini
     const chatHistory = getMessages().map(msg => ({
