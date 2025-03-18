@@ -29,7 +29,7 @@ async function getPlan(options) {
       getMessages().map(msg => ({
         role: msg.role === 'assistant' ? 'model' : msg.role,
         parts: [{ text: msg.content }]
-      })).filter(msg => msg.role === 'model') : [];
+      })).filter(msg => msg.role === 'user') : [];
 
     // Create system prompt with extra context about past conversation if needed
     const systemPrompt = getPlanPrompt(maxTokens, includePastConversation);
