@@ -45,11 +45,11 @@ const getNextThoughtPrompt = (maxTokens) =>`
         10. Return ONLY the next action of how are you going to achieve the execution plan goal and steps based on previous actions.
         11. If you have already achieved the entire execution plan goal and steps thoroughly, return "@CURRENT PLAN FINISHED@".
         12. DO NOT USE a list just a short description of how you are going to take action.
-        13. If a tool uses arguments to iterate over chunks of content then iterate over it as needed to accomplish the execution plan goal.
+        13. If a tool uses arguments to iterate over chunks of content then ONLY iterate over it until you have enough content to accomplish the execution plan goal, avoid unnecesary iterations.
         14. Test your actions to ensure they are correct like testing a script or code or configurations before going to next steps.
         15. Keep user operating system in mind for directories, paths, commands, configurations etc.
         16. DO NOT ASK QUESTIONS TO THE USER. 
-        17. Cannot use user output for grep_search, it only work for files.
+        17. DO NOT USE grep_search tool UNLESS YOU NEED TO SEARCH WITHIN FILES.
         18. Do not summarize unless requested.
         19. Always check if the file exists before trying to create or update one.
         20. DO NOT INCLUDE CODE, CODE SNIPPETS, OR TOOL_CODE IN YOUR RESPONSE.

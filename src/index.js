@@ -84,7 +84,7 @@ program
 
         if(!nextThought) {
           logger.error(" Error getting next thought");
-          return;
+          continue;
         }
         
         // Get the next function calls using the nextThought

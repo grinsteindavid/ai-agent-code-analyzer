@@ -14,11 +14,7 @@ const getWebsiteContentSchema = {
     },
     chunkSize: {
       type: "number",
-      description: "Size of each content chunk in number of lines. default 100",
-    },
-    maxChunks: {
-      type: "number",
-      description: "Maximum number of chunks to return. default 1",
+      description: "Size of each content chunk in number of lines. default 200",
     },
     chunkIndex: {
       type: "number",
@@ -29,7 +25,7 @@ const getWebsiteContentSchema = {
       description: "Force refresh the content even if it's already stored. default false",
     },
   },
-  required: ["url", "chunkSize", "maxChunks", "chunkIndex", "forceRefresh"],
+  required: ["url", "chunkSize", "chunkIndex", "forceRefresh"],
   additionalProperties: false,
   description: "Reads website content from a URL and returns only a partial chunk of it. Can be used to retrieve specific sections of a website's content."
 };
@@ -39,8 +35,7 @@ const getWebsiteContentSchema = {
  *
  * @param {Object} args - The arguments object
  * @param {string} args.url - The URL to fetch content from
- * @param {number} [args.chunkSize=100] - Size of each content chunk in number of lines
- * @param {number} [args.maxChunks=1] - Maximum number of chunks to return
+ * @param {number} [args.chunkSize=200] - Size of each content chunk in number of lines
  * @param {number} [args.chunkIndex] - Index of specific chunk to retrieve
  * @param {boolean} [args.forceRefresh=false] - Force refresh content even if cached
  * @returns {Promise<Object>} A promise that resolves to an object with chunks and metadata
@@ -48,11 +43,12 @@ const getWebsiteContentSchema = {
 async function getWebsiteContentTool(args) {
   const {
     url,
-    chunkSize = 100,
-    maxChunks = 1,
+    chunkSize = 200,
     chunkIndex,
     forceRefresh = false
   } = args;
+
+  const maxChunks = 1;
 
   return new Promise(async (resolve, reject) => {
     try {
@@ -102,25 +98,7 @@ async function getWebsiteContentTool(args) {
           // Remove script, style elements, and other non-content elements to clean the content
           $('script, style, meta, link, noscript, iframe, nav, footer, header, aside, svg, path, form, input, button').remove();
           
-          // Focus on potential content areas first
-          let contentSections = $('article, main, .content, .article, .post, #content, #main');
-          
-          // If we found specific content sections, extract from those first
-          if (contentSections.length > 0) {
-            contentSections.each((i, el) => {
-              fullText += $(el).text() + ' ';
-            });
-          } else {
-            // Fallback: extract text from specific tags likely to contain meaningful content
-            $('p, h1, h2, h3, h4, h5, h6, li, td, th, blockquote, pre, code, dl, dt, dd').each((i, el) => {
-              fullText += $(el).text() + ' ';
-            });
-            
-            // If still no content, fall back to body text as a last resort
-            if (!fullText.trim()) {
-              fullText = $('body').text();
-            }
-          }
+          fullText = $('body').text();
           
           // Clean the text
           fullText = cleanText(fullText);
@@ -156,11 +134,48 @@ async function getWebsiteContentTool(args) {
           fullText = `[Content type: ${contentType}]\n` + String(response.data);
         }
         
-        // Divide content into chunks of approximately chunkSize lines
-        const lines = fullText.split('\n');
+        // Divide content into chunks based on character count rather than just newlines
+        // This ensures more consistent chunking even for content with few or no newlines
+        const targetChunkLength = chunkSize * 80; // Approx 80 chars per line as estimate
         const chunks = [];
-        for (let i = 0; i < lines.length; i += chunkSize) {
-          chunks.push(lines.slice(i, i + chunkSize).join('\n'));
+        let currentChunk = "";
+        
+        // Try to split on natural boundaries when possible
+        const paragraphs = fullText.split(/\n\s*\n|\r\n\s*\r\n/); // Split on paragraph breaks
+        
+        for (let i = 0; i < paragraphs.length; i++) {
+          const paragraph = paragraphs[i].trim();
+          
+          // If adding this paragraph would make the chunk too large
+          if (currentChunk && (currentChunk.length + paragraph.length > targetChunkLength)) {
+            // Store the current chunk and start a new one
+            chunks.push(currentChunk);
+            currentChunk = paragraph;
+          } else if (paragraph) {
+            // Add a newline between paragraphs if needed
+            currentChunk = currentChunk ? `${currentChunk}\n\n${paragraph}` : paragraph;
+          }
+          
+          // Handle long paragraphs - split them further if needed
+          while (currentChunk.length > targetChunkLength * 1.5) {
+            // Find a good splitting point - preferably at the end of a sentence
+            let splitPoint = targetChunkLength;
+            
+            // Try to find the end of a sentence near the target length
+            const sentenceEndMatch = currentChunk.slice(targetChunkLength * 0.8, targetChunkLength * 1.2).match(/[.!?]\s/); 
+            if (sentenceEndMatch) {
+              splitPoint = currentChunk.slice(0, targetChunkLength * 0.8).length + 
+                          sentenceEndMatch.index + 2; // +2 to include the punctuation and space
+            }
+            
+            chunks.push(currentChunk.slice(0, splitPoint));
+            currentChunk = currentChunk.slice(splitPoint);
+          }
+        }
+        
+        // Add the last chunk if there's anything left
+        if (currentChunk) {
+          chunks.push(currentChunk);
         }
         
         // Store content data in context
@@ -197,6 +212,7 @@ async function getWebsiteContentTool(args) {
         totalChunks: contentData.totalChunks,
         chunks: chunksToReturn,
         chunkIndices: chunkIndex !== undefined ? [chunkIndex] : [...Array(chunksToReturn.length).keys()],
+        chunkIndex,
         fetchedAt: contentData.fetchedAt,
         contentType: contentData.contentType,
         statusCode: contentData.statusCode,
@@ -317,10 +333,11 @@ function isBinaryContent(contentType, data) {
  */
 function cleanText(text) {
   return text
-    .replace(/\s+/g, ' ') // Remove excessive whitespace
+    .replace(/\s{2,}/g, ' ') // Replace excessive whitespace with a single space
     .replace(/\[.*?\]/g, '') // Remove content in square brackets
     .replace(/\(.*?\)/g, '') // Remove content in parentheses if they're likely references
-    .replace(/[\t\n\r]+/g, ' ') // Replace tabs and newlines
+    .replace(/\t/g, ' ')      // Replace tabs with spaces
+    .replace(/\n{3,}/g, '\n\n') // Replace 3+ consecutive newlines with just two
     .trim();
 }
 

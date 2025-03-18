@@ -24,7 +24,7 @@ const getFunctionCallPrompt = () => `
         2. You can ONLY use tools that are explicitly provided.
         3. Learn from past errors.
         4. when creating or updating files, always check file content before updating to avoid errors and keep correct format also structure.
-        5. If a tool uses arguments to iterate over chunks of content then iterate over it as needed to accomplish the execution plan goal.
+        5. If a tool uses arguments to iterate over chunks of content then ONLY iterate over it until you have enough content to accomplish the execution plan goal, avoid unnecesary iterations.
         6. Keep user operating system in mind for directories, paths, commands, configurations etc.
         7. ONLY USE grep_search tool if you need to search for FILES in the user directory.
         8. DO NOT ASK QUESTIONS TO THE USER. 

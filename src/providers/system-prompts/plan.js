@@ -36,7 +36,8 @@ const getPlanPrompt = (maxTokens, includePastConversation) => `You are a helpful
         7. Be as technical as possible.
         8. Do not create files for summaries unless specify by the user.
         9. Do not return code snippets or tool_code snippets. 
-        10. MAX TOKENS: ${maxTokens}.
+        10. DO NOT USE grep_search tool UNLESS YOU NEED TO SEARCH WITHIN FILES.
+        11. MAX TOKENS: ${maxTokens}.
 
         YOU MUST EXPLICITLY INCLUDE FOLLOWING IN YOUR RESPONSE:
         - THE TOOL NAME.

@@ -133,7 +133,7 @@ const tools = {
     schema: getWebsiteContentSchema,
     execute: getWebsiteContent,
     format: (result) => {
-      logger.success(` Got content from ${result.url} (${result.chunks.length}/${result.totalChunks} chunks)`);
+      logger.success(` Got content from ${result.url}: (${result.chunkIndex + 1}/${result.totalChunks} chunks)`);
       return result;
     }
   },
