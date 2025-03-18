@@ -34,7 +34,7 @@ const tools = {
     schema: readFileSchema,
     execute: readFile,
     format: (result) => {
-      logger.success(` Read file content`);
+      logger.success(` Read file ${result.path} (${result.content.length} bytes)`);
       return result.content;
     }
   },

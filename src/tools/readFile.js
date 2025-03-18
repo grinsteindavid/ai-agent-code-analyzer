@@ -18,7 +18,7 @@ function readFile(args) {
   return new Promise((resolve, reject) => {
     fs.readFile(path, encoding, (err, data) => {
       if (err) reject({ error: err.message });
-      else resolve({ content: data });
+      else resolve({ content: data, path, encoding });
     });
   });
 }
