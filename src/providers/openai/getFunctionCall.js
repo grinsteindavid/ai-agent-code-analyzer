@@ -2,9 +2,6 @@ const { OpenAI } = require("openai");
 const { getMessages, addMessage} = require("../../utils/context");
 const { getFunctionCallPrompt } = require("../system-prompts");
 
-// Initialize OpenAI
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 /**
  * Call OpenAI API and get function call response
  * @param {Object} options - Options object
@@ -13,6 +10,9 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
  * @returns {Array} - Array of function calls with name and arguments, empty array if none or error
  */
 async function getFunctionCall(options) {
+  // Initialize OpenAI
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "" });
+  
   // Default options
   const {
     functions = [],

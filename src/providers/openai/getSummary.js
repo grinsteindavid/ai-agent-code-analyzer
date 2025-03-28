@@ -2,8 +2,7 @@ const { OpenAI } = require("openai");
 const { getMessages, addMessage } = require("../../utils/context");
 const { getSummaryPrompt } = require("../system-prompts");
 
-// Initialize OpenAI
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
 
 /**
  * Generate a summary of the execution results or code analysis
@@ -16,6 +15,9 @@ async function getSummary(options = {}) {
   const {
     maxTokens = 400,
   } = options;
+
+  // Initialize OpenAI
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "" });
 
   try {
 

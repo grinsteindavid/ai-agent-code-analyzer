@@ -4,8 +4,7 @@ const logger = require("../../utils/logger");
 const { getPlanPrompt } = require("../system-prompts");
 
 
-// Initialize OpenAI
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
 
 /**
  * Generate an execution plan using OpenAI
@@ -22,6 +21,9 @@ async function getPlan(options) {
   } = options;
 
   const maxTokens = 200;
+
+  // Initialize OpenAI
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "" });
 
   try {
 

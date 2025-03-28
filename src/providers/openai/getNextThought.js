@@ -2,15 +2,15 @@ const { OpenAI } = require("openai");
 const { getMessages } = require("../../utils/context");
 const { getNextThoughtPrompt } = require("../system-prompts");
 
-// Initialize OpenAI
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
 
 /**
  * Generate the next thought based on the execution plan and conversation history
  * @returns {Object} - Object containing the next thought from the AI
  */
 async function getNextThought() {
-
+  // Initialize OpenAI
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "" });
 
   const maxTokens = 200;
   
