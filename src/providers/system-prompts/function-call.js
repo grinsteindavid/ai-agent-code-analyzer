@@ -4,7 +4,16 @@
 const os = require('os');
 const { tools } = require("../../utils/tools");
 
-const getFunctionCallPrompt = () => `
+/**
+ * Gets the function call prompt
+ * @param {Object} options - Options object
+ * @param {number} [options.maxTokens] - Max tokens to generate a response
+ * @returns {string} The function call prompt
+ */
+const getFunctionCallPrompt = (options = {}) => {
+  const { maxTokens = 0 } = options;
+  
+  return `
         You are a helpful assistant that can use tools to accomplish tasks. \n
         
         ** Operating system info: ${process.platform} (${process.arch}) ${os.release()} ** 
@@ -28,6 +37,8 @@ const getFunctionCallPrompt = () => `
         6. Keep user operating system in mind for directories, paths, commands, configurations etc.
         7. ONLY USE grep_search tool if you need to search for FILES in the user directory.
         8. DO NOT ASK QUESTIONS TO THE USER. 
+        ${maxTokens ? `9. You have a max of ${maxTokens} tokens to generate a response.` : ''}
        `;
+};
 
 module.exports = getFunctionCallPrompt;

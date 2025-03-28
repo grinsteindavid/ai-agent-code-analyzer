@@ -1,5 +1,5 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const { getMessages, addMessage } = require("../../utils/context");
+const { getMessages } = require("../../utils/context");
 const { getFunctionCallPrompt } = require("../system-prompts");
 
 // Initialize Gemini API
@@ -66,7 +66,7 @@ async function getFunctionCall(options) {
   });
 
   // Prepare system instruction
-  const systemInstruction = getFunctionCallPrompt();
+  const systemInstruction = getFunctionCallPrompt({maxTokens: 500});
 
   // Create the model with system instruction
   const model = genAI.getGenerativeModel({ 
@@ -91,7 +91,7 @@ async function getFunctionCall(options) {
   const result = await model.generateContent({
     contents,
     generationConfig: {
-      temperature: 0.2,
+      temperature: 0.1,
     }
   });
   
