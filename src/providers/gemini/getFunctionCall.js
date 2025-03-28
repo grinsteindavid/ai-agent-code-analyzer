@@ -22,96 +22,97 @@ async function getFunctionCall(options) {
   if(nextThought.toUpperCase().includes("@CURRENT PLAN FINISHED@")) {
     return [];
   }
-  
-  try {
-    // Convert OpenAI tool format to Gemini function format if needed
-    const geminiFunctions = functions.map(tool => {
-      // Create a deep copy of parameters and remove unsupported fields
-      const parameters = JSON.parse(JSON.stringify(tool.function.parameters));
-      
-      // Helper function to clean schema objects recursively
-      const cleanSchema = (schema) => {
-        if (!schema || typeof schema !== 'object') return;
-        
-        // Remove fields at current level
-        if (schema.additionalProperties !== undefined) delete schema.additionalProperties;
-        if (schema.default !== undefined) delete schema.default;
-        
-        // Process properties if they exist
-        if (schema.properties) {
-          Object.keys(schema.properties).forEach(propKey => {
-            // Remove fields from each property
-            const prop = schema.properties[propKey];
-            if (prop.additionalProperties !== undefined) delete prop.additionalProperties;
-            if (prop.default !== undefined) delete prop.default;
-            
-            // Recursively clean nested objects
-            cleanSchema(prop);
-          });
-        }
-        
-        // Handle items in arrays
-        if (schema.items) {
-          cleanSchema(schema.items);
-        }
-      };
-      
-      // Clean the entire schema
-      cleanSchema(parameters);
 
-      return {
-        name: tool.function.name,
-        description: tool.function.description,
-        parameters: parameters
-      };
-    });
-
-    // Prepare system instruction
-    const systemInstruction = getFunctionCallPrompt();
-
-    // Create the model with system instruction
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.0-flash",
-      systemInstruction: systemInstruction,
-      tools: [{functionDeclarations: geminiFunctions}]
-    });
-
-    // Format conversation history for Gemini
-    const chatHistory = getMessages().map(msg => ({
-      role: msg.role === 'assistant' ? 'model' : msg.role,
-      parts: [{ text: msg.content }]
-    })).filter(msg => msg.role === 'user');
+  // Convert OpenAI tool format to Gemini function format if needed
+  const geminiFunctions = functions.map(tool => {
+    // Create a deep copy of parameters and remove unsupported fields
+    const parameters = JSON.parse(JSON.stringify(tool.function.parameters));
     
-    // Prepare the content for generation
-    const contents = [
-      ...chatHistory,
-      { role: 'user', parts: [{ text: `${nextThought}` }] }
-    ];
-    
-    // Generate content with the new API pattern
-    const result = await model.generateContent({
-      contents,
-      generationConfig: {
-        temperature: 0.2,
+    // Helper function to clean schema objects recursively
+    const cleanSchema = (schema) => {
+      if (!schema || typeof schema !== 'object') return;
+      
+      // Remove fields at current level
+      if (schema.additionalProperties !== undefined) delete schema.additionalProperties;
+      if (schema.default !== undefined) delete schema.default;
+      
+      // Process properties if they exist
+      if (schema.properties) {
+        Object.keys(schema.properties).forEach(propKey => {
+          // Remove fields from each property
+          const prop = schema.properties[propKey];
+          if (prop.additionalProperties !== undefined) delete prop.additionalProperties;
+          if (prop.default !== undefined) delete prop.default;
+          
+          // Recursively clean nested objects
+          cleanSchema(prop);
+        });
       }
-    });
+      
+      // Handle items in arrays
+      if (schema.items) {
+        cleanSchema(schema.items);
+      }
+    };
     
-    // Get function calls directly from the response object
-    const functionCalls = result.response.functionCalls();
-    
-    // Convert function calls to our standard format and return as array
-    if (functionCalls && functionCalls.length > 0) {
-      return functionCalls.map(functionCall => ({
-        name: functionCall.name,
-        arguments: functionCall.args
-      }));
+    // Clean the entire schema
+    cleanSchema(parameters);
+
+    return {
+      name: tool.function.name,
+      description: tool.function.description,
+      parameters: parameters
+    };
+  });
+
+  // Prepare system instruction
+  const systemInstruction = getFunctionCallPrompt();
+
+  // Create the model with system instruction
+  const model = genAI.getGenerativeModel({ 
+    model: "gemini-2.0-flash",
+    systemInstruction: systemInstruction,
+    tools: [{functionDeclarations: geminiFunctions}]
+  });
+
+  // Format conversation history for Gemini
+  const chatHistory = getMessages().map(msg => ({
+    role: msg.role === 'assistant' ? 'model' : msg.role,
+    parts: [{ text: msg.content }]
+  })).filter(msg => msg.role === 'user');
+  
+  // Prepare the content for generation
+  const contents = [
+    ...chatHistory,
+    { role: 'user', parts: [{ text: `${nextThought}` }] }
+  ];
+  
+  // Generate content with the new API pattern
+  const result = await model.generateContent({
+    contents,
+    generationConfig: {
+      temperature: 0.2,
     }
-    
-    return [];
-  } catch (error) {
-    addMessage(`user`, `ERROR: ${error.message}`);
-    return [];
+  });
+  
+  // Get function calls directly from the response object
+  const functionCalls = result.response.functionCalls();
+  
+  // Convert function calls to our standard format and return as array
+  if (functionCalls && functionCalls.length > 0) {
+    return functionCalls.map(functionCall => ({
+      name: functionCall.name,
+      arguments: functionCall.args
+    }));
   }
+
+  if(result.response.candidates[0].finishReason === 'MALFORMED_FUNCTION_CALL') {
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    throw new Error("Invalid function call");
+  }
+  
+  return [];
 }
 
 module.exports = getFunctionCall;
